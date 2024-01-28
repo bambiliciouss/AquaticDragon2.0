@@ -10,6 +10,8 @@ import {
   Container,
   Row,
   Col,
+  CardTitle,
+  CardText,
 } from "reactstrap";
 import AuthNavbar from "components/Navbars/AuthNavbar.js";
 import MetaData from "../layout/MetaData";
@@ -60,7 +62,7 @@ const ContainerStatus = () => {
           </CardHeader>
           <CardBody>
             <Form>
-              <FormGroup>
+              {/* <FormGroup>
                 <div>
                   <FormGroup check>
                     <label className="form-check-label">
@@ -87,11 +89,60 @@ const ContainerStatus = () => {
                     </label>
                   </FormGroup>
                 </div>
-              </FormGroup>
-            </Form>
+              </FormGroup> */}
 
+              <Row>
+                <Col sm="12">
+                  <Card body>
+                    <FormGroup check>
+                      <label className="form-check-label">
+                        <Input
+                          type="radio"
+                          name="containerStatus"
+                          value="Pickup"
+                          onChange={() => setSelectedContainerStatus("Pickup")}
+                          checked={selectedContainerStatus === "Pickup"}
+                        />
+
+                        <CardText>For Pick up</CardText>
+                        <CardText
+                          style={{ fontStyle: "italic", fontSize: "0.9rem" }}>
+                          The rider will pick up your water container(s) at your
+                          address.
+                        </CardText>
+                      </label>
+                    </FormGroup>
+                  </Card>
+                </Col>
+              </Row>
+              <div style={{ marginBottom: "20px" }}></div>
+              <Row>
+                <Col sm="12">
+                  <Card body>
+                    <FormGroup check>
+                      <label className="form-check-label">
+                        <Input
+                          type="radio"
+                          name="containerStatus"
+                          value="WalkIn"
+                          onChange={() => setSelectedContainerStatus("WalkIn")}
+                          checked={selectedContainerStatus === "WalkIn"}
+                        />
+                        <CardText>Walk In</CardText>
+                        <CardText
+                          style={{ fontStyle: "italic", fontSize: "0.9rem" }}>
+                          You are the one to bring your water container(s) at
+                          water station.
+                        </CardText>
+                      </label>
+                    </FormGroup>
+                  </Card>
+                </Col>
+              </Row>
+            </Form>
+            <div style={{ marginBottom: "20px" }}></div>
             <Button block color="info" onClick={processToContainerStatus}>
-              Proceed
+              Next
             </Button>
           </CardBody>
         </Card>

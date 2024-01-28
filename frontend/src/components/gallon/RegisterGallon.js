@@ -108,8 +108,8 @@ const RegisterGallon = () => {
         style={{
           minHeight: "700px",
           marginTop: "100px",
-          marginLeft: "20%",
-          marginRight: "20%",
+          marginLeft: "15%",
+          marginRight: "15%",
         }}>
         <div className="row">
           {/* Sidebar */}

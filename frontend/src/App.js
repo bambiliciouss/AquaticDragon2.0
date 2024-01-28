@@ -37,6 +37,11 @@ import DeliveryAddress from "components/cart/DeliveryAddress";
 import Payment from "components/cart/Payment";
 import OrderSummary from "components/cart/OrderSummary";
 
+import MyOrdersList from "components/order/MyOrders";
+
+import OrderList from "components/admin/OrderList";
+import OrderDetails from "components/order/OrderDetails";
+
 import store from "./store";
 import { loadUser } from "./actions/userActions";
 import { useEffect } from "react";
@@ -61,13 +66,11 @@ function App() {
           element={<ForgotPassword />}
           exact="true"
         />
-
         <Route
           path="/password/reset/:token"
           element={<NewPassword />}
           exact="true"
         />
-
         <Route path="/my-profile" element={<Profile />} exact="true" />
         <Route
           path="/me/update"
@@ -78,7 +81,6 @@ function App() {
           }
           exact="true"
         />
-
         <Route
           path="/password/update"
           element={
@@ -88,7 +90,6 @@ function App() {
           }
           exact="true"
         />
-
         <Route
           path="/register-gallon"
           element={
@@ -107,10 +108,8 @@ function App() {
           }
           exact="true"
         />
-
         {/* <Route path="/admin" element={<AdminRegistration />} exact="true" />
          */}
-
         {/* ADMIN */}
         <Route path="/dashboard" element={<Dashboard />} exact="true" />
         <Route path="/userlist" element={<UserList />} exact="true" />
@@ -122,7 +121,6 @@ function App() {
           element={<StoreBranchList />}
           exact="true"
         />
-
         <Route path="/cart" element={<Cart />} exact="true" />
         <Route
           path="/containerstatus"
@@ -133,7 +131,6 @@ function App() {
           }
           exact="true"
         />
-
         <Route
           path="/orderclaimingmethod"
           element={
@@ -143,7 +140,6 @@ function App() {
           }
           exact="true"
         />
-
         <Route
           path="/storeselection"
           element={
@@ -153,7 +149,6 @@ function App() {
           }
           exact="true"
         />
-
         <Route
           path="/pickupaddress"
           element={
@@ -163,7 +158,6 @@ function App() {
           }
           exact="true"
         />
-
         <Route
           path="/deliveryaddress"
           element={
@@ -182,7 +176,6 @@ function App() {
           }
           exact="true"
         />
-
         <Route
           path="/ordersummary"
           element={
@@ -191,6 +184,31 @@ function App() {
             </ProtectedRoute>
           }
           exact="true"
+        />
+        <Route
+          path="/orders/me"
+          element={
+            <ProtectedRoute>
+              <MyOrdersList />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/orderlist" element={<OrderList />} exact="true" />
+        <Route
+          path="/order/:id"
+          element={
+            <ProtectedRoute>
+              <OrderDetails />
+            </ProtectedRoute>
+          }
+        />{" "}
+        <Route
+          path="/order/:id"
+          element={
+            <ProtectedRoute>
+              <OrderDetails />
+            </ProtectedRoute>
+          }
         />
       </Routes>
     </>

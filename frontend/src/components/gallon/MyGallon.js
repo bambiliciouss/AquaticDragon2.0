@@ -77,8 +77,8 @@ const MyGallon = () => {
         style={{
           minHeight: "700px",
           marginTop: "100px",
-          marginLeft: "20%",
-          marginRight: "20%",
+          marginLeft: "15%",
+          marginRight: "15%",
         }}>
         <div className="row">
           {/* Sidebar */}
@@ -170,7 +170,7 @@ const MyGallon = () => {
                               <thead className="thead-light">
                                 <th scope="col">QR Code</th>
                                 <th scope="col">Type of Gallon</th>
-                                <th scope="col">Gallon Age</th>
+                                <th scope="col">Gallon Age (In Days)</th>
                                 <th scope="col">Gallon Image</th>
                                 <th scope="col">Add To Cart</th>
                               </thead>

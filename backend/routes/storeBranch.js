@@ -19,7 +19,7 @@ router.post(
 
 router
   .route("/admin/storebranch")
-  .get(isAuthenticatedUser, authorizeRoles("admin"), AllStoreBranch);
+  .get(isAuthenticatedUser, AllStoreBranch);
 
 router
   .route("/delete/storebranch/:id")

@@ -103,6 +103,7 @@ const Sidebar = (props) => {
               alt={logo.imgAlt}
               className="navbar-brand-img"
               src={logo.imgSrc}
+              style={{ width: "100px", height: "100px" }}
             />
           </NavbarBrand>
         ) : null}
@@ -154,7 +155,7 @@ const Sidebar = (props) => {
           </Form>
           {/* Navigation */}
           <Nav navbar>
-          <NavItem>
+            <NavItem>
               <NavLink href="/dashboard" onClick={closeCollapse}>
                 <i className="ni ni-chart-bar-32 text-pink" /> Dashboard
               </NavLink>
@@ -182,6 +183,12 @@ const Sidebar = (props) => {
             <NavItem>
               <NavLink href="/storebranchlist" onClick={closeCollapse}>
                 <i className="ni ni-shop text-red" /> Store Branch
+              </NavLink>
+            </NavItem>
+
+            <NavItem>
+              <NavLink href="/orderlist" onClick={closeCollapse}>
+                <i className="ni ni-basket text-green" /> Orders
               </NavLink>
             </NavItem>
           </Nav>

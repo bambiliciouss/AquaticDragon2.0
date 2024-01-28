@@ -3,7 +3,7 @@ import {
   combineReducers,
   applyMiddleware,
 } from "redux";
-import {thunk} from 'redux-thunk';
+import { thunk } from "redux-thunk";
 import { composeWithDevTools } from "@redux-devtools/extension";
 import {
   authReducer,
@@ -25,7 +25,13 @@ import {
   storeBranchReducer,
 } from "./reducers/storebranchReducers";
 
-import { newOrderReducer } from "reducers/orderReducers";
+import {
+  newOrderReducer,
+  myOrdersReducer,
+  allOrdersReducer,
+  orderDetailsReducer,
+  orderReducer,
+} from "reducers/orderReducers";
 import { cartReducer } from "reducers/cartReducers";
 
 const reducers = combineReducers({
@@ -42,13 +48,17 @@ const reducers = combineReducers({
   storeBranch: storeBranchReducer,
   cart: cartReducer,
   newOrder: newOrderReducer,
+  myOrders: myOrdersReducer,
+  allOrders: allOrdersReducer,
+  orderDetails: orderDetailsReducer,
+  order: orderReducer,
 });
 
 let initialState = {
   cart: {
     cartItems: localStorage.getItem("cartItems")
       ? JSON.parse(localStorage.getItem("cartItems"))
-      : []
+      : [],
   },
 };
 

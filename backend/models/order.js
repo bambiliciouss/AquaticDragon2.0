@@ -40,6 +40,13 @@ const orderSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "StoreBranch",
       },
+      branchNo: {
+        type: String,
+      },
+
+      address: {
+        type: String,
+      },
       deliveryFee: {
         type: Number,
         required: true,
@@ -47,68 +54,59 @@ const orderSchema = mongoose.Schema({
     },
   ],
 
-  pickupAddress: [
-    {
-      // latitude: {
-      //   type: String,
-      //   required: true,
-      // },
-      // longitude: {
-      //   type: String,
-      //   required: true,
-      // },
+  // deliveryAddress: [
+  //   {
+  //     latitude: {
+  //       type: String,
+  //       required: true,
+  //     },
+  //     longitude: {
+  //       type: String,
+  //       required: true,
+  //     },
 
-      address: {
-        type: String,
-        required: true,
-      },
+  //     address: {
+  //       type: String,
+  //       required: true,
+  //     },
 
-      street: {
-        type: String,
-        required: true,
-      },
+  //     street: {
+  //       type: String,
+  //       required: true,
+  //     },
 
-      barangay: {
-        type: String,
-        required: true,
-      },
+  //     barangay: {
+  //       type: String,
+  //       required: true,
+  //     },
 
-      city: {
-        type: String,
-        required: true,
-      },
-    },
-  ],
+  //     city: {
+  //       type: String,
+  //       required: true,
+  //     },
+  //   },
+  // ],
 
   deliveryAddress: [
     {
-      // latitude: {
-      //   type: String,
-      //   required: true,
-      // },
-      // longitude: {
-      //   type: String,
-      //   required: true,
-      // },
-
-      address: {
+      houseNo: {
         type: String,
-        required: true,
       },
 
-      street: {
+      streetName: {
         type: String,
-        required: true,
+      },
+
+      purokNum: {
+        type: String,
       },
 
       barangay: {
         type: String,
-        required: true,
       },
 
       city: {
         type: String,
-        required: true,
       },
     },
   ],
@@ -129,8 +127,15 @@ const orderSchema = mongoose.Schema({
     },
   ],
 
-  orderCompletedAt: {
-    type: Date,
+  totalPrice: {
+    type: Number,
+    required: true,
+    default: 0.0,
+  },
+
+  notes: {
+    type: String,
+    default: "",
   },
 
   createdAt: {
@@ -141,6 +146,6 @@ const orderSchema = mongoose.Schema({
 
 orderSchema
   .path("orderStatus")
-  .default([{ orderLevel: "Pending", datedAt: Date.now() }]);
+  .default([{ orderLevel: "Order Placed", datedAt: Date.now() }]);
 
 module.exports = mongoose.model("Order", orderSchema);

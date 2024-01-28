@@ -10,6 +10,8 @@ import {
   Container,
   Row,
   Col,
+  CardTitle,
+  CardText,
 } from "reactstrap";
 import AuthNavbar from "components/Navbars/AuthNavbar.js";
 import MetaData from "../layout/MetaData";
@@ -58,13 +60,69 @@ const OrderReceivedMethod = () => {
           <CardHeader className="bg-white border-0">
             <Row className="align-items-center">
               <Col xs="8">
-                <h3 className="mb-0">Select Order Claiming Method</h3>
+                <h3 className="mb-0">How will you claim your order?</h3>
               </Col>
             </Row>
           </CardHeader>
           <CardBody>
             <Form>
-              <FormGroup>
+              <Row>
+                <Col sm="12">
+                  <Card body>
+                    <FormGroup check>
+                      <label className="form-check-label">
+                        <Input
+                          type="radio"
+                          name="orderClaimingMethod"
+                          value="Delivery"
+                          onChange={() =>
+                            setSelectedOrderClaimingMethod("Delivery")
+                          }
+                          checked={selectedOrderClaimingMethod === "Delivery"}
+                        />
+                       
+                        <CardText>Delivery</CardText>
+                        <CardText
+                          style={{ fontStyle: "italic", fontSize: "0.9rem" }}>
+                          The rider will deliver your water container(s) at your
+                          address.
+                        </CardText>
+                      </label>
+                    </FormGroup>
+                  </Card>
+                </Col>
+              </Row>
+              <div style={{ marginBottom: "20px" }}></div>
+              <Row>
+                <Col sm="12">
+                  <Card body>
+                    <FormGroup check>
+                      <label className="form-check-label">
+                      <Input
+                        type="radio"
+                        name="orderClaimingMethod"
+                        value="Walkin"
+                        onChange={() =>
+                          setSelectedOrderClaimingMethod("Walkin")
+                        }
+                        checked={selectedOrderClaimingMethod === "Walkin"}
+                      />
+                       
+                        <CardText>Walk In</CardText>
+                        <CardText
+                          style={{ fontStyle: "italic", fontSize: "0.9rem" }}>
+                          You are the one to claim your water container(s) at
+                          water station.
+                        </CardText>
+                      </label>
+                    </FormGroup>
+                  </Card>
+                </Col>
+              </Row>
+              <div style={{ marginBottom: "20px" }}></div>
+
+              
+              {/* <FormGroup>
                 <div>
                   <FormGroup check>
                     <label className="form-check-label">
@@ -95,7 +153,7 @@ const OrderReceivedMethod = () => {
                     </label>
                   </FormGroup>
                 </div>
-              </FormGroup>
+              </FormGroup> */}
             </Form>
 
             <Button block color="info" onClick={processToOrderClaimingMethod}>

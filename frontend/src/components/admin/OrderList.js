@@ -15,7 +15,8 @@ import AdminFooter from "components/Footers/AdminFooter.js";
 import QRCode from "react-qr-code";
 import { DELETE_GALLON_RESET } from "../../constants/gallonConstants";
 import swal from "sweetalert";
-import { allGallons, deleteGallon } from "actions/gallonActions";
+import { allOrders, clearErrors } from "../../actions/orderActions";
+import Loader from "components/layout/Loader";
 import {
   Button,
   Card,
@@ -31,94 +32,74 @@ import {
   Col,
 } from "reactstrap";
 
-const GallonList = () => {
+const OrderList = () => {
   const dispatch = useDispatch();
 
   let navigate = useNavigate();
 
-  const { loading, error, gallons } = useSelector((state) => state.allGallons);
-  const { isDeleted } = useSelector((state) => state.gallon);
+  const { loading, error, orders } = useSelector((state) => state.allOrders);
+
   useEffect(() => {
-    dispatch(allGallons());
-    if (isDeleted) {
-      navigate("/gallonlist");
-      dispatch({ type: DELETE_GALLON_RESET });
+    dispatch(allOrders());
+
+    if (error) {
+      dispatch(clearErrors());
     }
-  }, [dispatch, isDeleted, navigate]);
+  }, [dispatch, error]);
 
-  const deleteGallonHandler = (id) => {
-    swal({
-      title: "Are you sure you want to delete this gallon?",
-      icon: "warning",
-      buttons: true,
-      dangerMode: true,
-    }).then((willDelete) => {
-      if (willDelete) {
-        swal("Gallon has been deleted!", "", "success");
-        dispatch(deleteGallon(id));
-      } else {
-        swal("Gallon is not deleted!", "", "info");
-        console.log(id);
-      }
+  const setOrders = () => {
+    const sortedOrders = orders.sort((a, b) => {
+      return new Date(b.createdAt) - new Date(a.createdAt);
     });
-  };
-
-  const setGallons = () => {
     const data = {
       columns: [
         {
-          label: "Gallon ID",
+          label: "Order ID",
           field: "id",
           sort: "asc",
         },
-
         {
-          label: "QR Code",
-          field: "qr",
-          sort: "asc",
-        },
-
-        {
-          label: "Type",
-          field: "type",
+          label: "Num of Items",
+          field: "numOfItems",
           sort: "asc",
         },
         {
-          label: "Age",
-          field: "age",
+          label: "Amount",
+          field: "amount",
+          sort: "asc",
+        },
+        {
+          label: "Status",
+          field: "status",
           sort: "asc",
         },
         {
           label: "Actions",
           field: "actions",
+          sort: "asc",
         },
       ],
-
       rows: [],
     };
 
-    gallons.forEach((gallon) => {
+    orders.forEach((order) => {
+      // Find the latest order status
+      const latestOrderStatus = order.orderStatus.reduce((latest, status) => {
+        if (!latest.datedAt || status.datedAt > latest.datedAt) {
+          return status;
+        }
+        return latest;
+      }, {});
+
       data.rows.push({
-        id: gallon._id,
-        type: gallon.type,
-        age: gallon.gallonAge,
-        qr: (
-          <QRCode
-            value={gallon._id}
-            style={{
-              width: "100px",
-              height: "100px",
-            }}
-          />
-        ),
+        id: order._id,
+        numOfItems: order.orderItems.length,
+        amount: `₱${order.totalPrice}`,
+        status: latestOrderStatus.orderLevel || "N/A",
         actions: (
-          <Fragment>
-            <button
-              className="btn btn-danger py-1 px-2 ml-2"
-              onClick={() => deleteGallonHandler(gallon._id)}>
-              <i className="fa fa-trash"></i>
-            </button>
-          </Fragment>
+          <Link to={`/order/${order._id}`} className="btn btn-info">
+            <i className="fa fa-eye"></i>
+          </Link>
         ),
       });
     });
@@ -128,7 +109,7 @@ const GallonList = () => {
 
   return (
     <>
-      <MetaData title={"Gallon(s)"} />
+      <MetaData title={"Order(s)"} />
       <Sidebar
         logo={{
           innerLink: "/",
@@ -144,19 +125,23 @@ const GallonList = () => {
             <CardHeader className="bg-white border-0">
               <Row className="align-items-center">
                 <Col xs="8">
-                  <h3 className="mb-0">List of Gallon(s)</h3>
+                  <h3 className="mb-0">List of Order(s)</h3>
                 </Col>
               </Row>
             </CardHeader>
             <CardBody style={{ overflowX: "auto" }}>
-              <MDBDataTable
-                data={setGallons()}
-                className="px-3"
-                bordered
-                hover
-                noBottomColumns
-                responsive
-              />
+              {loading ? (
+                <Loader />
+              ) : (
+                <MDBDataTable
+                  data={setOrders()}
+                  className="px-3"
+                  bordered
+                  hover
+                  noBottomColumns
+                  responsive
+                />
+              )}
             </CardBody>
           </Card>
         </Container>
@@ -168,4 +153,4 @@ const GallonList = () => {
   );
 };
 
-export default GallonList;
+export default OrderList;

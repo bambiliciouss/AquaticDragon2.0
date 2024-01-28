@@ -214,7 +214,7 @@ const StoreBranchList = (args) => {
 
   return (
     <>
-      <MetaData title={"Dashboard"} />
+      <MetaData title={"Store(s)"} />
       <Sidebar
         logo={{
           innerLink: "/",

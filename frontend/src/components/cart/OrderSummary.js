@@ -10,6 +10,8 @@ import {
   Container,
   Row,
   Col,
+  CardTitle,
+  CardText,
 } from "reactstrap";
 import AuthNavbar from "components/Navbars/AuthNavbar.js";
 import MetaData from "../layout/MetaData";
@@ -23,7 +25,7 @@ const OrderSummary = () => {
   const { user } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.cart);
   const { error } = useSelector((state) => state.newOrder);
-
+  const [notes, setNotes] = useState();
   useEffect(() => {
     if (error) {
       console.log(error);
@@ -33,6 +35,7 @@ const OrderSummary = () => {
 
   const order = {
     orderItems: cartItems,
+    notes,
   };
 
   const containerstatusinfo = JSON.parse(
@@ -59,36 +62,29 @@ const OrderSummary = () => {
     ];
   }
 
-  const pickupAddressinfo = JSON.parse(sessionStorage.getItem("pickupAddress"));
-  if (pickupAddressinfo) {
-    order.pickupAddress = [
-      {
-        address: pickupAddressinfo.address,
-        street: pickupAddressinfo.streetName,
-        barangay: pickupAddressinfo.barangay,
-        city: pickupAddressinfo.city,
-      },
-    ];
-  }
-
-  const deliveryAddressinfo = JSON.parse(
-    sessionStorage.getItem("deliveryAddress")
-  );
-  if (deliveryAddressinfo) {
-    order.deliveryAddress = [
-      {
-        address: deliveryAddressinfo.address,
-        street: deliveryAddressinfo.streetName,
-        barangay: deliveryAddressinfo.barangay,
-        city: deliveryAddressinfo.city,
-      },
-    ];
-  }
-
   const paymentinfo = JSON.parse(sessionStorage.getItem("processToPayment"));
   if (paymentinfo) {
     order.paymentInfo = paymentinfo.paymentMethod;
   }
+
+  order.deliveryAddress = [
+    {
+      houseNo: user.houseNo,
+      streetName: user.streetName,
+      purokNum: user.purokNum,
+      barangay: user.barangay,
+      city: user.city,
+    },
+  ];
+
+  const itemsPrice = cartItems.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
+  const deliveryFee = parseFloat(storeBranchinfo.deliverFee);
+  const totalPrice = itemsPrice + deliveryFee;
+
+  order.totalPrice = totalPrice;
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -105,7 +101,9 @@ const OrderSummary = () => {
     dispatch(clearCart());
     sessionStorage.clear();
     localStorage.clear();
-    navigate("/my-profile");
+
+    navigate("/orders/me");
+    window.location.reload();
   };
   return (
     <>
@@ -130,7 +128,132 @@ const OrderSummary = () => {
           </CardHeader>
           <CardBody>
             <Form onSubmit={submitHandler}>
-              <FormGroup></FormGroup>
+              <Row>
+                <Col sm="12">
+                  <Card body>
+                    <CardTitle tag="h2">
+                      {" "}
+                      <i className="ni ni-square-pin" /> Delivery Address
+                    </CardTitle>
+                    <CardText>
+                      {user.houseNo}, {user.purokNum}, {user.streetName},{" "}
+                      {user.barangay}, {user.city}`
+                    </CardText>
+                  </Card>
+                </Col>
+              </Row>
+              <div style={{ marginBottom: "20px" }}></div>
+
+              <Row>
+                <Col sm="12">
+                  <Card body>
+                    <CardTitle tag="h2">
+                      {" "}
+                      <i className="ni ni-shop" /> Selected Store
+                    </CardTitle>
+                    <CardText>
+                      <Row>
+                        <Col sm="3">
+                          <img
+                            src={storeBranchinfo.storeImage.url}
+                            alt={storeBranchinfo._id}
+                            img
+                            style={{ width: 70, height: 70 }}
+                          />
+                        </Col>
+                        <Col sm="3">{storeBranchinfo.deliverFee}</Col>
+                        <Col sm="4">{totalPrice}</Col>
+                      </Row>
+                    </CardText>
+                  </Card>
+                </Col>
+              </Row>
+
+              <div style={{ marginBottom: "20px" }}></div>
+
+              <Row>
+                <Col sm="12">
+                  <Card body>
+                    <CardTitle tag="h2">
+                      {" "}
+                      <i className="ni ni-cart" /> Order(s)
+                    </CardTitle>
+                    <CardText>
+                      {" "}
+                      {cartItems.map((item) => (
+                        <Row>
+                          <Col sm="5">{item.gallon}</Col>
+                          <Col sm="3">{item.quantity}</Col>
+                          <Col sm="4">{item.price}</Col>
+                        </Row>
+                      ))}
+                    </CardText>
+                  </Card>
+                </Col>
+              </Row>
+
+              <div style={{ marginBottom: "20px" }}></div>
+
+              <Row>
+                <Col sm="12">
+                  <Card body>
+                    <CardText>
+                      <span style={{ fontWeight: "bold" }}>
+                        Container Status:{" "}
+                      </span>
+                      {containerstatusinfo.containerStatus}
+                    </CardText>
+                  </Card>
+                </Col>
+              </Row>
+              <div style={{ marginBottom: "20px" }}></div>
+
+              <Row>
+                <Col sm="12">
+                  <Card body>
+                    <CardText>
+                      <span style={{ fontWeight: "bold" }}>
+                        Order Claiming Method:{" "}
+                      </span>{" "}
+                      {orderclaimingOptioninfo.orderClaimingMethod}
+                    </CardText>
+                  </Card>
+                </Col>
+              </Row>
+              <div style={{ marginBottom: "20px" }}></div>
+
+              <Row>
+                <Col sm="12">
+                  <Card body>
+                    <CardText>
+                      <span style={{ fontWeight: "bold" }}>
+                        Payment Method:
+                      </span>{" "}
+                      {paymentinfo.paymentMethod}
+                    </CardText>
+                  </Card>
+                </Col>
+              </Row>
+              <div style={{ marginBottom: "20px" }}></div>
+
+              <Row>
+                <Col sm="12">
+                  <Card body>
+                    <CardText>
+                      <span style={{ fontWeight: "bold" }}>Notes:</span>{" "}
+                      <Input
+                        placeholder="Add Notes here ..."
+                        rows="3"
+                        type="textarea"
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                      />
+                    </CardText>
+                  </Card>
+                </Col>
+              </Row>
+              <div style={{ marginBottom: "20px" }}></div>
+
               <Button block color="info">
                 Place Order
               </Button>

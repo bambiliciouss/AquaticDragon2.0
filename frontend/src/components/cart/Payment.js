@@ -10,6 +10,7 @@ import {
   Container,
   Row,
   Col,
+  CardText,
 } from "reactstrap";
 import AuthNavbar from "components/Navbars/AuthNavbar.js";
 import MetaData from "../layout/MetaData";
@@ -60,7 +61,7 @@ const Payment = () => {
           </CardHeader>
           <CardBody>
             <Form>
-              <FormGroup>
+              {/* <FormGroup>
                 <div>
                   <FormGroup check>
                     <label className="form-check-label">
@@ -87,11 +88,53 @@ const Payment = () => {
                     </label>
                   </FormGroup>
                 </div>
-              </FormGroup>
+              </FormGroup> */}
+
+              <Row>
+                <Col sm="12">
+                  <Card body>
+                    <FormGroup check>
+                      <label className="form-check-label">
+                        <Input
+                          type="radio"
+                          name="paymentMethod"
+                          value="GCash"
+                          onChange={() => setSelectedPaymentMethod("GCash")}
+                          checked={selectedPaymentMethod === "GCash"}
+                        />
+
+                        <CardText>Gcash</CardText>
+                      </label>
+                    </FormGroup>
+                  </Card>
+                </Col>
+              </Row>
+              <div style={{ marginBottom: "20px" }}></div>
+
+              <Row>
+                <Col sm="12">
+                  <Card body>
+                    <FormGroup check>
+                      <label className="form-check-label">
+                        <Input
+                          type="radio"
+                          name="paymentMethod"
+                          value="Cash"
+                          onChange={() => setSelectedPaymentMethod("Cash")}
+                          checked={selectedPaymentMethod === "Cash"}
+                        />
+
+                        <CardText>Cash</CardText>
+                      </label>
+                    </FormGroup>
+                  </Card>
+                </Col>
+              </Row>
+              <div style={{ marginBottom: "20px" }}></div>
             </Form>
 
             <Button block color="info" onClick={processToNextStep}>
-             View Order Summary
+              View Order Summary
             </Button>
           </CardBody>
         </Card>

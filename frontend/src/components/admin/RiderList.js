@@ -245,7 +245,7 @@ const RiderList = (args) => {
 
   return (
     <>
-      <MetaData title={"Dashboard"} />
+      <MetaData title={"Rider(s)"} />
       <Sidebar
         logo={{
           innerLink: "/",
@@ -261,7 +261,7 @@ const RiderList = (args) => {
             <CardHeader className="bg-white border-0">
               <Row className="align-items-center">
                 <Col xs="8">
-                  <h3 className="mb-0">List of Riders</h3>
+                  <h3 className="mb-0">List of Rider(s)</h3>
                 </Col>
                 <Col md="4">
                   <Button

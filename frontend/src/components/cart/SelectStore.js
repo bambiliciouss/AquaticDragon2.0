@@ -9,6 +9,7 @@ import {
   Row,
   Col,
   CardHeader,
+  
 } from "reactstrap";
 import AuthNavbar from "components/Navbars/AuthNavbar.js";
 import MetaData from "../layout/MetaData";
@@ -30,7 +31,7 @@ const SelectStore = () => {
   const handleSelectStore = (store) => {
     setSelectedStore(store);
     sessionStorage.setItem("selectedStore", JSON.stringify(store));
-    navigate("/pickupaddress");
+    navigate("/payment");
   };
 
   return (
@@ -50,7 +51,7 @@ const SelectStore = () => {
           <CardHeader className="bg-white border-0">
             <Row className="align-items-center">
               <Col xs="8">
-                <h3 className="mb-0">Select Container Status</h3>
+                <h3 className="mb-0">Select your preferred store</h3>
               </Col>
             </Row>
           </CardHeader>

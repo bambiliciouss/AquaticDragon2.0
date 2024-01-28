@@ -246,7 +246,7 @@ const EmployeeList = (args) => {
 
   return (
     <>
-      <MetaData title={"Dashboard"} />
+      <MetaData title={"Employee(s)"} />
       <Sidebar
         logo={{
           innerLink: "/",
@@ -262,7 +262,7 @@ const EmployeeList = (args) => {
             <CardHeader className="bg-white border-0">
               <Row className="align-items-center">
                 <Col xs="8">
-                  <h3 className="mb-0">List of Employees</h3>
+                  <h3 className="mb-0">List of Employee(s)</h3>
                 </Col>
                 <Col md="4">
                   <Button
