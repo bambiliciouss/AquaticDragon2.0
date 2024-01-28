@@ -211,8 +211,20 @@ const OrderDetails = () => {
                     {orderItems &&
                       orderItems.map((item) => (
                         <Row>
-                          <Col sm="5">{item.gallon}</Col>
-                          <Col sm="3" style={{ textAlign: "right" }}>
+                          <Col sm="5">
+                            <div style={{ textAlign: "center" }}>
+                              <img
+                                src={item.image}
+                                alt={item.image}
+                                style={{
+                                  width: 100,
+                                  height: 100,
+                                  display: "inline-block",
+                                }}
+                              />
+                            </div>
+                          </Col>
+                          <Col sm="3" style={{ textAlign: "center" }}>
                             {item.quantity} pc(s)
                           </Col>
                           <Col sm="4" style={{ textAlign: "right" }}>
@@ -236,7 +248,7 @@ const OrderDetails = () => {
                     storeBranch.map((item) => (
                       <CardText>
                         <Row>
-                          <Col sm="6"></Col>
+                          <Col sm="6">{item.address}</Col>
 
                           <Col sm="6" style={{ textAlign: "right" }}>
                             ₱ {item.deliveryFee}.00

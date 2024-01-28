@@ -14,6 +14,10 @@ const orderSchema = mongoose.Schema({
         required: true,
         ref: "Gallon",
       },
+      image: {
+        type: String,
+        required: true,
+      },
       quantity: {
         type: Number,
         default: 1,

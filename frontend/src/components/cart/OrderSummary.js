@@ -57,6 +57,8 @@ const OrderSummary = () => {
     order.storeBranch = [
       {
         store: storeBranchinfo._id,
+        branchNo: storeBranchinfo.branchNo,
+        address: `${storeBranchinfo.houseNo}, ${storeBranchinfo.purokNum}, ${storeBranchinfo.streetName}, ${storeBranchinfo.barangay}, ${storeBranchinfo.city}  `,
         deliveryFee: storeBranchinfo.deliverFee,
       },
     ];
