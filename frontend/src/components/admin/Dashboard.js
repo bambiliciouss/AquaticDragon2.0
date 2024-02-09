@@ -83,7 +83,7 @@ const Dashboard = (props) => {
       <Sidebar
         logo={{
           innerLink: "/",
-          imgSrc: require("../../assets/img/brand/logo2.0.png"),
+          imgSrc: require("../../assets/img/brand/logo2.1.jpg"),
           imgAlt: "...",
         }}
       />

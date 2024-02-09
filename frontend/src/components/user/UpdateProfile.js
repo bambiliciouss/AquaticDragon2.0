@@ -5,7 +5,8 @@ import MetaData from "components/layout/MetaData";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
-
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   updateProfile,
   loadUser,
@@ -44,9 +45,29 @@ const UpdateProfile = () => {
   const { user } = useSelector((state) => state.auth);
   const { error, isUpdated, loading } = useSelector((state) => state.user);
 
-  useEffect(() => {
-    console.log(isUpdated);
+  const notifyError = (message = "") =>
+    toast.error(message, {
+      position: "bottom-left",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
 
+  const notifySuccess = (message = "") =>
+    toast.success(message, {
+      position: "bottom-left",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+
+  useEffect(() => {
     if (user) {
       setFname(user.fname);
       setLname(user.lname);
@@ -60,10 +81,13 @@ const UpdateProfile = () => {
     }
 
     if (error) {
+      notifyError(error);
       dispatch(clearErrors());
     }
 
     if (isUpdated) {
+      notifySuccess("Update Successfully");
+
       dispatch(loadUser());
       navigate("/my-profile", { replace: true });
       dispatch({
@@ -193,19 +217,19 @@ const UpdateProfile = () => {
                           <Col lg="3">
                             <FormGroup>
                               <label className="form-control-label">
-                                House No.
+                                Unit, Building, House No.
                               </label>
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="House No."
+                                placeholder="Unit, Building, House No."
                                 value={houseNo}
                                 onChange={(e) => setHouseNo(e.target.value)}
                               />
                             </FormGroup>
                           </Col>
                           <Col lg="4">
-                            <FormGroup>
+                            {/* <FormGroup>
                               <label className="form-control-label">
                                 Purok No.
                               </label>
@@ -216,6 +240,30 @@ const UpdateProfile = () => {
                                 value={purokNum}
                                 onChange={(e) => setPurokNum(e.target.value)}
                               />
+                            </FormGroup> */}
+                            <FormGroup>
+                              <label className="form-control-label">
+                                Purok No.
+                              </label>
+                              <select
+                                className="form-control"
+                                id="purokSelect"
+                                value={purokNum}
+                                onChange={(e) => setPurokNum(e.target.value)}>
+                                <option value="" disabled>
+                                  Select Purok No.
+                                </option>
+                                <option value="Purok 1">Purok 1</option>
+                                <option value="Purok 2">Purok 2</option>
+                                <option value="Purok 3">Purok 3</option>
+                                <option value="Purok 4">Purok 4</option>
+                                <option value="Purok 5">Purok 5</option>
+                                <option value="Purok 6">Purok 6</option>
+                                <option value="Purok 7">Purok 7</option>
+                                <option value="Purok 8">Purok 8</option>
+                                <option value="Purok 9">Purok 9</option>
+                                <option value="Purok 10">Purok 10</option>
+                              </select>
                             </FormGroup>
                           </Col>
                         </Row>

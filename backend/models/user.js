@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [false, "Please enter your phone number"],
     maxLength: [11, "Your phone number cannot exceed 11 characters"],
+    unique: [true, "Phone number is already taken"],
   },
 
   houseNo: {
@@ -74,7 +75,7 @@ const userSchema = new mongoose.Schema({
   avatar: {
     public_id: {
       type: String,
-      required: true,
+      //required: true,
       default: "avatars/yvsg7qgvfalme36gwxws_qlbbz4",
     },
 
@@ -86,6 +87,11 @@ const userSchema = new mongoose.Schema({
     },
   },
 
+
+
+
+
+
   role: {
     type: String,
     default: "user",
@@ -95,6 +101,12 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+
+  terms: {
+    type: Boolean,
+    //default: false,
+  },
+
 
   createdAt: {
     type: Date,
@@ -112,6 +124,15 @@ userSchema.pre("save", async function (next) {
     next();
   }
   this.password = await bcrypt.hash(this.password, 10);
+});
+
+userSchema.pre("save", function (next) {
+  // Check if the phone field is present and not empty
+  if (this.phone && this.phone.trim() !== "") {
+    // Add +63 to the phone number
+    this.phone = "+63" + this.phone.trim();
+  }
+  next();
 });
 
 //generates the token

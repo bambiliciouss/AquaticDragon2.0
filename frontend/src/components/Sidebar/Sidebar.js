@@ -51,20 +51,18 @@ import {
   Row,
   Col,
 } from "reactstrap";
-
+import { useSelector } from "react-redux";
 var ps;
 
 const Sidebar = (props) => {
+  const { user, loading } = useSelector((state) => state.auth);
   const [collapseOpen, setCollapseOpen] = useState();
-  // verifies if routeName is the one active (in browser input)
   const activeRoute = (routeName) => {
     return props.location.pathname.indexOf(routeName) > -1 ? "active" : "";
   };
-  // toggles collapse between opened and closed (true/false)
   const toggleCollapse = () => {
     setCollapseOpen((data) => !data);
   };
-  // closes the collapse
   const closeCollapse = () => {
     setCollapseOpen(false);
   };
@@ -90,6 +88,7 @@ const Sidebar = (props) => {
       id="sidenav-main">
       <Container fluid>
         {/* Toggler */}
+
         <button
           className="navbar-toggler"
           type="button"
@@ -103,8 +102,15 @@ const Sidebar = (props) => {
               alt={logo.imgAlt}
               className="navbar-brand-img"
               src={logo.imgSrc}
-              style={{ width: "100px", height: "100px" }}
+              style={{ width: "200px", height: "300px" }}
             />
+
+            <br />
+            <h3
+              className="text-overflow m-0"
+              style={{ textTransform: "uppercase" }}>
+              {`${user ? user.role : ""}`}
+            </h3>
           </NavbarBrand>
         ) : null}
 
@@ -193,11 +199,10 @@ const Sidebar = (props) => {
             </NavItem>
           </Nav>
 
-          {/* Divider */}
-          <hr className="my-3" />
-          {/* Heading */}
+          {/* <hr className="my-3" />
+        
           <h6 className="navbar-heading text-muted">Documentation</h6>
-          {/* Navigation */}
+       
           <Nav className="mb-md-3" navbar>
             <NavItem>
               <NavLink href="https://demos.creative-tim.com/argon-dashboard-react/#/documentation/overview?ref=adr-admin-sidebar">
@@ -225,7 +230,7 @@ const Sidebar = (props) => {
                 Upgrade to PRO
               </NavLink>
             </NavItem>
-          </Nav>
+          </Nav> */}
         </Collapse>
       </Container>
     </Navbar>

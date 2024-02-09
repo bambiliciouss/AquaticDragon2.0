@@ -113,7 +113,7 @@ const OrderList = () => {
       <Sidebar
         logo={{
           innerLink: "/",
-          imgSrc: require("../../assets/img/brand/argon-react.png"),
+          imgSrc: require("../../assets/img/brand/logo2.1.jpg"),
           imgAlt: "...",
         }}
       />

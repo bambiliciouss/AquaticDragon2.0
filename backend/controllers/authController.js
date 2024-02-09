@@ -35,6 +35,7 @@ exports.registerUser = async (req, res, next) => {
       email,
       password,
       role,
+      terms,
     } = req.body;
 
     const user = await User.create({
@@ -53,11 +54,13 @@ exports.registerUser = async (req, res, next) => {
       //   url: result.secure_url,
       // },
       role,
+      terms,
     });
 
     const token = await new Token({
       userId: user._id,
       token: crypto.randomBytes(32).toString("hex"),
+      // expiresAt: new Date(Date.now() + (24 * 60 * 60 * 1000)), // Set expiration to 24 hours from now
     }).save();
 
     // const url = `${process.env.BASE_URL}/users/${user._id}/verify/${token.token}`;
@@ -70,9 +73,15 @@ exports.registerUser = async (req, res, next) => {
       .json({ message: "An Email sent to your account please verify" });
     //sendToken(user, 200, res);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: error.message });
+    //   res
+    //     .status(500)
+    //     .json({ message: "Internal Server Error", error: error.message });
+    // }
+    if (error.code === 11000 && error.keyPattern && error.keyPattern.phone) {
+      const errorMessage = `Phone number '${newUserData.phone}' is already taken.`;
+      return res.status(400).json({ success: false, message: errorMessage });
+    }
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -114,12 +123,12 @@ exports.LoginUser = async (req, res, next) => {
     const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
-      return next(new ErrorHandler("Email is not register", 401));
+      return next(new ErrorHandler("Email or password is incorrect", 401));
     }
 
     const isPasswordMatched = await user.comparePassword(password);
     if (!isPasswordMatched) {
-      return next(new ErrorHandler("Incorrect Password", 401));
+      return next(new ErrorHandler("Email or password is incorrect", 401));
       //return res.status(400).send({ message: "Invalid Password" });
     }
 
@@ -146,7 +155,7 @@ exports.LoginUser = async (req, res, next) => {
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Internal Server Error", error: error.message });
+      .json({ message: "Verify your Email Account", error: error.message });
   }
 };
 
@@ -184,18 +193,18 @@ exports.logout = async (req, res, next) => {
 };
 
 exports.updateProfile = async (req, res, next) => {
-  try {
-    const newUserData = {
-      fname: req.body.fname,
-      lname: req.body.lname,
-      phone: req.body.phone,
-      houseNo: req.body.houseNo,
-      streetName: req.body.streetName,
-      purokNum: req.body.purokNum,
-      barangay: req.body.barangay,
-      city: req.body.city,
-    };
+  const newUserData = {
+    fname: req.body.fname,
+    lname: req.body.lname,
+    phone: req.body.phone,
+    houseNo: req.body.houseNo,
+    streetName: req.body.streetName,
+    purokNum: req.body.purokNum,
+    barangay: req.body.barangay,
+    city: req.body.city,
+  };
 
+  try {
     if (req.body.avatar !== "") {
       const user = await User.findById(req.user.id);
       const image_id = user.avatar.public_id;
@@ -226,9 +235,13 @@ exports.updateProfile = async (req, res, next) => {
       user,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: error.message });
+    if (error.code === 11000 && error.keyPattern && error.keyPattern.phone) {
+      const errorMessage = `Phone number '${newUserData.phone}' is already taken.`;
+      return res.status(400).json({ success: false, message: errorMessage });
+    }
+
+    // Handle other errors
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 

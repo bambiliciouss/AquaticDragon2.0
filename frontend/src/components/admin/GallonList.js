@@ -66,11 +66,6 @@ const GallonList = () => {
   const setGallons = () => {
     const data = {
       columns: [
-        {
-          label: "Gallon ID",
-          field: "id",
-          sort: "asc",
-        },
 
         {
           label: "QR Code",
@@ -99,7 +94,6 @@ const GallonList = () => {
 
     gallons.forEach((gallon) => {
       data.rows.push({
-        id: gallon._id,
         type: gallon.type,
         age: gallon.gallonAge,
         qr: (
@@ -132,7 +126,7 @@ const GallonList = () => {
       <Sidebar
         logo={{
           innerLink: "/",
-          imgSrc: require("../../assets/img/brand/argon-react.png"),
+          imgSrc: require("../../assets/img/brand/logo2.1.jpg"),
           imgAlt: "...",
         }}
       />

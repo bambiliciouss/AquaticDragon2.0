@@ -130,7 +130,7 @@ const Cart = () => {
                               <p>
                                 Total:{" "}
                                 <span className="order-summary-values">
-                                  $
+                                ₱
                                   {cartItems
                                     .reduce(
                                       (acc, item) =>

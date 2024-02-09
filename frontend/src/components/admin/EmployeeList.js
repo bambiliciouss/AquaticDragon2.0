@@ -171,11 +171,7 @@ const EmployeeList = (args) => {
 
     const data = {
       columns: [
-        {
-          label: "Customer ID",
-          field: "id",
-          sort: "asc",
-        },
+
 
         {
           label: "Profile",
@@ -215,7 +211,6 @@ const EmployeeList = (args) => {
 
     filter.forEach((user) => {
       data.rows.push({
-        id: user._id,
         name: `${user.fname} ${user.lname}`,
         phone: user.phone,
         address: `${user.houseNo}, ${user.purokNum}, ${user.streetName}, ${user.barangay}, ${user.city}`,
@@ -250,7 +245,7 @@ const EmployeeList = (args) => {
       <Sidebar
         logo={{
           innerLink: "/",
-          imgSrc: require("../../assets/img/brand/argon-react.png"),
+          imgSrc: require("../../assets/img/brand/logo2.1.jpg"),
           imgAlt: "...",
         }}
       />

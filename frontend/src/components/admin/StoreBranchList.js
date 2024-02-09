@@ -162,12 +162,6 @@ const StoreBranchList = (args) => {
     const data = {
       columns: [
         {
-          label: "Store ID",
-          field: "id",
-          sort: "asc",
-        },
-
-        {
           label: "Branch No",
           field: "branchNo",
           sort: "asc",
@@ -193,10 +187,9 @@ const StoreBranchList = (args) => {
 
     storeBranch.forEach((storeBranches) => {
       data.rows.push({
-        id: storeBranches._id,
         branchNo: storeBranches.branchNo,
         address: `${storeBranches.houseNo}, ${storeBranches.purokNum}, ${storeBranches.streetName}, ${storeBranches.barangay}, ${storeBranches.city}`,
-        deliverFee: storeBranches.deliverFee,
+        deliverFee: `₱ ${storeBranches.deliverFee}.00`,
         actions: (
           <Fragment>
             <button
@@ -218,7 +211,7 @@ const StoreBranchList = (args) => {
       <Sidebar
         logo={{
           innerLink: "/",
-          imgSrc: require("../../assets/img/brand/argon-react.png"),
+          imgSrc: require("../../assets/img/brand/logo2.1.jpg"),
           imgAlt: "...",
         }}
       />

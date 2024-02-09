@@ -124,7 +124,7 @@ const Payment = () => {
                           checked={selectedPaymentMethod === "Cash"}
                         />
 
-                        <CardText>Cash</CardText>
+                        <CardText>Cash on Delivery</CardText>
                       </label>
                     </FormGroup>
                   </Card>

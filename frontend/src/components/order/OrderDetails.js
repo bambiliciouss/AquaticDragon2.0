@@ -51,7 +51,7 @@ const OrderDetails = () => {
     paymentInfo,
     orderStatus,
     notes,
-
+    customer,
     totalPrice,
     createdAt,
   } = order;
@@ -157,18 +157,36 @@ const OrderDetails = () => {
             </Row>
           </CardHeader>
           <CardBody>
+            {user && user.role === "admin" && (
+              <Row>
+                <Col sm="12">
+                  <Card body>
+                    <CardText>
+                      <span style={{ fontWeight: "bold" }}>Name:</span>{" "}
+                      {customer && customer.fname} {customer && customer.lname}
+                    </CardText>
+                    <CardText>
+                      <span style={{ fontWeight: "bold" }}>Email:</span>{" "}
+                      {customer && customer.email}
+                    </CardText>
+                  </Card>
+                </Col>
+              </Row>
+            )}
+            <div style={{ marginBottom: "20px" }}></div>
+
             <Row>
               <Col sm="12">
                 <Card body>
-                  <Row key={order._id}>
+                  <Row>
                     <Col lg="3">
                       <CardTitle tag="h2">
-                        {" "}
                         <i className="ni ni-square-pin" /> Delivery Address
+                        {/* <b>Name:</b> {user && user.fname} */}
                       </CardTitle>
                       {deliveryAddress &&
-                        deliveryAddress.map((item) => (
-                          <CardText>
+                        deliveryAddress.map((item, index) => (
+                          <CardText key={index}>
                             {" "}
                             {item.houseNo}, {item.purokNum}, {item.streetName},{" "}
                             {item.barangay}, {item.city}
@@ -186,8 +204,8 @@ const OrderDetails = () => {
                           .sort(
                             (a, b) => new Date(b.datedAt) - new Date(a.datedAt)
                           )
-                          .map((item) => (
-                            <CardText key={item.id}>
+                          .map((item, index) => (
+                            <CardText key={index}>
                               {" "}
                               {item.datedAt} {item.orderLevel}
                             </CardText>
@@ -209,8 +227,8 @@ const OrderDetails = () => {
                   <CardText>
                     {" "}
                     {orderItems &&
-                      orderItems.map((item) => (
-                        <Row>
+                      orderItems.map((item, index) => (
+                        <Row key={index}>
                           <Col sm="5">
                             <div style={{ textAlign: "center" }}>
                               <img
@@ -245,16 +263,15 @@ const OrderDetails = () => {
                     <i className="ni ni-shop" /> Store Branch
                   </CardTitle>
                   {storeBranch &&
-                    storeBranch.map((item) => (
-                      <CardText>
-                        <Row>
+                    storeBranch.map((item, index) => (
+                      <Row key={index}>
+                        <CardText>
                           <Col sm="6">{item.address}</Col>
-
                           <Col sm="6" style={{ textAlign: "right" }}>
-                            ₱ {item.deliveryFee}.00
-                          </Col>
-                        </Row>
-                      </CardText>
+                            Shipping Fee: ₱ {item.deliveryFee}.00
+                          </Col>{" "}
+                        </CardText>
+                      </Row>
                     ))}
                 </Card>
               </Col>

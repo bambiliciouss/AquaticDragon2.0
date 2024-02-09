@@ -4,6 +4,7 @@ const cloudinary = require("cloudinary");
 const mongoose = require("mongoose");
 
 exports.newOrder = async (req, res, next) => {
+  //console.log("user",req);
   const {
     orderItems,
     containerStatus,
@@ -16,7 +17,7 @@ exports.newOrder = async (req, res, next) => {
   } = req.body;
 
   const order = await Order.create({
-    user: req.user._id,
+    customer: req.user._id,
     orderItems,
     containerStatus,
     orderclaimingOption,
@@ -36,7 +37,7 @@ exports.newOrder = async (req, res, next) => {
 };
 
 exports.myOrders = async (req, res, next) => {
-  const orders = await Order.find({ user: req.user._id });
+  const orders = await Order.find({ customer: req.user._id });
   res.status(200).json({
     success: true,
     orders,
@@ -86,8 +87,8 @@ exports.allOrders = async (req, res, next) => {
 exports.getSingleOrder = async (req, res, next) => {
   try {
     const order = await Order.findById(req.params.id).populate(
-      "user",
-      "name email"
+      "customer",
+      "fname lname email"
     );
     if (!order) {
       return next(new ErrorHandler("No Order found with this ID", 401));

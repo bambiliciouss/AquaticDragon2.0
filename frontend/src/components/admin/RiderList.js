@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect,useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -171,12 +171,6 @@ const RiderList = (args) => {
     const data = {
       columns: [
         {
-          label: "Customer ID",
-          field: "id",
-          sort: "asc",
-        },
-
-        {
           label: "Profile",
           field: "image",
           sort: "asc",
@@ -214,7 +208,6 @@ const RiderList = (args) => {
 
     filter.forEach((user) => {
       data.rows.push({
-        id: user._id,
         name: `${user.fname} ${user.lname}`,
         phone: user.phone,
         address: `${user.houseNo}, ${user.purokNum}, ${user.streetName}, ${user.barangay}, ${user.city}`,
@@ -249,7 +242,7 @@ const RiderList = (args) => {
       <Sidebar
         logo={{
           innerLink: "/",
-          imgSrc: require("../../assets/img/brand/argon-react.png"),
+          imgSrc: require("../../assets/img/brand/logo2.1.jpg"),
           imgAlt: "...",
         }}
       />
@@ -270,7 +263,7 @@ const RiderList = (args) => {
                     color="primary"
                     type="button"
                     onClick={toggle}>
-                    Register New Riders
+                    Register New Rider
                   </Button>
                   <Modal
                     className="modal-dialog-centered"

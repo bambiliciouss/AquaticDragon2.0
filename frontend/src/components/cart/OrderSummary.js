@@ -27,6 +27,7 @@ const OrderSummary = () => {
   const { error } = useSelector((state) => state.newOrder);
   const [notes, setNotes] = useState();
   useEffect(() => {
+    //console.log(user)
     if (error) {
       console.log(error);
       dispatch(clearErrors());
@@ -36,6 +37,7 @@ const OrderSummary = () => {
   const order = {
     orderItems: cartItems,
     notes,
+    user,
   };
 
   const containerstatusinfo = JSON.parse(
@@ -151,26 +153,38 @@ const OrderSummary = () => {
                   <Card body>
                     <CardTitle tag="h2">
                       {" "}
-                      <i className="ni ni-shop" /> Selected Store
+                      <i className="ni ni-cart" /> Order(s)
                     </CardTitle>
                     <CardText>
-                      <Row>
-                        <Col sm="3">
-                          <img
-                            src={storeBranchinfo.storeImage.url}
-                            alt={storeBranchinfo._id}
-                            img
-                            style={{ width: 70, height: 70 }}
-                          />
-                        </Col>
-                        <Col sm="3">{storeBranchinfo.deliverFee}</Col>
-                        <Col sm="4">{totalPrice}</Col>
-                      </Row>
+                      {" "}
+                      {cartItems.map((item) => (
+                        <Row>
+                          <Col sm="5">
+                            <div style={{ textAlign: "center" }}>
+                              <img
+                                src={item.image}
+                                alt={item.image}
+                                style={{
+                                  width: 100,
+                                  height: 100,
+                                  display: "inline-block",
+                                }}
+                              />
+                            </div>
+                          </Col>
+                          <Col sm="3" style={{ textAlign: "center" }}>
+                            {item.quantity} pc
+                          </Col>
+
+                          <Col sm="4" style={{ textAlign: "right" }}>
+                            ₱{item.price}.00
+                          </Col>
+                        </Row>
+                      ))}
                     </CardText>
                   </Card>
                 </Col>
               </Row>
-
               <div style={{ marginBottom: "20px" }}></div>
 
               <Row>
@@ -178,17 +192,20 @@ const OrderSummary = () => {
                   <Card body>
                     <CardTitle tag="h2">
                       {" "}
-                      <i className="ni ni-cart" /> Order(s)
+                      <i className="ni ni-shop" /> Selected Store
                     </CardTitle>
                     <CardText>
-                      {" "}
-                      {cartItems.map((item) => (
-                        <Row>
-                          <Col sm="5">{item.gallon}</Col>
-                          <Col sm="3">{item.quantity}</Col>
-                          <Col sm="4">{item.price}</Col>
-                        </Row>
-                      ))}
+                      <Row>
+                        <Col sm="8">
+                          {storeBranchinfo.houseNo},{storeBranchinfo.purokNum},
+                          {storeBranchinfo.streetName},
+                          {storeBranchinfo.barangay}, {storeBranchinfo.city}{" "}
+                        </Col>
+                        <Col sm="4" style={{ textAlign: "right" }}>
+                          {" "}
+                          Shipping Fee: ₱ {storeBranchinfo.deliverFee}.00
+                        </Col>
+                      </Row>
                     </CardText>
                   </Card>
                 </Col>
@@ -255,7 +272,15 @@ const OrderSummary = () => {
                 </Col>
               </Row>
               <div style={{ marginBottom: "20px" }}></div>
-
+              <Row>
+                <Col sm="12">
+                  <CardText style={{ textAlign: "right" }}>
+                    <span style={{ fontWeight: "bold" }}>Order Total:</span> ₱
+                    {totalPrice}.00
+                  </CardText>
+                </Col>
+              </Row>
+              <div style={{ marginBottom: "20px" }}></div>
               <Button block color="info">
                 Place Order
               </Button>
