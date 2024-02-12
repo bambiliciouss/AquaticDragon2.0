@@ -33,6 +33,9 @@ import {
   DELETE_USER_SUCCESS,
   DELETE_USER_FAIL,
   CLEAR_ERRORS,
+  USER_DETAILS_REQUEST,
+  USER_DETAILS_SUCCESS,
+  USER_DETAILS_FAIL,
 } from "../constants/userConstants";
 
 export const newregister = (userData) => async (dispatch) => {
@@ -52,6 +55,60 @@ export const newregister = (userData) => async (dispatch) => {
     dispatch({
       type: REGISTER_USER_FAIL,
       payload: error.response.data.message,
+    });
+  }
+};
+
+export const newemployee = (userData) => async (dispatch) => {
+  try {
+    dispatch({ type: REGISTER_USER_REQUEST });
+    const config = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    };
+    const { data } = await axios.post(
+      `/api/v1/register/employee`,
+      userData,
+      config
+    );
+    dispatch({
+      type: REGISTER_USER_SUCCESS,
+      payload: data.user,
+    });
+  } catch (error) {
+    dispatch({
+      type: REGISTER_USER_FAIL,
+      payload: error.response
+        ? error.response.data.message
+        : "Unknown error occurred",
+    });
+  }
+};
+
+export const newrider = (userData) => async (dispatch) => {
+  try {
+    dispatch({ type: REGISTER_USER_REQUEST });
+    const config = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    };
+    const { data } = await axios.post(
+      `/api/v1/register/rider`,
+      userData,
+      config
+    );
+    dispatch({
+      type: REGISTER_USER_SUCCESS,
+      payload: data.user,
+    });
+  } catch (error) {
+    dispatch({
+      type: REGISTER_USER_FAIL,
+      payload: error.response
+        ? error.response.data.message
+        : "Unknown error occurred",
     });
   }
 };
@@ -132,6 +189,7 @@ export const updateProfile = (userData) => async (dispatch) => {
       type: UPDATE_PROFILE_SUCCESS,
       payload: data.success,
     });
+    console.log("success");
   } catch (error) {
     dispatch({
       type: UPDATE_PROFILE_FAIL,
@@ -288,6 +346,89 @@ export const deleteUser = (id) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: DELETE_USER_FAIL,
+      payload: error.response.data.message,
+    });
+  }
+};
+
+export const getUserDetails = (id) => async (dispatch) => {
+  try {
+    dispatch({ type: USER_DETAILS_REQUEST });
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    };
+
+    const { data } = await axios.get(`/api/v1/admin/user/${id}`, config);
+
+    // Log user details
+    console.log("userdetails", data.user);
+
+    dispatch({
+      type: USER_DETAILS_SUCCESS,
+      payload: data.user,
+    });
+  } catch (error) {
+    dispatch({
+      type: USER_DETAILS_FAIL,
+      payload: error.response.data.message,
+    });
+  }
+};
+
+export const updateRider = (id, userData) => async (dispatch) => {
+  try {
+    dispatch({ type: UPDATE_PROFILE_REQUEST });
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    };
+
+    const { data } = await axios.put(
+      `/api/v1/rider/update/${id}`,
+      userData,
+      config
+    );
+    dispatch({
+      type: UPDATE_PROFILE_SUCCESS,
+      payload: data.success,
+    });
+    console.log("result", data);
+  } catch (error) {
+    dispatch({
+      type: UPDATE_PROFILE_FAIL,
+      payload: error.response.data.message,
+    });
+  }
+};
+
+export const updateEmployee = (id, userData) => async (dispatch) => {
+  try {
+    dispatch({ type: UPDATE_PROFILE_REQUEST });
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    };
+
+    const { data } = await axios.put(
+      `/api/v1/employee/update/${id}`,
+      userData,
+      config
+    );
+    dispatch({
+      type: UPDATE_PROFILE_SUCCESS,
+      payload: data.success,
+    });
+    console.log("result", data);
+  } catch (error) {
+    dispatch({
+      type: UPDATE_PROFILE_FAIL,
       payload: error.response.data.message,
     });
   }

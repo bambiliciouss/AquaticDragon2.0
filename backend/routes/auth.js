@@ -15,10 +15,33 @@ const {
   GetUserDetails,
   UpdateUser,
   DeleteUser,
+  registerEmployee,
+  registerRider,
+  updateProfileRider,
+  updateProfileEmployee,
 } = require("../controllers/authController");
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
 router.post("/register", upload.single("avatar"), registerUser);
+// router.post("/register/employee", upload.single("medcert"), registerEmployee);
+router.post(
+  "/register/employee",
+  upload.fields([
+    { name: "medcert", maxCount: 1 },
+    { name: "barangayclearance", maxCount: 1 },
+  ]),
+  registerEmployee
+);
+
+router.post(
+  "/register/rider",
+  upload.fields([
+    { name: "medcert", maxCount: 1 },
+    { name: "barangayclearance", maxCount: 1 },
+    { name: "driverslicense", maxCount: 1 },
+  ]),
+  registerRider
+);
 router.get("/:id/verify/:token", verifyEmail);
 router.post("/login", LoginUser);
 router.get("/me", isAuthenticatedUser, getProfile);
@@ -29,6 +52,7 @@ router.put(
   isAuthenticatedUser,
   updateProfile
 );
+
 router.put("/password/update", isAuthenticatedUser, updatePassword);
 router.post("/password/forgot", forgotPassword);
 router.put("/password/reset/:token", resetPassword);
@@ -60,6 +84,29 @@ router.delete(
   isAuthenticatedUser,
   authorizeRoles("admin"),
   DeleteUser
+);
+
+router.put(
+  "/rider/update/:id",
+  upload.fields([
+    { name: "avatar", maxCount: 1 },
+    { name: "medcert", maxCount: 1 },
+    { name: "barangayclearance", maxCount: 1 },
+    { name: "driverslicense", maxCount: 1 },
+  ]),
+  isAuthenticatedUser,
+  updateProfileRider
+);
+
+router.put(
+  "/employee/update/:id",
+  upload.fields([
+    { name: "avatar", maxCount: 1 },
+    { name: "medcert", maxCount: 1 },
+    { name: "barangayclearance", maxCount: 1 },
+  ]),
+  isAuthenticatedUser,
+  updateProfileRider
 );
 
 module.exports = router;

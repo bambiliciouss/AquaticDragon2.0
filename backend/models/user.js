@@ -87,11 +87,6 @@ const userSchema = new mongoose.Schema({
     },
   },
 
-
-
-
-
-
   role: {
     type: String,
     default: "user",
@@ -104,14 +99,66 @@ const userSchema = new mongoose.Schema({
 
   terms: {
     type: Boolean,
-    //default: false,
+    default: false,
   },
-
-
   createdAt: {
     type: Date,
 
     default: Date.now,
+  },
+  deleted: {
+    type: Boolean,
+    default: false,
+  },
+
+  medcert: {
+    public_id: {
+      type: String,
+      //required: true,
+      //default: "documents/docu_woxq39",
+      default: "",
+    },
+
+    url: {
+      type: String,
+      //required: true,
+      // default:
+      //   "https://res.cloudinary.com/dde5uztoz/image/upload/v1707662109/documents/docu_woxq39.png",
+      default: "",
+    },
+  },
+
+  barangayclearance: {
+    public_id: {
+      type: String,
+      //required: true,
+      //default: "documents/docu_woxq39",
+      default: "",
+    },
+
+    url: {
+      type: String,
+      //required: true,
+      // default:
+      //   "https://res.cloudinary.com/dde5uztoz/image/upload/v1707662109/documents/docu_woxq39.png",
+      default: "",
+    },
+  },
+
+  driverslicense: {
+    public_id: {
+      type: String,
+      //required: true,
+      //default: "documents/docu_woxq39",
+      default: "",
+    },
+
+    url: {
+      type: String,
+      //required: true,
+      //default: "https://res.cloudinary.com/dde5uztoz/image/upload/v1707662109/documents/docu_woxq39.png",
+      default: "",
+    },
   },
 
   resetPasswordToken: String,

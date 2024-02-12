@@ -23,7 +23,8 @@ import RiderList from "components/admin/RiderList";
 import EmployeeList from "components/admin/EmployeeList";
 import GallonList from "components/admin/GallonList";
 import StoreBranchList from "components/admin/StoreBranchList";
-
+import UpdateRider from "components/admin/UpdateRider";
+import UpdateEmployee from "components/admin/UpdateEmployee";
 // import EmployeeRegistration from "components/employee/EmployeeRegistration";
 // import RiderRegistration from "components/rider/RiderRegistration";
 // import StoreBranchRegistration from "components/StoreBranch/StoreBranchRegistration";
@@ -207,6 +208,22 @@ function App() {
           element={
             <ProtectedRoute>
               <OrderDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/rider/details/:id"
+          element={
+            <ProtectedRoute>
+              <UpdateRider />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/employee/details/:id"
+          element={
+            <ProtectedRoute>
+              <UpdateEmployee />
             </ProtectedRoute>
           }
         />

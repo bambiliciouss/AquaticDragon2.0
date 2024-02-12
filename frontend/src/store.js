@@ -10,6 +10,7 @@ import {
   userReducer,
   forgotPasswordReducer,
   allUsersReducer,
+  userDetailsReducer
 } from "./reducers/userReducers";
 
 import {
@@ -52,6 +53,7 @@ const reducers = combineReducers({
   allOrders: allOrdersReducer,
   orderDetails: orderDetailsReducer,
   order: orderReducer,
+  userDetails: userDetailsReducer,
 });
 
 let initialState = {

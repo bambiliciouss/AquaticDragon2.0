@@ -56,5 +56,9 @@ const storeSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  deleted: {
+    type: Boolean,
+    default: false,
+  },
 });
 module.exports = mongoose.model("StoreBranch", storeSchema);

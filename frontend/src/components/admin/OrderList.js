@@ -53,9 +53,14 @@ const OrderList = () => {
     });
     const data = {
       columns: [
+        // {
+        //   label: "Order ID",
+        //   field: "id",
+        //   sort: "asc",
+        // },
         {
-          label: "Order ID",
-          field: "id",
+          label: "Customer",
+          field: "customer",
           sort: "asc",
         },
         {
@@ -92,10 +97,11 @@ const OrderList = () => {
       }, {});
 
       data.rows.push({
-        id: order._id,
+        // id: order._id,
         numOfItems: order.orderItems.length,
         amount: `₱${order.totalPrice}`,
         status: latestOrderStatus.orderLevel || "N/A",
+        customer: `${order.customer.fname} ${order.customer.lname}`,
         actions: (
           <Link to={`/order/${order._id}`} className="btn btn-info">
             <i className="fa fa-eye"></i>

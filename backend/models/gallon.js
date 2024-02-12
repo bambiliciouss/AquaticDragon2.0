@@ -102,6 +102,11 @@ const gallonSchema = new mongoose.Schema({
     type: Number,
     default: 1,
   },
+
+  deleted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 // // Define a pre-save hook to update the gallonAge before saving

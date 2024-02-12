@@ -15,7 +15,7 @@ import AdminFooter from "components/Footers/AdminFooter.js";
 import { DELETE_USER_RESET } from "../../constants/userConstants";
 import swal from "sweetalert";
 
-import { newregister, clearErrors } from "../../actions/userActions";
+import { clearErrors, newemployee } from "../../actions/userActions";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useForm } from "react-hook-form";
@@ -94,9 +94,23 @@ const EmployeeList = (args) => {
     });
 
   const [avatar, setAvatar] = useState("");
+  const [medcert, setMedcert] = useState("");
+  const [barangayclearance, setBarangayclearance] = useState("");
+
+  const [selectedFileName, setSelectedFileName] = useState("");
+  const [selectedFileNameBC, setSelectedFileNameBC] = useState("");
+
   const [avatarPreview, setAvatarPreview] = useState(
     "/images/default_avatar.jpg"
   );
+
+  const [employeeDetailsModal, setEmployeeDetailsModal] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState({});
+
+  const openEmployeeDetailsModal = (employee) => {
+    setSelectedEmployee(employee);
+    setEmployeeDetailsModal(true);
+  };
 
   useEffect(() => {
     setRole("employee");
@@ -122,12 +136,16 @@ const EmployeeList = (args) => {
     formData.set("email", e.email);
     formData.set("password", e.password);
     formData.set("avatar", avatar);
+    formData.set("medcert", medcert);
+    formData.set("barangayclearance", barangayclearance);
     formData.set("role", role);
 
-    dispatch(newregister(formData));
-
-    navigate("/employeelist");
-    notifySuccess("An email sent to your Email account, please verify");
+    dispatch(newemployee(formData));
+    toggle();
+    window.location.reload();
+    notifySuccess(
+      "An email sent to your employee's email account, please verify"
+    );
   };
 
   const deleteUserHandler = (id) => {
@@ -147,13 +165,31 @@ const EmployeeList = (args) => {
   };
 
   const onChange = (e) => {
-    if (e.target.name === "avatar") {
+    if (e.target.name === "medcert") {
+      // Handle medcert file upload
+      const medcertfile = e.target.files[0] ? e.target.files[0].name : "";
+      setSelectedFileName(medcertfile);
       const reader = new FileReader();
 
       reader.onload = () => {
         if (reader.readyState === 2) {
-          setAvatarPreview(reader.result);
-          setAvatar(reader.result);
+          setMedcert(reader.result);
+        }
+      };
+
+      reader.readAsDataURL(e.target.files[0]);
+    } else if (e.target.name === "barangayclearance") {
+      // Handle barangayclearance file upload
+      const barangayclearancefile = e.target.files[0]
+        ? e.target.files[0].name
+        : "";
+      setSelectedFileNameBC(barangayclearancefile);
+
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          setBarangayclearance(reader.result);
         }
       };
 
@@ -171,8 +207,6 @@ const EmployeeList = (args) => {
 
     const data = {
       columns: [
-
-
         {
           label: "Profile",
           field: "image",
@@ -226,6 +260,16 @@ const EmployeeList = (args) => {
         ),
         actions: (
           <Fragment>
+            {/* <button
+              className="btn btn-info py-1 px-2 ml-2"
+              onClick={() => openEmployeeDetailsModal(user)}>
+              <i className="fa fa-info-circle"></i>
+            </button> */}
+            <button
+              className="btn btn-primary py-1 px-2 ml-2"
+              onClick={() => navigate(`/employee/details/${user._id}`)}>
+              <i className="fa fa-info-circle"></i>
+            </button>
             <button
               className="btn btn-danger py-1 px-2 ml-2"
               onClick={() => deleteUserHandler(user._id)}>
@@ -303,6 +347,7 @@ const EmployeeList = (args) => {
                             </h2>
                           )}
                         </FormGroup>
+
                         <FormGroup>
                           <InputGroup className="input-group-alternative mb-3">
                             <InputGroupAddon addonType="prepend">
@@ -359,6 +404,136 @@ const EmployeeList = (args) => {
                           <InputGroup className="input-group-alternative mb-3">
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
+                                <i className="ni ni ni-pin-3" />
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <input
+                              placeholder="House No..."
+                              className="form-control"
+                              type="text"
+                              name="houseNo"
+                              {...register("houseNo", {
+                                required: "Please enter a valid house no.",
+                              })}
+                            />
+                          </InputGroup>
+                          {errors.houseNo && (
+                            <h2
+                              className="h1-seo"
+                              style={{ color: "red", fontSize: "small" }}>
+                              {errors.houseNo.message}
+                            </h2>
+                          )}
+                        </FormGroup>
+
+                        <FormGroup>
+                          <InputGroup className="input-group-alternative mb-3">
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
+                                <i className="ni ni ni-pin-3" />
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <input
+                              placeholder="Purok No."
+                              className="form-control"
+                              type="text"
+                              name="purokNum"
+                              {...register("purokNum", {
+                                required: "Please enter a valid purok no.",
+                              })}
+                            />
+                          </InputGroup>
+                          {errors.purokNum && (
+                            <h2
+                              className="h1-seo"
+                              style={{ color: "red", fontSize: "small" }}>
+                              {errors.purokNum.message}
+                            </h2>
+                          )}
+                        </FormGroup>
+
+                        <FormGroup>
+                          <InputGroup className="input-group-alternative mb-3">
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
+                                <i className="ni ni-mobile-button" />
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <input
+                              placeholder="Street Name..."
+                              className="form-control"
+                              type="text"
+                              name="streetName"
+                              {...register("streetName", {
+                                required: "Please enter a valid house no.",
+                              })}
+                            />
+                          </InputGroup>
+                          {errors.streetName && (
+                            <h2
+                              className="h1-seo"
+                              style={{ color: "red", fontSize: "small" }}>
+                              {errors.streetName.message}
+                            </h2>
+                          )}
+                        </FormGroup>
+
+                        <FormGroup>
+                          <InputGroup className="input-group-alternative mb-3">
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
+                                <i className="ni ni ni-pin-3" />
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <input
+                              placeholder="Barangay"
+                              className="form-control"
+                              type="text"
+                              name="barangay"
+                              {...register("barangay", {
+                                required: "Please enter a valid barangay",
+                              })}
+                            />
+                          </InputGroup>
+                          {errors.barangay && (
+                            <h2
+                              className="h1-seo"
+                              style={{ color: "red", fontSize: "small" }}>
+                              {errors.barangay.message}
+                            </h2>
+                          )}
+                        </FormGroup>
+
+                        <FormGroup>
+                          <InputGroup className="input-group-alternative mb-3">
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
+                                <i className="ni ni ni-pin-3" />
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <input
+                              placeholder="City"
+                              className="form-control"
+                              type="text"
+                              name="city"
+                              {...register("city", {
+                                required: "Please enter a valid city",
+                              })}
+                            />
+                          </InputGroup>
+                          {errors.city && (
+                            <h2
+                              className="h1-seo"
+                              style={{ color: "red", fontSize: "small" }}>
+                              {errors.city.message}
+                            </h2>
+                          )}
+                        </FormGroup>
+
+                        <FormGroup>
+                          <InputGroup className="input-group-alternative mb-3">
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
                                 <i className="ni ni-email-83" />
                               </InputGroupText>
                             </InputGroupAddon>
@@ -402,6 +577,7 @@ const EmployeeList = (args) => {
                             </div>
                           )}
                         </FormGroup>
+
                         <FormGroup>
                           <InputGroup className="input-group-alternative">
                             <InputGroupAddon addonType="prepend">
@@ -428,20 +604,93 @@ const EmployeeList = (args) => {
                           )}
                         </FormGroup>
 
-                        {/* 
-                        <div className="text-center">
-                          <Button
-                          block
-                            className="mt-4 mb-4"
-                            color="primary"
-                            type="submit"
-                           >
-                            Create account
-                          </Button>
-                        </div> */}
+                        <FormGroup>
+                          <label className="form-control-label">
+                            Medical Certificate
+                          </label>
+
+                          <div className="row">
+                            <div className="col-sm-12">
+                              <div className="custom-file">
+                                <input
+                                  type="file"
+                                  name="medcert"
+                                  className="custom-file-input"
+                                  id="customFileMedCert"
+                                  accept="images/*"
+                                  {...register("medcert", {
+                                    required: true,
+                                  })}
+                                  onChange={(e) => {
+                                    onChange(e);
+                                    e.target.blur();
+                                  }}
+                                />
+                                <label
+                                  className="custom-file-label"
+                                  htmlFor="customFileMedCert">
+                                  {selectedFileName || "Choose Image"}
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                          {errors.medcert && !medcert && (
+                            <h2
+                              className="h1-seo"
+                              style={{
+                                color: "red",
+                                fontSize: "small",
+                              }}>
+                              Please select a valid image.
+                            </h2>
+                          )}
+                        </FormGroup>
+
+                        <FormGroup>
+                          <label className="form-control-label">
+                            Barangay Clearance
+                          </label>
+
+                          <div className="row">
+                            <div className="col-sm-12">
+                              <div className="custom-file">
+                                <input
+                                  type="file"
+                                  name="barangayclearance" // Change the name to barangayclearance
+                                  className="custom-file-input"
+                                  id="customFileBarangayClearance" // Change the ID
+                                  accept="images/*"
+                                  {...register("barangayclearance", {
+                                    required: true,
+                                  })}
+                                  onChange={(e) => {
+                                    onChange(e);
+                                    e.target.blur();
+                                  }}
+                                />
+                                <label
+                                  className="custom-file-label"
+                                  htmlFor="customFileBarangayClearance">
+                                  {" "}
+                                  {selectedFileNameBC || "Choose Image"}
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                          {errors.barangayclearance && !barangayclearance && (
+                            <h2
+                              className="h1-seo"
+                              style={{
+                                color: "red",
+                                fontSize: "small",
+                              }}>
+                              Please select a valid image.
+                            </h2>
+                          )}
+                        </FormGroup>
                       </ModalBody>
                       <ModalFooter>
-                        <Button color="primary" type="submit" onClick={toggle}>
+                        <Button color="primary" type="submit">
                           Register
                         </Button>{" "}
                         <Button color="secondary" onClick={toggle}>
@@ -469,6 +718,71 @@ const EmployeeList = (args) => {
           <AdminFooter />
         </Container>
       </div>
+
+      <Modal
+        className="modal-dialog-centered"
+        isOpen={employeeDetailsModal}
+        toggle={() => setEmployeeDetailsModal(!employeeDetailsModal)}
+        {...args}>
+        <ModalHeader
+          toggle={() => setEmployeeDetailsModal(!employeeDetailsModal)}>
+          Employee Details
+        </ModalHeader>
+        <ModalBody>
+          <p>
+            <strong>Profile:</strong>{" "}
+            <img
+              src={selectedEmployee.avatar?.url || "/images/default_avatar.jpg"}
+              alt="Avatar"
+              style={{ width: 50, height: 50 }}
+            />
+          </p>
+          <p>
+            <strong>Name:</strong>{" "}
+            {`${selectedEmployee.fname} ${selectedEmployee.lname}`}
+          </p>
+          <p>
+            <strong>Phone:</strong> {selectedEmployee.phone}
+          </p>
+          <p>
+            <strong>Address:</strong>{" "}
+            {`${selectedEmployee.houseNo}, ${selectedEmployee.purokNum}, ${selectedEmployee.streetName}, ${selectedEmployee.barangay}, ${selectedEmployee.city}`}
+          </p>
+          <p>
+            <strong>Email:</strong> {selectedEmployee.email}
+          </p>
+
+          <p>
+            <strong>Medical Certificate:</strong>{" "}
+            <img
+              src={
+                selectedEmployee.medcert?.url || "/images/default_avatar.jpg"
+              }
+              alt="MedCert"
+              style={{ width: 100, height: 100 }}
+            />
+          </p>
+          <p>
+            <strong>Barangay Clearance:</strong>{" "}
+            <img
+              src={
+                selectedEmployee.barangayclearance?.url ||
+                "/images/default_avatar.jpg"
+              }
+              alt="BarangayClearance"
+              style={{ width: 100, height: 100 }}
+            />
+          </p>
+        </ModalBody>
+
+        <ModalFooter>
+          <Button
+            color="secondary"
+            onClick={() => setEmployeeDetailsModal(!employeeDetailsModal)}>
+            Close
+          </Button>
+        </ModalFooter>
+      </Modal>
     </>
   );
 };

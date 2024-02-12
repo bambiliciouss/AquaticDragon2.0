@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -28,6 +28,14 @@ import {
   Container,
   Row,
   Col,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Input,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
 } from "reactstrap";
 
 const UserList = () => {
@@ -38,6 +46,9 @@ const UserList = () => {
   const { loading, error, users } = useSelector((state) => state.allUsers);
   const { isDeleted } = useSelector((state) => state.user);
 
+  const [modal, setModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+
   useEffect(() => {
     dispatch(allUsers());
     if (isDeleted) {
@@ -45,6 +56,20 @@ const UserList = () => {
       dispatch({ type: DELETE_USER_RESET });
     }
   }, [dispatch, isDeleted, navigate]);
+
+  const toggleModal = () => {
+    setModal(!modal);
+  };
+
+  const showUserDetails = (user) => {
+    setSelectedUser(user);
+    toggleModal();
+  };
+
+  const closeModal = () => {
+    setSelectedUser(null);
+    toggleModal();
+  };
 
   const deleteUserHandler = (id) => {
     swal({
@@ -70,7 +95,6 @@ const UserList = () => {
 
     const data = {
       columns: [
-
         {
           label: "Profile",
           field: "image",
@@ -124,6 +148,12 @@ const UserList = () => {
         ),
         actions: (
           <Fragment>
+            {" "}
+            <button
+              className="btn btn-info py-1 px-2 ml-2"
+              onClick={() => showUserDetails(user)}>
+              <i className="fa fa-info-circle"></i>
+            </button>
             <button
               className="btn btn-danger py-1 px-2 ml-2"
               onClick={() => deleteUserHandler(user._id)}>
@@ -175,6 +205,31 @@ const UserList = () => {
           <AdminFooter />
         </Container>
       </div>
+
+      <Modal isOpen={modal} toggle={toggleModal}>
+        <ModalHeader toggle={closeModal}>User Details</ModalHeader>
+        <ModalBody>
+          {selectedUser && (
+            <div>
+              <p><strong>Name:</strong> {`${selectedUser.fname} ${selectedUser.lname}`}</p>
+              <p><strong>Phone:</strong> {selectedUser.phone}</p>
+              <p><strong>Address:</strong> {`${selectedUser.houseNo}, ${selectedUser.purokNum}, ${selectedUser.streetName}, ${selectedUser.barangay}, ${selectedUser.city}`}</p>
+              <p><strong>Email:</strong> {selectedUser.email}</p>
+              <p><strong>Profile Image:</strong></p>
+              <img
+                src={selectedUser.avatar.url}
+                alt={selectedUser.title}
+                style={{ width: 100, height: 100 }}
+              />
+            </div>
+          )}
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={closeModal}>
+            Close
+          </Button>
+        </ModalFooter>
+      </Modal>
     </>
   );
 };

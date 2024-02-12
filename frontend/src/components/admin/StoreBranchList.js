@@ -3,7 +3,6 @@ import React, { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 
-import { allUsers, deleteUser } from "actions/userActions";
 import { MDBDataTable } from "mdbreact";
 
 import Sidebar from "components/Sidebar/Sidebar";
@@ -57,6 +56,7 @@ const StoreBranchList = (args) => {
 
   const { isDeleted } = useSelector((state) => state.storeBranch);
 
+  console.log("Initial storeBranch state:", storeBranch);
   const [storeBranches, setstoreBranch] = useState({
     branchNo: "",
     houseNo: "",
@@ -89,7 +89,10 @@ const StoreBranchList = (args) => {
   } = useForm();
 
   useEffect(() => {
-    dispatch(allStoreBranch());
+    if (!storeBranch || storeBranch.length === 0) {
+      dispatch(allStoreBranch());
+    }
+
     if (isDeleted) {
       navigate("/storebranchlist");
       dispatch({ type: DELETE_STOREBRANCH_RESET });

@@ -72,7 +72,10 @@ exports.addOrderStatus = async (req, res, next) => {
 
 exports.allOrders = async (req, res, next) => {
   try {
-    const orders = await Order.find();
+    const orders = await Order.find().populate(
+      "customer",
+      "fname lname"
+    );;
     res.status(200).json({
       success: true,
       orders,

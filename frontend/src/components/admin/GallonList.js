@@ -66,12 +66,11 @@ const GallonList = () => {
   const setGallons = () => {
     const data = {
       columns: [
-
-        {
-          label: "QR Code",
-          field: "qr",
-          sort: "asc",
-        },
+        // {
+        //   label: "QR Code",
+        //   field: "qr",
+        //   sort: "asc",
+        // },
 
         {
           label: "Type",
@@ -81,6 +80,11 @@ const GallonList = () => {
         {
           label: "Age",
           field: "age",
+          sort: "asc",
+        },
+        {
+          label: "Owner",
+          field: "user",
           sort: "asc",
         },
         {
@@ -96,15 +100,17 @@ const GallonList = () => {
       data.rows.push({
         type: gallon.type,
         age: gallon.gallonAge,
-        qr: (
-          <QRCode
-            value={gallon._id}
-            style={{
-              width: "100px",
-              height: "100px",
-            }}
-          />
-        ),
+        // qr: (
+        //   <QRCode
+        //     value={gallon._id}
+        //     style={{
+        //       width: "100px",
+        //       height: "100px",
+        //     }}
+        //   />
+        // ),
+
+        user: `${gallon.user.fname} ${gallon.user.lname}`,
         actions: (
           <Fragment>
             <button

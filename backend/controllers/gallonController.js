@@ -91,21 +91,45 @@ exports.myGallons = async (req, res, next) => {
   }
 };
 
+// exports.deleteMyGallon = async (req, res, next) => {
+//   const { id } = req.params;
+//   const gallon = await Gallon.findOneAndDelete({ _id: id });
+
+//   if (!gallon)
+//     return res
+//       .status(404)
+//       .json({ success: false, message: "Gallon not found" });
+
+//   res.status(200).json({ success: true, message: "Gallon deleted" });
+// };
+
 exports.deleteMyGallon = async (req, res, next) => {
   const { id } = req.params;
-  const gallon = await Gallon.findOneAndDelete({ _id: id });
 
-  if (!gallon)
-    return res
-      .status(404)
-      .json({ success: false, message: "Gallon not found" });
+  try {
+    const gallon = await Gallon.findByIdAndUpdate(
+      id,
+      { $set: { deleted: true } },
+      { new: true }
+    );
 
-  res.status(200).json({ success: true, message: "Gallon deleted" });
+    if (!gallon) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Gallon not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Gallon soft deleted" });
+  } catch (error) {
+    // Handle error, log, or send an appropriate response
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
 };
 
 exports.AllGallons = async (req, res, next) => {
   try {
-    const gallons = await Gallon.find();
+    const gallons = await Gallon.find({ deleted: false }).populate("user", "fname lname");
     res.status(200).json({
       success: true,
       gallons,

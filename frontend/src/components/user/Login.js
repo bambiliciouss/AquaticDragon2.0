@@ -204,12 +204,12 @@ const Login = () => {
               </Card>
               <Row className="mt-3">
                 <Col xs="6">
-                  <a className="text-light" href="/password/forgot">
+                  <a className="text-danger" href="/password/forgot">
                     <small>Forgot password?</small>
                   </a>
                 </Col>
                 <Col className="text-right" xs="6">
-                  <a className="text-light" href="/register">
+                  <a className="text-info" href="/register">
                     <small>Create new account</small>
                   </a>
                 </Col>

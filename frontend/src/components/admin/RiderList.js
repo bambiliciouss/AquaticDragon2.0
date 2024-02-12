@@ -15,7 +15,7 @@ import AdminFooter from "components/Footers/AdminFooter.js";
 import { DELETE_USER_RESET } from "../../constants/userConstants";
 import swal from "sweetalert";
 
-import { newregister, clearErrors } from "../../actions/userActions";
+import { newrider, clearErrors } from "../../actions/userActions";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useForm } from "react-hook-form";
@@ -53,6 +53,22 @@ const RiderList = (args) => {
   const { isDeleted } = useSelector((state) => state.user);
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
+
+  const [medcert, setMedcert] = useState("");
+  const [barangayclearance, setBarangayclearance] = useState("");
+  const [driverslicense, setDriversLicense] = useState("");
+
+  const [selectedFileName, setSelectedFileName] = useState("");
+  const [selectedFileNameBC, setSelectedFileNameBC] = useState("");
+  const [selectedFileNameDL, setSelectedFileNameDL] = useState("");
+
+  // const [riderDetailsModal, setRiderDetailsModal] = useState(false);
+  // const [selectedRider, setSelectedRider] = useState({});
+
+  // const openRiderDetailsModal = (rider) => {
+  //   setSelectedRider(rider);
+  //   setRiderDetailsModal(true);
+  // };
 
   const [rideruser, setUser] = useState({
     fname: "",
@@ -122,12 +138,66 @@ const RiderList = (args) => {
     formData.set("email", e.email);
     formData.set("password", e.password);
     formData.set("avatar", avatar);
+    formData.set("medcert", medcert);
+    formData.set("barangayclearance", barangayclearance);
+    formData.set("driverslicense", driverslicense);
     formData.set("role", role);
 
-    dispatch(newregister(formData));
+    dispatch(newrider(formData));
+    toggle();
+    window.location.reload();
+    notifySuccess("An email sent to your rider's email account, please verify");
+  };
 
-    navigate("/riderlist");
-    notifySuccess("An email sent to your Email account, please verify");
+  const onChange = (e) => {
+    if (e.target.name === "medcert") {
+      // Handle medcert file upload
+      const medcertfile = e.target.files[0] ? e.target.files[0].name : "";
+      setSelectedFileName(medcertfile);
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          setMedcert(reader.result);
+        }
+      };
+
+      reader.readAsDataURL(e.target.files[0]);
+    } else if (e.target.name === "barangayclearance") {
+      // Handle barangayclearance file upload
+      const barangayclearancefile = e.target.files[0]
+        ? e.target.files[0].name
+        : "";
+      setSelectedFileNameBC(barangayclearancefile);
+
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          setBarangayclearance(reader.result);
+        }
+      };
+
+      reader.readAsDataURL(e.target.files[0]);
+    } else if (e.target.name === "driverslicense") {
+      // Handle driverslicense file upload
+      const driverslicensefile = e.target.files[0]
+        ? e.target.files[0].name
+        : "";
+      setSelectedFileNameDL(driverslicensefile);
+
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          setDriversLicense(reader.result);
+        }
+      };
+
+      reader.readAsDataURL(e.target.files[0]);
+    } else {
+      setUser({ ...rideruser, [e.target.name]: e.target.value });
+    }
   };
 
   const deleteUserHandler = (id) => {
@@ -144,22 +214,6 @@ const RiderList = (args) => {
         swal("User is not deleted!", "", "info");
       }
     });
-  };
-  const onChange = (e) => {
-    if (e.target.name === "avatar") {
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        if (reader.readyState === 2) {
-          setAvatarPreview(reader.result);
-          setAvatar(reader.result);
-        }
-      };
-
-      reader.readAsDataURL(e.target.files[0]);
-    } else {
-      setUser({ ...rideruser, [e.target.name]: e.target.value });
-    }
   };
 
   const setUsers = () => {
@@ -223,6 +277,11 @@ const RiderList = (args) => {
         ),
         actions: (
           <Fragment>
+            <button
+              className="btn btn-primary py-1 px-2 ml-2"
+              onClick={() => navigate(`/rider/details/${user._id}`)}>
+              <i className="fa fa-info-circle"></i>
+            </button>
             <button
               className="btn btn-danger py-1 px-2 ml-2"
               onClick={() => deleteUserHandler(user._id)}>
@@ -300,6 +359,7 @@ const RiderList = (args) => {
                             </h2>
                           )}
                         </FormGroup>
+
                         <FormGroup>
                           <InputGroup className="input-group-alternative mb-3">
                             <InputGroupAddon addonType="prepend">
@@ -356,6 +416,136 @@ const RiderList = (args) => {
                           <InputGroup className="input-group-alternative mb-3">
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
+                                <i className="ni ni ni-pin-3" />
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <input
+                              placeholder="House No..."
+                              className="form-control"
+                              type="text"
+                              name="houseNo"
+                              {...register("houseNo", {
+                                required: "Please enter a valid house no.",
+                              })}
+                            />
+                          </InputGroup>
+                          {errors.houseNo && (
+                            <h2
+                              className="h1-seo"
+                              style={{ color: "red", fontSize: "small" }}>
+                              {errors.houseNo.message}
+                            </h2>
+                          )}
+                        </FormGroup>
+
+                        <FormGroup>
+                          <InputGroup className="input-group-alternative mb-3">
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
+                                <i className="ni ni ni-pin-3" />
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <input
+                              placeholder="Purok No."
+                              className="form-control"
+                              type="text"
+                              name="purokNum"
+                              {...register("purokNum", {
+                                required: "Please enter a valid purok no.",
+                              })}
+                            />
+                          </InputGroup>
+                          {errors.purokNum && (
+                            <h2
+                              className="h1-seo"
+                              style={{ color: "red", fontSize: "small" }}>
+                              {errors.purokNum.message}
+                            </h2>
+                          )}
+                        </FormGroup>
+
+                        <FormGroup>
+                          <InputGroup className="input-group-alternative mb-3">
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
+                                <i className="ni ni-mobile-button" />
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <input
+                              placeholder="Street Name..."
+                              className="form-control"
+                              type="text"
+                              name="streetName"
+                              {...register("streetName", {
+                                required: "Please enter a valid house no.",
+                              })}
+                            />
+                          </InputGroup>
+                          {errors.streetName && (
+                            <h2
+                              className="h1-seo"
+                              style={{ color: "red", fontSize: "small" }}>
+                              {errors.streetName.message}
+                            </h2>
+                          )}
+                        </FormGroup>
+
+                        <FormGroup>
+                          <InputGroup className="input-group-alternative mb-3">
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
+                                <i className="ni ni ni-pin-3" />
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <input
+                              placeholder="Barangay"
+                              className="form-control"
+                              type="text"
+                              name="barangay"
+                              {...register("barangay", {
+                                required: "Please enter a valid barangay",
+                              })}
+                            />
+                          </InputGroup>
+                          {errors.barangay && (
+                            <h2
+                              className="h1-seo"
+                              style={{ color: "red", fontSize: "small" }}>
+                              {errors.barangay.message}
+                            </h2>
+                          )}
+                        </FormGroup>
+
+                        <FormGroup>
+                          <InputGroup className="input-group-alternative mb-3">
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
+                                <i className="ni ni ni-pin-3" />
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <input
+                              placeholder="City"
+                              className="form-control"
+                              type="text"
+                              name="city"
+                              {...register("city", {
+                                required: "Please enter a valid city",
+                              })}
+                            />
+                          </InputGroup>
+                          {errors.city && (
+                            <h2
+                              className="h1-seo"
+                              style={{ color: "red", fontSize: "small" }}>
+                              {errors.city.message}
+                            </h2>
+                          )}
+                        </FormGroup>
+
+                        <FormGroup>
+                          <InputGroup className="input-group-alternative mb-3">
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
                                 <i className="ni ni-email-83" />
                               </InputGroupText>
                             </InputGroupAddon>
@@ -399,6 +589,7 @@ const RiderList = (args) => {
                             </div>
                           )}
                         </FormGroup>
+
                         <FormGroup>
                           <InputGroup className="input-group-alternative">
                             <InputGroupAddon addonType="prepend">
@@ -425,20 +616,136 @@ const RiderList = (args) => {
                           )}
                         </FormGroup>
 
-                        {/* 
-                        <div className="text-center">
-                          <Button
-                          block
-                            className="mt-4 mb-4"
-                            color="primary"
-                            type="submit"
-                           >
-                            Create account
-                          </Button>
-                        </div> */}
+                        <FormGroup>
+                          <label className="form-control-label">
+                            Medical Certificate
+                          </label>
+
+                          <div className="row">
+                            <div className="col-sm-12">
+                              <div className="custom-file">
+                                <input
+                                  type="file"
+                                  name="medcert"
+                                  className="custom-file-input"
+                                  id="customFileMedCert"
+                                  accept="images/*"
+                                  {...register("medcert", {
+                                    required: true,
+                                  })}
+                                  onChange={(e) => {
+                                    onChange(e);
+                                    e.target.blur();
+                                  }}
+                                />
+                                <label
+                                  className="custom-file-label"
+                                  htmlFor="customFileMedCert">
+                                  {selectedFileName || "Choose Image"}
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                          {errors.medcert && !medcert && (
+                            <h2
+                              className="h1-seo"
+                              style={{
+                                color: "red",
+                                fontSize: "small",
+                              }}>
+                              Please select a valid image.
+                            </h2>
+                          )}
+                        </FormGroup>
+
+                        <FormGroup>
+                          <label className="form-control-label">
+                            Barangay Clearance
+                          </label>
+
+                          <div className="row">
+                            <div className="col-sm-12">
+                              <div className="custom-file">
+                                <input
+                                  type="file"
+                                  name="barangayclearance" // Change the name to barangayclearance
+                                  className="custom-file-input"
+                                  id="customFileBarangayClearance" // Change the ID
+                                  accept="images/*"
+                                  {...register("barangayclearance", {
+                                    required: true,
+                                  })}
+                                  onChange={(e) => {
+                                    onChange(e);
+                                    e.target.blur();
+                                  }}
+                                />
+                                <label
+                                  className="custom-file-label"
+                                  htmlFor="customFileBarangayClearance">
+                                  {" "}
+                                  {selectedFileNameBC || "Choose Image"}
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                          {errors.barangayclearance && !barangayclearance && (
+                            <h2
+                              className="h1-seo"
+                              style={{
+                                color: "red",
+                                fontSize: "small",
+                              }}>
+                              Please select a valid image.
+                            </h2>
+                          )}
+                        </FormGroup>
+
+                        <FormGroup>
+                          <label className="form-control-label">
+                            Driver's License
+                          </label>
+
+                          <div className="row">
+                            <div className="col-sm-12">
+                              <div className="custom-file">
+                                <input
+                                  type="file"
+                                  name="driverslicense" // Change the name to driverslicense
+                                  className="custom-file-input"
+                                  id="customFileDriversLicense" // Change the ID
+                                  accept="images/*"
+                                  {...register("driverslicense", {
+                                    required: true,
+                                  })}
+                                  onChange={(e) => {
+                                    onChange(e);
+                                    e.target.blur();
+                                  }}
+                                />
+                                <label
+                                  className="custom-file-label"
+                                  htmlFor="customFileDriversLicense">
+                                  {" "}
+                                  {selectedFileNameDL || "Choose Image"}
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                          {errors.driverslicense && !driverslicense && (
+                            <h2
+                              className="h1-seo"
+                              style={{
+                                color: "red",
+                                fontSize: "small",
+                              }}>
+                              Please select a valid image.
+                            </h2>
+                          )}
+                        </FormGroup>
                       </ModalBody>
                       <ModalFooter>
-                        <Button color="primary" type="submit" onClick={toggle}>
+                        <Button color="primary" type="submit">
                           Register
                         </Button>{" "}
                         <Button color="secondary" onClick={toggle}>
@@ -466,6 +773,154 @@ const RiderList = (args) => {
           <AdminFooter />
         </Container>
       </div>
+
+      {/* <Modal
+        className="modal-dialog-centered"
+        isOpen={riderDetailsModal}
+        toggle={() => setRiderDetailsModal(!riderDetailsModal)}
+        {...args}>
+        <ModalHeader toggle={() => setRiderDetailsModal(!riderDetailsModal)}>
+          Rider Details
+        </ModalHeader>
+        <ModalBody>
+          <p>
+            <strong>Profile:</strong>{" "}
+            <img
+              src={selectedRider.avatar?.url || "/images/default_avatar.jpg"}
+              alt="Avatar"
+              style={{ width: 50, height: 50 }}
+            />
+          </p>
+     
+          <FormGroup>
+            <label className="form-control-label">First Name</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="First Name"
+              value={selectedRider.fname}
+              //onChange={(e) => setFname(e.target.value)}
+            />
+          </FormGroup>
+          <FormGroup>
+            <label className="form-control-label">Last Name</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="First Name"
+              value={selectedRider.lname}
+              //onChange={(e) => setFname(e.target.value)}
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <label className="form-control-label">Phone No.</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="First Name"
+              value={selectedRider.phone}
+              //onChange={(e) => setFname(e.target.value)}
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <label className="form-control-label">House No</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="First Name"
+              value={selectedRider.houseNo}
+              //onChange={(e) => setFname(e.target.value)}
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <label className="form-control-label">Purok No</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="First Name"
+              value={selectedRider.purokNum}
+              //onChange={(e) => setFname(e.target.value)}
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <label className="form-control-label">Street Name</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="First Name"
+              value={selectedRider.streetName}
+              //onChange={(e) => setFname(e.target.value)}
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <label className="form-control-label">Barangay</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="First Name"
+              value={selectedRider.barangay}
+              //onChange={(e) => setFname(e.target.value)}
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <label className="form-control-label">City</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="First Name"
+              value={selectedRider.city}
+              //onChange={(e) => setFname(e.target.value)}
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <label className="form-control-label">Email</label>
+            <input
+              type="email"
+              className="form-control"
+              placeholder="First Name"
+              value={selectedRider.email}
+              //onChange={(e) => setFname(e.target.value)}
+            />
+          </FormGroup>
+
+
+
+          <p>
+            <strong>Medical Certificate:</strong>{" "}
+            <img
+              src={selectedRider.medcert?.url || "/images/default_avatar.jpg"}
+              alt="MedCert"
+              style={{ width: 100, height: 100 }}
+            />
+          </p>
+          <p>
+            <strong>Barangay Clearance:</strong>{" "}
+            <img
+              src={
+                selectedRider.barangayclearance?.url ||
+                "/images/default_avatar.jpg"
+              }
+              alt="BarangayClearance"
+              style={{ width: 100, height: 100 }}
+            />
+          </p>
+        </ModalBody>
+
+        <ModalFooter>
+          <Button
+            color="secondary"
+            onClick={() => setRiderDetailsModal(!riderDetailsModal)}>
+            Close
+          </Button>
+        </ModalFooter>
+      </Modal> */}
     </>
   );
 };
