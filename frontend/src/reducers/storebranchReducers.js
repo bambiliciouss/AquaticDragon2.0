@@ -11,10 +11,17 @@ import {
   DELETE_STOREBRANCH_RESET,
   DELETE_STOREBRANCH_FAIL,
   CLEAR_ERRORS,
+  STOREBRANCH_DETAILS_REQUEST,
+  STOREBRANCH_DETAILS_SUCCESS,
+  STOREBRANCH_DETAILS_FAIL,
+  UPDATE_STOREBRANCH_REQUEST,
+  UPDATE_STOREBRANCH_SUCCESS,
+  UPDATE_STOREBRANCH_RESET,
+  UPDATE_STOREBRANCH_FAIL,
 } from "../constants/storebranchConstants";
 
 export const newStoreBranchReducer = (
-  state = { storeBranch: {}, storeBranchcreated: false },
+  state = { storeBranch: {}, storeBranch: false },
   action
 ) => {
   switch (action.type) {
@@ -28,7 +35,7 @@ export const newStoreBranchReducer = (
       return {
         ...state,
         loading: false,
-        storeBranchcreated: true,
+        //storeBranchcreated: true,
         storeBranch: action.payload,
       };
 
@@ -42,7 +49,7 @@ export const newStoreBranchReducer = (
     case CREATE_STOREBRANCH_RESET:
       return {
         ...state,
-        storeBranchcreated: false,
+        storeBranch: false,
       };
 
     case CLEAR_ERRORS:
@@ -89,15 +96,29 @@ export const allStoreBranchReducer = (state = { storeBranch: [] }, action) => {
   }
 };
 
-
 export const storeBranchReducer = (state = {}, action) => {
   switch (action.type) {
+    case UPDATE_STOREBRANCH_REQUEST:
     case DELETE_STOREBRANCH_REQUEST:
       return {
         ...state,
         loading: true,
       };
 
+    case UPDATE_STOREBRANCH_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        isUpdated: action.payload,
+      };
+
+    case UPDATE_STOREBRANCH_RESET:
+      return {
+        ...state,
+        isUpdated: false,
+      };
+
+    case UPDATE_STOREBRANCH_FAIL:
     case DELETE_STOREBRANCH_FAIL:
       return {
         ...state,
@@ -124,6 +145,39 @@ export const storeBranchReducer = (state = {}, action) => {
         ...state,
         error: null,
       };
+    default:
+      return state;
+  }
+};
+
+export const storeDetailsReducer = (state = { storeBranch: {} }, action) => {
+  switch (action.type) {
+    case STOREBRANCH_DETAILS_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+
+    case STOREBRANCH_DETAILS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        storeBranch: action.payload,
+      };
+
+    case STOREBRANCH_DETAILS_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+
+    case CLEAR_ERRORS:
+      return {
+        ...state,
+        error: null,
+      };
+
     default:
       return state;
   }

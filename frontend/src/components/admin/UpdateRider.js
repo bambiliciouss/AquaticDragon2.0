@@ -221,7 +221,7 @@ const UpdateRider = () => {
 
   return (
     <>
-      <MetaData title={"Update Profile"} />
+      <MetaData title={"Update Rider"} />
       <Sidebar
         logo={{
           innerLink: "/",
@@ -251,133 +251,11 @@ const UpdateRider = () => {
                           onSubmit={submitHandler}
                           encType="multipart/form-data">
                           <Row>
-                            <Col lg="6">
-                              <FormGroup>
-                                <label className="form-control-label">
-                                  First Name
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="First Name"
-                                  value={fname}
-                                  onChange={(e) => setFname(e.target.value)}
-                                />
-                              </FormGroup>
-                            </Col>
-                            <Col lg="6">
-                              <FormGroup>
-                                <label className="form-control-label">
-                                  Last Name
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="Last Name"
-                                  value={lname}
-                                  onChange={(e) => setLname(e.target.value)}
-                                />
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                          <Row>
-                            <Col lg="5">
-                              <FormGroup>
-                                <label className="form-control-label">
-                                  Phone No.
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="Phone"
-                                  value={phone}
-                                  onChange={(e) => setPhone(e.target.value)}
-                                />
-                              </FormGroup>
-                            </Col>
                             <Col lg="3">
-                              <FormGroup>
-                                <label className="form-control-label">
-                                  Unit, Building, House No.
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="Unit, Building, House No."
-                                  value={houseNo}
-                                  onChange={(e) => setHouseNo(e.target.value)}
-                                />
-                              </FormGroup>
-                            </Col>
-                            <Col lg="4">
-                              <FormGroup>
-                                <label className="form-control-label">
-                                  Purok No.
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="Purok No."
-                                  value={purokNum}
-                                  onChange={(e) => setPurokNum(e.target.value)}
-                                />
-                              </FormGroup>
-                            </Col>
-                          </Row>
+                              <label className="form-control-label">
+                                Avatar
+                              </label>
 
-                          <Row>
-                            <Col lg="12">
-                              <FormGroup>
-                                <label className="form-control-label">
-                                  Street Name
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="Street Name"
-                                  value={streetName}
-                                  onChange={(e) =>
-                                    setStreetName(e.target.value)
-                                  }
-                                />
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                          <Row>
-                            <Col lg="6">
-                              <FormGroup>
-                                <label className="form-control-label">
-                                  Barangay
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="Street Name"
-                                  value={barangay}
-                                  onChange={(e) => setBarangay(e.target.value)}
-                                />
-                              </FormGroup>
-                            </Col>
-                            <Col lg="6">
-                              <FormGroup>
-                                <label className="form-control-label">
-                                  City
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="Street Name"
-                                  value={city}
-                                  onChange={(e) => setCity(e.target.value)}
-                                />
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                          <label className="form-control-label">Avatar</label>
-
-                          <Row>
-                            <Col lg="3"></Col>
-                            <Col lg="6">
                               <div className="text-center">
                                 <img
                                   className="avatar border-gray"
@@ -405,6 +283,137 @@ const UpdateRider = () => {
                                   Choose Avatar
                                 </label>
                               </div>
+                            </Col>
+                            <Col lg="9">
+                              <Row>
+                                <Col lg="6">
+                                  <FormGroup>
+                                    <label className="form-control-label">
+                                      First Name
+                                    </label>
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                      placeholder="First Name"
+                                      value={fname}
+                                      onChange={(e) => setFname(e.target.value)}
+                                    />
+                                  </FormGroup>
+                                </Col>
+                                <Col lg="6">
+                                  <FormGroup>
+                                    <label className="form-control-label">
+                                      Last Name
+                                    </label>
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                      placeholder="Last Name"
+                                      value={lname}
+                                      onChange={(e) => setLname(e.target.value)}
+                                    />
+                                  </FormGroup>
+                                </Col>
+                              </Row>
+                              <Row>
+                                <Col lg="5">
+                                  <FormGroup>
+                                    <label className="form-control-label">
+                                      Phone No.
+                                    </label>
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                      placeholder="Phone"
+                                      value={phone}
+                                      onChange={(e) => setPhone(e.target.value)}
+                                    />
+                                  </FormGroup>
+                                </Col>
+                                <Col lg="3">
+                                  <FormGroup>
+                                    <label className="form-control-label">
+                                      Unit, Building, House No.
+                                    </label>
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                      placeholder="Unit, Building, House No."
+                                      value={houseNo}
+                                      onChange={(e) =>
+                                        setHouseNo(e.target.value)
+                                      }
+                                    />
+                                  </FormGroup>
+                                </Col>
+                                <Col lg="4">
+                                  <FormGroup>
+                                    <label className="form-control-label">
+                                      Purok No.
+                                    </label>
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                      placeholder="Purok No."
+                                      value={purokNum}
+                                      onChange={(e) =>
+                                        setPurokNum(e.target.value)
+                                      }
+                                    />
+                                  </FormGroup>
+                                </Col>
+                              </Row>
+
+                              <Row>
+                                <Col lg="12">
+                                  <FormGroup>
+                                    <label className="form-control-label">
+                                      Street Name
+                                    </label>
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                      placeholder="Street Name"
+                                      value={streetName}
+                                      onChange={(e) =>
+                                        setStreetName(e.target.value)
+                                      }
+                                    />
+                                  </FormGroup>
+                                </Col>
+                              </Row>
+                              <Row>
+                                <Col lg="6">
+                                  <FormGroup>
+                                    <label className="form-control-label">
+                                      Barangay
+                                    </label>
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                      placeholder="Street Name"
+                                      value={barangay}
+                                      onChange={(e) =>
+                                        setBarangay(e.target.value)
+                                      }
+                                    />
+                                  </FormGroup>
+                                </Col>
+                                <Col lg="6">
+                                  <FormGroup>
+                                    <label className="form-control-label">
+                                      City
+                                    </label>
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                      placeholder="Street Name"
+                                      value={city}
+                                      onChange={(e) => setCity(e.target.value)}
+                                    />
+                                  </FormGroup>
+                                </Col>
+                              </Row>
                             </Col>
                           </Row>
 
@@ -552,7 +561,7 @@ const UpdateRider = () => {
 
                           <div className="text-center">
                             <Button className="my-4" color="info" type="submit">
-                              Update Rider's Profile
+                              Update
                             </Button>
                           </div>
                         </Form>

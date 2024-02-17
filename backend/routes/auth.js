@@ -72,12 +72,6 @@ router.get(
   GetUserDetails
 );
 
-router.put(
-  "/admin/user/:id",
-  isAuthenticatedUser,
-  authorizeRoles("admin"),
-  UpdateUser
-);
 
 router.delete(
   "/admin/user/:id",
@@ -107,6 +101,13 @@ router.put(
   ]),
   isAuthenticatedUser,
   updateProfileRider
+);
+
+router.put(
+  "/admin/user/:id", upload.single("avatar"),
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
+  UpdateUser
 );
 
 module.exports = router;

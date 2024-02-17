@@ -135,7 +135,7 @@ const UserList = () => {
       data.rows.push({
         name: `${user.fname} ${user.lname}`,
         phone: user.phone,
-        address: `${user.houseNo}, ${user.purokNum}, ${user.streetName}, ${user.barangay}, ${user.city}`,
+        address: `${user.houseNo} ${user.purokNum} ${user.streetName} ${user.barangay} ${user.city}`,
         email: user.email,
         image: (
           <img
@@ -149,9 +149,14 @@ const UserList = () => {
         actions: (
           <Fragment>
             {" "}
-            <button
+            {/* <button
               className="btn btn-info py-1 px-2 ml-2"
               onClick={() => showUserDetails(user)}>
+              <i className="fa fa-info-circle"></i>
+            </button> */}
+            <button
+              className="btn btn-primary py-1 px-2 ml-2"
+              onClick={() => navigate(`/user/details/${user._id}`)}>
               <i className="fa fa-info-circle"></i>
             </button>
             <button
@@ -211,11 +216,23 @@ const UserList = () => {
         <ModalBody>
           {selectedUser && (
             <div>
-              <p><strong>Name:</strong> {`${selectedUser.fname} ${selectedUser.lname}`}</p>
-              <p><strong>Phone:</strong> {selectedUser.phone}</p>
-              <p><strong>Address:</strong> {`${selectedUser.houseNo}, ${selectedUser.purokNum}, ${selectedUser.streetName}, ${selectedUser.barangay}, ${selectedUser.city}`}</p>
-              <p><strong>Email:</strong> {selectedUser.email}</p>
-              <p><strong>Profile Image:</strong></p>
+              <p>
+                <strong>Name:</strong>{" "}
+                {`${selectedUser.fname} ${selectedUser.lname}`}
+              </p>
+              <p>
+                <strong>Phone:</strong> {selectedUser.phone}
+              </p>
+              <p>
+                <strong>Address:</strong>{" "}
+                {`${selectedUser.houseNo}, ${selectedUser.purokNum}, ${selectedUser.streetName}, ${selectedUser.barangay}, ${selectedUser.city}`}
+              </p>
+              <p>
+                <strong>Email:</strong> {selectedUser.email}
+              </p>
+              <p>
+                <strong>Profile Image:</strong>
+              </p>
               <img
                 src={selectedUser.avatar.url}
                 alt={selectedUser.title}

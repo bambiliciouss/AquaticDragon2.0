@@ -247,7 +247,7 @@ const EmployeeList = (args) => {
       data.rows.push({
         name: `${user.fname} ${user.lname}`,
         phone: user.phone,
-        address: `${user.houseNo}, ${user.purokNum}, ${user.streetName}, ${user.barangay}, ${user.city}`,
+        address: `${user.houseNo} ${user.purokNum} ${user.streetName} ${user.barangay} ${user.city}`,
         email: user.email,
         image: (
           <img

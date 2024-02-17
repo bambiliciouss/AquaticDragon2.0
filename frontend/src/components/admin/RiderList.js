@@ -118,6 +118,7 @@ const RiderList = (args) => {
     setRole("rider");
     dispatch(allUsers());
     if (isDeleted) {
+      console.log("deleted ");
       navigate("/riderlist");
       dispatch({ type: DELETE_USER_RESET });
     }
@@ -264,7 +265,7 @@ const RiderList = (args) => {
       data.rows.push({
         name: `${user.fname} ${user.lname}`,
         phone: user.phone,
-        address: `${user.houseNo}, ${user.purokNum}, ${user.streetName}, ${user.barangay}, ${user.city}`,
+        address: `${user.houseNo} ${user.purokNum} ${user.streetName} ${user.barangay} ${user.city}`,
         email: user.email,
         image: (
           <img

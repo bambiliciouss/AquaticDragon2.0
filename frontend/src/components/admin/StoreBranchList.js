@@ -89,27 +89,30 @@ const StoreBranchList = (args) => {
   } = useForm();
 
   useEffect(() => {
-    if (!storeBranch || storeBranch.length === 0) {
-      dispatch(allStoreBranch());
-    }
-
+    dispatch(allStoreBranch());
+    // if (!storeBranch || storeBranch.length === 0) {
+    //   dispatch(allStoreBranch());
+    // }
+    // if (storeBranchcreated) {
+    //   console.log("success store branch registration");
+    //   dispatch({
+    //     type: CREATE_STOREBRANCH_RESET,
+    //   });
+    //   navigate("/storebranchlist", { replace: true });
+    //   window.location.reload();
+    // }
     if (isDeleted) {
+      console.log("store branch deleted ");
       navigate("/storebranchlist");
+      window.location.reload();
       dispatch({ type: DELETE_STOREBRANCH_RESET });
-    }
-    if (storeBranchcreated) {
-      console.log("success store branch registration");
-      navigate("/storebranchlist", { replace: true });
-      dispatch({
-        type: CREATE_STOREBRANCH_RESET,
-      });
     }
 
     if (error) {
       console.log(error);
       dispatch(clearErrors());
     }
-  }, [dispatch, isDeleted, navigate, storeBranchcreated]);
+  }, [dispatch, isDeleted, navigate]);
 
   const deleteStoreBranchHandler = (id) => {
     swal({
@@ -132,16 +135,26 @@ const StoreBranchList = (args) => {
     //e.preventDefault();
 
     const formData = new FormData();
-    formData.set("branchNo", e.branchNo);
-    formData.set("houseNo", e.houseNo);
-    formData.set("streetName", e.streetName);
-    formData.set("purokNum", e.purokNum);
-    formData.set("barangay", e.barangay);
-    formData.set("city", e.city);
+    // formData.set("branchNo", e.branchNo);
+    // formData.set("houseNo", e.houseNo);
+    // formData.set("streetName", e.streetName);
+    // formData.set("purokNum", e.purokNum);
+    // formData.set("barangay", e.barangay);
+    // formData.set("city", e.city);
+
+    formData.set("address[houseNo]", e.houseNo);
+    formData.set("address[streetName]", e.streetName);
+    formData.set("address[purokNum]", e.purokNum);
+    formData.set("address[barangay]", e.barangay);
+    formData.set("address[city]", e.city);
+
     formData.set("deliverFee", e.deliverFee);
     formData.set("storeImage", storeImage);
 
     dispatch(createStoreBranch(formData));
+
+    toggle();
+    window.location.reload();
   };
 
   const onChange = (e) => {
@@ -164,6 +177,11 @@ const StoreBranchList = (args) => {
   const setStoreBranch = () => {
     const data = {
       columns: [
+        {
+          label: "Store",
+          field: "storeImage",
+          sort: "asc",
+        },
         {
           label: "Branch No",
           field: "branchNo",
@@ -190,11 +208,25 @@ const StoreBranchList = (args) => {
 
     storeBranch.forEach((storeBranches) => {
       data.rows.push({
+        storeImage: (
+          <img
+            className="d-block w-100"
+            src={storeBranches.storeImage.url}
+            alt={storeBranches.branchNo}
+            img
+            style={{ width: 70, height: 70 }}
+          />
+        ),
         branchNo: storeBranches.branchNo,
-        address: `${storeBranches.houseNo}, ${storeBranches.purokNum}, ${storeBranches.streetName}, ${storeBranches.barangay}, ${storeBranches.city}`,
+        address: `${storeBranches.address.houseNo} ${storeBranches.address.purokNum} ${storeBranches.address.streetName} ${storeBranches.address.barangay} ${storeBranches.address.city}`,
         deliverFee: `₱ ${storeBranches.deliverFee}.00`,
         actions: (
           <Fragment>
+                        <button
+              className="btn btn-primary py-1 px-2 ml-2"
+              onClick={() => navigate(`/store/details/${storeBranches._id}`)}>
+              <i className="fa fa-info-circle"></i>
+            </button>
             <button
               className="btn btn-danger py-1 px-2 ml-2"
               onClick={() => deleteStoreBranchHandler(storeBranches._id)}>
@@ -255,36 +287,9 @@ const StoreBranchList = (args) => {
                               </InputGroupText>
                             </InputGroupAddon>
                             <input
-                              placeholder="Branch No..."
-                              className="form-control"
-                              type="text"
-                              name="branchNo"
-                              {...register("branchNo", {
-                                required: "Please enter a valid branch number.",
-                              })}></input>
-                          </InputGroup>
-                          {errors.branchNo && (
-                            <h2
-                              className="h1-seo"
-                              style={{
-                                color: "red",
-                                fontSize: "small",
-                              }}>
-                              {errors.branchNo.message}
-                            </h2>
-                          )}
-                        </FormGroup>
-                        <FormGroup>
-                          <InputGroup className="input-group-alternative mb-3">
-                            <InputGroupAddon addonType="prepend">
-                              <InputGroupText>
-                                <i className="ni ni-circle-08" />
-                              </InputGroupText>
-                            </InputGroupAddon>
-                            <input
                               placeholder="House No..."
                               className="form-control"
-                              type="number"
+                              type="text"
                               name="houseNo"
                               {...register("houseNo", {
                                 required: "Please enter a valid house No.",
@@ -312,7 +317,7 @@ const StoreBranchList = (args) => {
                             <input
                               placeholder="Purok No..."
                               className="form-control"
-                              type="number"
+                              type="text"
                               name="purokNum"
                               {...register("purokNum", {
                                 required: "Please enter a valid Purok No.",
@@ -381,6 +386,34 @@ const StoreBranchList = (args) => {
                                 fontSize: "small",
                               }}>
                               {errors.barangay.message}
+                            </h2>
+                          )}
+                        </FormGroup>
+
+                        <FormGroup>
+                          <InputGroup className="input-group-alternative">
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
+                                <i className="ni ni-lock-circle-open" />
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <input
+                              placeholder="City..."
+                              className="form-control"
+                              type="text"
+                              name="city"
+                              {...register("city", {
+                                required: "Please enter a valid Barangay.",
+                              })}></input>
+                          </InputGroup>
+                          {errors.city && (
+                            <h2
+                              className="h1-seo"
+                              style={{
+                                color: "red",
+                                fontSize: "small",
+                              }}>
+                              {errors.city.message}
                             </h2>
                           )}
                         </FormGroup>
@@ -470,7 +503,7 @@ const StoreBranchList = (args) => {
                         </Row>
                       </ModalBody>
                       <ModalFooter>
-                        <Button color="primary" type="submit" onClick={toggle}>
+                        <Button color="primary" type="submit">
                           Register
                         </Button>{" "}
                         <Button color="secondary" onClick={toggle}>

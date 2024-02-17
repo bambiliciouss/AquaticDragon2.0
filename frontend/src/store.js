@@ -10,7 +10,7 @@ import {
   userReducer,
   forgotPasswordReducer,
   allUsersReducer,
-  userDetailsReducer
+  userDetailsReducer,
 } from "./reducers/userReducers";
 
 import {
@@ -24,6 +24,7 @@ import {
   newStoreBranchReducer,
   allStoreBranchReducer,
   storeBranchReducer,
+  storeDetailsReducer,
 } from "./reducers/storebranchReducers";
 
 import {
@@ -54,6 +55,7 @@ const reducers = combineReducers({
   orderDetails: orderDetailsReducer,
   order: orderReducer,
   userDetails: userDetailsReducer,
+  storeDetails: storeDetailsReducer,
 });
 
 let initialState = {

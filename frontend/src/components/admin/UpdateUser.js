@@ -5,7 +5,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 
 import {
   getUserDetails,
-  updateEmployee,
+  updateRider,
+  deleteUser,
   clearErrors,
 } from "actions/userActions";
 import { MDBDataTable } from "mdbreact";
@@ -45,7 +46,7 @@ import {
   Form,
 } from "reactstrap";
 
-const UpdateEmployee = () => {
+const UpdateUser = () => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const { error, isUpdated } = useSelector((state) => state.user);
@@ -73,9 +74,14 @@ const UpdateEmployee = () => {
   const [barangayclearancePreview, setBarangayclearancePreview] = useState(
     "/images/default_avatar.jpg"
   );
+  const [driverslicense, setDriversLicense] = useState("");
+  const [driverslicensePreview, setDriverslicensePreview] = useState(
+    "/images/default_avatar.jpg"
+  );
 
   const [selectedFileName, setSelectedFileName] = useState("");
   const [selectedFileNameBC, setSelectedFileNameBC] = useState("");
+  const [selectedFileNameDL, setSelectedFileNameDL] = useState("");
 
   const notifyError = (message = "") =>
     toast.error(message, {
@@ -100,7 +106,7 @@ const UpdateEmployee = () => {
     });
 
   useEffect(() => {
-    setRole("employee");
+    setRole("rider");
 
     if (user && user._id !== id) {
       dispatch(getUserDetails(id));
@@ -116,6 +122,7 @@ const UpdateEmployee = () => {
       setAvatarPreview(user.avatar.url);
       setMedcertPreview(user.medcert.url);
       setBarangayclearancePreview(user.barangayclearance.url);
+      setDriverslicensePreview(user.driverslicense.url);
     }
 
     if (error) {
@@ -126,7 +133,7 @@ const UpdateEmployee = () => {
     if (isUpdated) {
       notifySuccess("Update Successfully");
 
-      navigate("/employeelist", { replace: true });
+      navigate("/userlist", { replace: true });
       dispatch({
         type: UPDATE_PROFILE_RESET,
       });
@@ -146,11 +153,9 @@ const UpdateEmployee = () => {
     formData.append("barangay", barangay);
     formData.append("city", city);
     formData.append("avatar", avatar);
-    formData.append("medcert", medcert);
-    formData.append("barangayclearance", barangayclearance);
     formData.append("role", role);
 
-    dispatch(updateEmployee(id, formData));
+    dispatch(updateRider(id, formData));
   };
 
   const onChange = (e) => {
@@ -164,41 +169,12 @@ const UpdateEmployee = () => {
       };
 
       reader.readAsDataURL(e.target.files[0]);
-    } else if (e.target.name === "medcert") {
-      // Handle medcert file upload
-      const medcertfile = e.target.files[0] ? e.target.files[0].name : "";
-      setSelectedFileName(medcertfile);
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        if (reader.readyState === 2) {
-          setMedcert(reader.result);
-        }
-      };
-
-      reader.readAsDataURL(e.target.files[0]);
-    } else if (e.target.name === "barangayclearance") {
-      // Handle barangayclearance file upload
-      const barangayclearancefile = e.target.files[0]
-        ? e.target.files[0].name
-        : "";
-      setSelectedFileNameBC(barangayclearancefile);
-
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        if (reader.readyState === 2) {
-          setBarangayclearance(reader.result);
-        }
-      };
-
-      reader.readAsDataURL(e.target.files[0]);
     }
   };
 
   return (
     <>
-      <MetaData title={"Update Employee"} />
+      <MetaData title={"Update Customer"} />
       <Sidebar
         logo={{
           innerLink: "/",
@@ -219,7 +195,7 @@ const UpdateEmployee = () => {
                       <CardHeader className="bg-white border-0">
                         <Row className="align-items-center">
                           <Col xs="8">
-                            <h3 className="mb-0">Employee's Details</h3>
+                            <h3 className="mb-0">Customer's Details</h3>
                           </Col>
                         </Row>
                       </CardHeader>
@@ -394,102 +370,6 @@ const UpdateEmployee = () => {
                             </Col>
                           </Row>
 
-                          <label className="form-control-label">
-                            Medical Certificate
-                          </label>
-
-                          <Row>
-                            <Col lg="6">
-                              <Button
-                                className="my-1"
-                                color="success"
-                                size="md"
-                                onClick={() =>
-                                  window.open(medcertPreview, "_blank")
-                                }
-                                block>
-                                View Medical Certificate
-                              </Button>
-                            </Col>
-
-                            <Col lg="6">
-                              <FormGroup>
-                                <div className="row">
-                                  <div className="col-sm-12">
-                                    <div className="custom-file">
-                                      <input
-                                        type="file"
-                                        name="medcert"
-                                        className="custom-file-input"
-                                        id="customFileMedCert"
-                                        accept="images/*"
-                                        onChange={(e) => {
-                                          onChange(e);
-                                          e.target.blur();
-                                        }}
-                                      />
-                                      <label
-                                        className="custom-file-label"
-                                        htmlFor="customFileMedCert">
-                                        {selectedFileName || "Choose Image"}
-                                      </label>
-                                    </div>
-                                  </div>
-                                </div>
-                              </FormGroup>
-                            </Col>
-                          </Row>
-
-                          <label className="form-control-label">
-                            Barangay Clearance
-                          </label>
-
-                          <Row>
-                            <Col lg="6">
-                              <Button
-                                className="my-1"
-                                color="success"
-                                size="md"
-                                onClick={() =>
-                                  window.open(
-                                    barangayclearancePreview,
-                                    "_blank"
-                                  )
-                                }
-                                block>
-                                View Barangay Clearance
-                              </Button>
-                            </Col>
-
-                            <Col lg="6">
-                              <FormGroup>
-                                <div className="row">
-                                  <div className="col-sm-12">
-                                    <div className="custom-file">
-                                      <input
-                                        type="file"
-                                        name="barangayclearance" // Change the name to barangayclearance
-                                        className="custom-file-input"
-                                        id="customFileBarangayClearance" // Change the ID
-                                        accept="images/*"
-                                        onChange={(e) => {
-                                          onChange(e);
-                                          e.target.blur();
-                                        }}
-                                      />
-                                      <label
-                                        className="custom-file-label"
-                                        htmlFor="customFileBarangayClearance">
-                                        {" "}
-                                        {selectedFileNameBC || "Choose Image"}
-                                      </label>
-                                    </div>
-                                  </div>
-                                </div>
-                              </FormGroup>
-                            </Col>
-                          </Row>
-
                           <div className="text-center">
                             <Button className="my-4" color="info" type="submit">
                               Update
@@ -512,4 +392,4 @@ const UpdateEmployee = () => {
   );
 };
 
-export default UpdateEmployee;
+export default UpdateUser;

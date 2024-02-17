@@ -38,7 +38,7 @@ const orderSchema = mongoose.Schema({
     required: true,
   },
 
-  storeBranch: [
+  storeBranch: 
     {
       store: {
         type: mongoose.Schema.Types.ObjectId,
@@ -56,7 +56,7 @@ const orderSchema = mongoose.Schema({
         required: true,
       },
     },
-  ],
+ 
 
   // deliveryAddress: [
   //   {
@@ -91,7 +91,7 @@ const orderSchema = mongoose.Schema({
   //   },
   // ],
 
-  deliveryAddress: [
+  deliveryAddress: 
     {
       houseNo: {
         type: String,
@@ -113,7 +113,7 @@ const orderSchema = mongoose.Schema({
         type: String,
       },
     },
-  ],
+
 
   paymentInfo: {
     type: String,

@@ -7,29 +7,30 @@ const storeSchema = new mongoose.Schema({
   },
 
   branchNo: {
-    type: String,
-    required: true,
+    type: Number,
+    unique: true,
   },
-  houseNo: {
-    type: String,
-    required: true,
-  },
-
-  streetName: {
-    type: String,
-    required: true,
-  },
-  purokNum: {
-    type: String,
-    required: true,
-  },
-  barangay: {
-    type: String,
-    required: true,
-  },
-  city: {
-    type: String,
-    required: true,
+  address: {
+    houseNo: {
+      type: String,
+      required: true,
+    },
+    streetName: {
+      type: String,
+      required: true,
+    },
+    purokNum: {
+      type: String,
+      required: true,
+    },
+    barangay: {
+      type: String,
+      required: true,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
   },
 
   deliverFee: {
@@ -61,4 +62,23 @@ const storeSchema = new mongoose.Schema({
     default: false,
   },
 });
+
+storeSchema.pre("save", async function (next) {
+  if (!this.isNew) {
+    return next();
+  }
+
+  try {
+    const lastBranch = await this.constructor.findOne(
+      {},
+      { branchNo: 1 },
+      { sort: { branchNo: -1 } }
+    );
+    this.branchNo = (lastBranch && lastBranch.branchNo + 1) || 1;
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = mongoose.model("StoreBranch", storeSchema);

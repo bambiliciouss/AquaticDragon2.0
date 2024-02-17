@@ -186,11 +186,32 @@ const Sidebar = (props) => {
                 <i className="ni ni-settings-gear-65 text-yellow" /> Gallons
               </NavLink>
             </NavItem>
-            <NavItem>
+            {/* <NavItem>
               <NavLink href="/storebranchlist" onClick={closeCollapse}>
                 <i className="ni ni-shop text-red" /> Store Branch
               </NavLink>
+            </NavItem> */}
+
+            <NavItem>
+              <NavLink href="/storebranchlist" >
+                <i className="ni ni-shop text-red" /> Store Branch
+              </NavLink>
+             
+              <Nav vertical>
+                <NavItem>
+                  <NavLink href="/subpage1" onClick={closeCollapse}>
+                    Sub Page 1
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink href="/subpage2" onClick={closeCollapse}>
+                    Sub Page 2
+                  </NavLink>
+                </NavItem>
+               
+              </Nav>
             </NavItem>
+
 
             <NavItem>
               <NavLink href="/orderlist" onClick={closeCollapse}>

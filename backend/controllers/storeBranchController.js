@@ -23,24 +23,11 @@ exports.registerStoreBranch = async (req, res, next) => {
       );
     });
 
-    const {
-      branchNo,
-      houseNo,
-      streetName,
-      purokNum,
-      barangay,
-      city,
-      deliverFee,
-    } = req.body;
-    console.log(req.body);
+    const { address, deliverFee } = req.body;
+    //console.log(req.body);
 
     const storeBranch = await StoreBranch.create({
-      branchNo,
-      houseNo,
-      streetName,
-      purokNum,
-      barangay,
-      city,
+      address,
       deliverFee,
       user: req.user.id,
       storeImage: {
@@ -62,10 +49,9 @@ exports.registerStoreBranch = async (req, res, next) => {
   }
 };
 
-
 exports.AllStoreBranch = async (req, res, next) => {
   try {
-    const storeBranch = await StoreBranch.find();
+    const storeBranch = await StoreBranch.find({ deleted: false });
     res.status(200).json({
       success: true,
       storeBranch,
@@ -77,15 +63,90 @@ exports.AllStoreBranch = async (req, res, next) => {
   }
 };
 
-exports.deleteStoreBranch  = async (req, res, next) => {
+exports.deleteStoreBranch = async (req, res, next) => {
   const { id } = req.params;
-  const gallon = await StoreBranch.findOneAndDelete({ _id: id });
 
-  if (!gallon)
-    return res
-      .status(404)
-      .json({ success: false, message: "StoreBranch not found" });
+  try {
+    const store = await StoreBranch.findByIdAndUpdate(
+      id,
+      { $set: { deleted: true } },
+      { new: true }
+    );
 
-  res.status(200).json({ success: true, message: "StoreBranch deleted" });
+    if (!store) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Store not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Store soft deleted" });
+  } catch (error) {
+    // Handle error, log, or send an appropriate response
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
 };
 
+exports.GetStoreDetails = async (req, res, next) => {
+  try {
+    const storeBranch = await StoreBranch.findById(req.params.id);
+    if (!storeBranch) {
+      return next(
+        new ErrorHandler(`Store does not found with id: ${req.params.id}`)
+      );
+    }
+    res.status(200).json({
+      success: true,
+      storeBranch,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
+exports.updateStoreBranch = async (req, res, next) => {
+  const newStoreData = {
+    address: req.body.address,
+    deliverFee: req.body.deliverFee,
+  };
+
+  try {
+    if (req.body.storeImage && req.body.storeImage !== "") {
+      const storeBranch = await StoreBranch.findById(req.params.id);
+      const image_id = storeBranch.storeImage.public_id;
+      const res = await cloudinary.uploader.destroy(image_id);
+      const result = await cloudinary.v2.uploader.upload(
+        req.body.storeImage,
+        {
+          folder: "storeImage",
+          width: 150,
+          crop: "scale",
+        },
+        (err, res) => {
+          console.log(err, res);
+        }
+      );
+      newStoreData.storeImage = {
+        public_id: result.public_id,
+        url: result.secure_url,
+      };
+    }
+    const storeBranch = await StoreBranch.findByIdAndUpdate(
+      req.params.id,
+      newStoreData,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    res.status(200).json({
+      success: true,
+      storeBranch,
+      message: "pasok bhie"
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

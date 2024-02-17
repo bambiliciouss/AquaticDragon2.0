@@ -363,31 +363,6 @@ exports.GetUserDetails = async (req, res, next) => {
   }
 };
 
-exports.UpdateUser = async (req, res, next) => {
-  try {
-    const newUserData = {
-      fname: req.body.fname,
-      lname: req.body.lname,
-      // email: req.body.email,
-      role: req.body.role,
-    };
-
-    const user = await User.findByIdAndUpdate(req.params.id, newUserData, {
-      new: true,
-      runValidators: true,
-    });
-
-    res.status(200).json({
-      success: true,
-      user,
-    });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: error.message });
-  }
-};
-
 exports.DeleteUser = async (req, res, next) => {
   try {
     const user = await User.findByIdAndUpdate(
@@ -743,8 +718,10 @@ exports.updateProfileEmployee = async (req, res, next) => {
         public_id: result.public_id,
         url: result.secure_url,
       };
-    } 
-    else if (req.body.barangayclearance &&req.body.barangayclearance !== "") {
+    } else if (
+      req.body.barangayclearance &&
+      req.body.barangayclearance !== ""
+    ) {
       const user = await User.findById(req.params.id);
       const barangayclearance_id = user.barangayclearance.public_id;
       const res = await cloudinary.uploader.destroy(barangayclearance_id);
@@ -769,6 +746,58 @@ exports.updateProfileEmployee = async (req, res, next) => {
       new: true,
       runValidators: true,
     });
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    if (error.code === 11000 && error.keyPattern && error.keyPattern.phone) {
+      const errorMessage = `Phone number '${newUserData.phone}' is already taken.`;
+      return res.status(400).json({ success: false, message: errorMessage });
+    }
+
+    // Handle other errors
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.UpdateUser = async (req, res, next) => {
+  const newUserData = {
+    fname: req.body.fname,
+    lname: req.body.lname,
+    phone: req.body.phone,
+    houseNo: req.body.houseNo,
+    streetName: req.body.streetName,
+    purokNum: req.body.purokNum,
+    barangay: req.body.barangay,
+    city: req.body.city,
+  };
+  try {
+    if (req.body.avatar && req.body.avatar !== "") {
+      const user = await User.findById(req.params.id);
+      const image_id = user.avatar.public_id;
+      const res = await cloudinary.uploader.destroy(image_id);
+      const result = await cloudinary.v2.uploader.upload(
+        req.body.avatar,
+        {
+          folder: "avatars",
+          width: 150,
+          crop: "scale",
+        },
+        (err, res) => {
+          console.log(err, res);
+        }
+      );
+      newUserData.avatar = {
+        public_id: result.public_id,
+        url: result.secure_url,
+      };
+    }
+    const user = await User.findByIdAndUpdate(req.params.id, newUserData, {
+      new: true,
+      runValidators: true,
+    });
+
     res.status(200).json({
       success: true,
       user,

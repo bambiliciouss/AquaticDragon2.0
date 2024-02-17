@@ -5,6 +5,8 @@ const {
   registerStoreBranch,
   AllStoreBranch,
   deleteStoreBranch,
+  GetStoreDetails,
+  updateStoreBranch,
 } = require("../controllers/storeBranchController");
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
@@ -17,12 +19,23 @@ router.post(
   registerStoreBranch
 );
 
-router
-  .route("/admin/storebranch")
-  .get(isAuthenticatedUser, AllStoreBranch);
+router.route("/admin/storebranch").get(isAuthenticatedUser, AllStoreBranch);
 
 router
   .route("/delete/storebranch/:id")
   .delete(isAuthenticatedUser, deleteStoreBranch);
 
+router.get(
+  "/admin/store/:id",
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
+  GetStoreDetails
+);
+
+router.put(
+  "/admin/store/update/:id",
+  upload.single("storeImage"),
+  isAuthenticatedUser,
+  updateStoreBranch
+);
 module.exports = router;
