@@ -2,6 +2,7 @@ import {
   REGISTER_USER_REQUEST,
   REGISTER_USER_SUCCESS,
   REGISTER_USER_FAIL,
+  REGISTER_USER_RESET,
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
   LOGIN_FAIL,
@@ -40,7 +41,10 @@ import {
   USER_DETAILS_FAIL,
 } from "../constants/userConstants";
 
-export const authReducer = (state = { user: {} }, action) => {
+export const authReducer = (
+  state = { user: {} },
+  action
+) => {
   switch (action.type) {
     case REGISTER_USER_REQUEST:
     case LOGIN_REQUEST:
@@ -79,6 +83,8 @@ export const authReducer = (state = { user: {} }, action) => {
         ...state,
         error: action.payload,
       };
+
+   
 
     case CLEAR_ERRORS:
       return {

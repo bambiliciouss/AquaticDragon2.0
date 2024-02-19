@@ -1,0 +1,275 @@
+import React, { Fragment, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useForm } from "react-hook-form"; // Import the useForm hook
+
+import { MDBDataTable } from "mdbreact";
+import swal from "sweetalert";
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardBody,
+  Container,
+  Row,
+  Col,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  FormGroup,
+  InputGroupAddon,
+  InputGroupText,
+  InputGroup,
+  Form,
+} from "reactstrap";
+import Sidebar from "components/Sidebar/Sidebar";
+import MetaData from "components/layout/MetaData";
+import AdminNavbar from "components/Navbars/AdminNavbar";
+import Header2 from "components/Headers/Header2";
+import AdminFooter from "components/Footers/AdminFooter.js";
+import { DELETE_TYPESGALLON_RESET } from "../../constants/typesgallonConstants";
+import { CREATE_TYPESGALLON_RESET } from "../../constants/typesgallonConstants";
+import { useNavigate } from "react-router-dom";
+import {
+  allTypesGallon,
+  deleteTypesGallon,
+  createTypesGallon,
+  clearErrors,
+} from "actions/typesgallonAction";
+
+const TypesGallonList = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate(); // Use useNavigate hook from react-router-dom
+
+  const { error, typeofGallon } = useSelector((state) => state.allTypesGallon);
+  const { typesGalloncreated } = useSelector((state) => state.newTypesGallon);
+  const { isDeleted } = useSelector((state) => state.typesGallon);
+
+  const [modal, setModal] = useState(false);
+  const toggle = () => setModal(!modal);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm(); // Destructure the reset function from useForm
+  console.log("INTIAL DATA: ", typeofGallon);
+  useEffect(() => {
+    dispatch(allTypesGallon());
+    if (isDeleted) {
+      navigate("/typesgallonlist");
+      dispatch({ type: DELETE_TYPESGALLON_RESET });
+    }
+    if (typesGalloncreated) {
+      console.log("success gallon registration");
+      swal("Type of Gallon Created!", "", "success");
+      setModal(false);
+      navigate("/typesgallonlist", { replace: true });
+      dispatch({
+        type: CREATE_TYPESGALLON_RESET,
+      });
+      reset(); // Call the reset function to reset the form inputs
+    }
+
+    if (error) {
+      console.log(error);
+      dispatch(clearErrors());
+    }
+    
+  }, [dispatch, isDeleted, navigate, typesGalloncreated, error, reset]); // Add reset to dependency array
+
+  const deletetypesGallonHandler = (id) => {
+    swal({
+      title: "Are you sure you want to delete this gallon?",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        swal("Gallon has been deleted!", "", "success");
+        dispatch(deleteTypesGallon(id));
+      } else {
+        swal("Gallon is not deleted!", "", "info");
+      }
+    });
+  };
+
+  const submitHandler = (data) => {
+    // Adjust the argument to accept form data
+    console.log(data.gallonType);
+    const formData = new FormData();
+    formData.set("typeofGallon", data.gallonType);
+    formData.set("price", data.price);
+
+    dispatch(createTypesGallon(formData));
+  };
+
+  const setGallonTypes = () => {
+    const data = {
+      columns: [
+        {
+          label: "Type of Gallon",
+          field: "typeofGallon",
+          sort: "asc",
+        },
+        {
+          label: "Price",
+          field: "price",
+          sort: "asc",
+        },
+        {
+          label: "Actions",
+          field: "actions",
+        },
+      ],
+      rows: [],
+    };
+
+    typeofGallon.forEach((typeofGallon) => {
+      data.rows.push({
+        typeofGallon: typeofGallon.typeofGallon,
+        price: `₱ ${typeofGallon.price}.00`,
+        actions: (
+          <Fragment>
+            <button
+              className="btn btn-danger py-1 px-2 ml-2"
+              onClick={() => deletetypesGallonHandler(typeofGallon._id)}>
+              <i className="fa fa-trash"></i>
+            </button>
+          </Fragment>
+        ),
+      });
+    });
+
+    return data;
+  };
+
+  return (
+    <>
+      <MetaData title={"Type of Gallon(s)"} />
+      <Sidebar
+        logo={{
+          innerLink: "/",
+          imgSrc: require("../../assets/img/brand/logo2.1.jpg"),
+          imgAlt: "...",
+        }}
+      />
+      <div className="main-content">
+        <AdminNavbar />
+        <Header2 />
+        <Container className="mt--7" fluid>
+          <Card className="bg-secondary shadow">
+            <CardHeader className="bg-white border-0">
+              <Row className="align-items-center">
+                <Col xs="8">
+                  <h3 className="mb-0">Types of Gallon </h3>
+                </Col>
+                <Col md="4">
+                  <Button
+                    block
+                    className="mb-3"
+                    color="primary"
+                    type="button"
+                    onClick={toggle}>
+                    Register New Type of Gallon
+                  </Button>
+                  <Modal
+                    className="modal-dialog-centered"
+                    isOpen={modal}
+                    toggle={toggle}>
+                    <Form role="form" onSubmit={handleSubmit(submitHandler)}>
+                      <ModalHeader toggle={toggle}>
+                        Register New Type of Gallon
+                      </ModalHeader>
+                      <ModalBody>
+                        <FormGroup>
+                          <InputGroup className="input-group-alternative">
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
+                                <i className="ni ni-lock-circle-open" />
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <input
+                              placeholder="Type of Gallon..."
+                              className="form-control"
+                              type="text"
+                              name="gallonType"
+                              {...register("gallonType", {
+                                required:
+                                  "Please enter a valid Type of Gallon.",
+                              })}></input>
+                          </InputGroup>
+                          {errors.gallonType && (
+                            <h2
+                              className="h1-seo"
+                              style={{
+                                color: "red",
+                                fontSize: "small",
+                              }}>
+                              {errors.gallonType.message}
+                            </h2>
+                          )}
+                        </FormGroup>
+                        <FormGroup>
+                          <InputGroup className="input-group-alternative">
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
+                                <i className="ni ni-lock-circle-open" />
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <input
+                              placeholder="Price..."
+                              className="form-control"
+                              type="text"
+                              name="price"
+                              {...register("price", {
+                                required: "Please enter a valid price.",
+                              })}></input>
+                          </InputGroup>
+                          {errors.price && (
+                             <h2
+                             className="h1-seo"
+                             style={{
+                               color: "red",
+                               fontSize: "small",
+                             }}>
+                              {errors.price.message}
+                            </h2>
+                          )}
+                        </FormGroup>
+                      </ModalBody>
+                      <ModalFooter>
+                        <Button color="primary" type="submit">
+                          Register
+                        </Button>{" "}
+                        <Button color="secondary" onClick={toggle}>
+                          Cancel
+                        </Button>
+                      </ModalFooter>{" "}
+                    </Form>
+                  </Modal>
+                </Col>
+              </Row>
+            </CardHeader>
+            <CardBody style={{ overflowX: "auto" }}>
+              <MDBDataTable
+                data={setGallonTypes()}
+                className="px-3"
+                bordered
+                hover
+                noBottomColumns
+                responsive
+              />
+            </CardBody>
+          </Card>
+        </Container>
+        <Container fluid>
+          <AdminFooter />
+        </Container>
+      </div>
+    </>
+  );
+};
+
+export default TypesGallonList;

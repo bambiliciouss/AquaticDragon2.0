@@ -5,6 +5,7 @@ const {
   registerTypeofGallon,
   updateTypeofGallon,
   AllTypesGallons,
+  deleteGallonType,
 } = require("../controllers/typesofGallonController");
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
@@ -16,6 +17,8 @@ router.post(
 );
 
 router.put("/update/typeofgallon/:id", isAuthenticatedUser, updateTypeofGallon);
-router.get("/typeofgallon", isAuthenticatedUser, AllTypesGallons);
-
+router.get("/admin/typeofgallon", isAuthenticatedUser, AllTypesGallons);
+router
+  .route("/admin/delete/typeofgallon/:id")
+  .delete(isAuthenticatedUser, deleteGallonType);
 module.exports = router;

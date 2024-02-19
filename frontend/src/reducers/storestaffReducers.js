@@ -47,7 +47,7 @@ export const newStorestaffReducer = (
     case CREATE_STORESTAFF_RESET:
       return {
         ...state,
-        galloncreated: false,
+        storestaffcreated: false,
       };
 
     case CLEAR_ERRORS:

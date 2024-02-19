@@ -44,6 +44,11 @@ import {
   StoreStaffReducer,
 } from "reducers/storestaffReducers";
 
+import {
+  newTypesGallonReducer,
+  allTypesGallonReducer,
+  typesGallonReducer,
+} from "./reducers/typesgallonReducers";
 const reducers = combineReducers({
   auth: authReducer,
   user: userReducer,
@@ -68,6 +73,10 @@ const reducers = combineReducers({
   allStoreStaff: allStoreStaffReducer,
   singleStoreStaff: singleStoreStaffReducer,
   storeStaff: StoreStaffReducer,
+
+  newTypesGallon: newTypesGallonReducer,
+  allTypesGallon: allTypesGallonReducer,
+  typesGallon: typesGallonReducer,
 });
 
 let initialState = {

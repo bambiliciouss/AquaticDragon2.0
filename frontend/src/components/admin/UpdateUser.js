@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate, useParams, useLocation} from "react-router-dom";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 
 import {
   getUserDetails,
@@ -132,7 +132,7 @@ const UpdateUser = () => {
     }
 
     if (isUpdated) {
-      notifySuccess("Update Successfully");
+      swal("Updated Successfully!", "", "success");
 
       navigate("/userlist", { replace: true });
       dispatch({

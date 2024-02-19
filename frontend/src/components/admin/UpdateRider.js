@@ -131,7 +131,7 @@ const UpdateRider = () => {
     }
 
     if (isUpdated) {
-      notifySuccess("Update Successfully");
+      swal("Updated Successfully!", "", "success");
 
       navigate("/riderlist", { replace: true });
       dispatch({

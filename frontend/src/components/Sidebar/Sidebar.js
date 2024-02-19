@@ -217,6 +217,12 @@ const Sidebar = (props) => {
                 <i className="ni ni-basket text-green" /> Orders
               </NavLink>
             </NavItem>
+
+            <NavItem>
+              <NavLink href="/typesgallonlist" onClick={closeCollapse}>
+                <i className="ni ni-favourite-28 text-red" /> Types of Gallon
+              </NavLink>
+            </NavItem>
           </Nav>
 
           {/* <hr className="my-3" />

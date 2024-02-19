@@ -21,7 +21,7 @@ import {
 } from "../constants/storebranchConstants";
 
 export const newStoreBranchReducer = (
-  state = { storeBranch: {}, storeBranch: false },
+  state = { storeBranch: {}, storeBranchCreated: false },
   action
 ) => {
   switch (action.type) {
@@ -35,7 +35,7 @@ export const newStoreBranchReducer = (
       return {
         ...state,
         loading: false,
-        //storeBranchcreated: true,
+        storeBranchCreated: true,
         storeBranch: action.payload,
       };
 
@@ -49,7 +49,7 @@ export const newStoreBranchReducer = (
     case CREATE_STOREBRANCH_RESET:
       return {
         ...state,
-        storeBranch: false,
+        storeBranchCreated: false,
       };
 
     case CLEAR_ERRORS:

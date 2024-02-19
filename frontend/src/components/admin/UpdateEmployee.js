@@ -124,8 +124,8 @@ const UpdateEmployee = () => {
     }
 
     if (isUpdated) {
-      notifySuccess("Update Successfully");
-
+      //notifySuccess("Update Successfully");
+      swal("Updated Successfully!", "", "success");
       navigate("/employeelist", { replace: true });
       dispatch({
         type: UPDATE_PROFILE_RESET,

@@ -50,12 +50,15 @@ import {
   Input,
   CardText,
 } from "reactstrap";
+import { CREATE_STORESTAFF_RESET } from "../../constants/storestaffConstants";
+import { REGISTER_USER_RESET } from "../../constants/userConstants";
 
 const EmployeeList = (args) => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
   const { loading, error, users } = useSelector((state) => state.allUsers);
+  const { storestaffcreated } = useSelector((state) => state.newStorestaff);
   const { isDeleted } = useSelector((state) => state.user);
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
@@ -77,6 +80,7 @@ const EmployeeList = (args) => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
   const notifyError = (message = "") =>
     toast.error(message, {
@@ -155,8 +159,8 @@ const EmployeeList = (args) => {
       storebranch: selectedBranch,
     };
     dispatch(createStoreStaff(storeStaffData, userIdModal));
-    notifySuccess("Store staff created successfully");
-    window.location.reload();
+    // notifySuccess("Store staff created successfully");
+    // window.location.reload();
   };
 
   useEffect(() => {
@@ -170,7 +174,18 @@ const EmployeeList = (args) => {
       navigate("/employeelist");
       dispatch({ type: DELETE_USER_RESET });
     }
-  }, [dispatch, isDeleted, navigate, storeStaffdetails]);
+
+    if (storestaffcreated) {
+      console.log("success ");
+      swal("The Employee is now assigned to the store!", "", "success");
+      toggleUserIdModal();
+      navigate("/employeelist", { replace: true });
+      dispatch({
+        type: CREATE_STORESTAFF_RESET,
+      });
+      //reset();
+    }
+  }, [dispatch, isDeleted, navigate, storeStaffdetails, storestaffcreated]);
 
   const submitHandler = (e) => {
     //e.preventDefault();
@@ -194,9 +209,13 @@ const EmployeeList = (args) => {
     dispatch(newemployee(formData));
     toggle();
     window.location.reload();
-    notifySuccess(
-      "An email sent to your employee's email account, please verify"
+
+    swal(
+      "An email sent to your employee's email account, please verify",
+      "",
+      "success"
     );
+
   };
 
   const deleteUserHandler = (id) => {

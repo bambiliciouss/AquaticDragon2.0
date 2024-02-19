@@ -40,15 +40,27 @@ exports.updateTypeofGallon = async (req, res, next) => {
 };
 
 exports.AllTypesGallons = async (req, res, next) => {
-    try {
-      const typeofg = await TypeOfGallon.find();
-      res.status(200).json({
-        success: true,
-        typeofg,
-      });
-    } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Internal Server Error", error: error.message });
-    }
-  };
+  try {
+    const typeGallon = await TypeOfGallon.find();
+    res.status(200).json({
+      success: true,
+      typeGallon,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
+exports.deleteGallonType = async (req, res, next) => {
+  const { id } = req.params;
+  const gallonType = await TypeOfGallon.findOneAndDelete({ _id: id });
+
+  if (!gallonType)
+    return res
+      .status(404)
+      .json({ success: false, message: "StoreBranch not found" });
+
+  res.status(200).json({ success: true, message: "StoreBranch deleted" });
+};

@@ -58,7 +58,7 @@ import {
 const StoreBranchList = (args) => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
-  const { storeBranchcreated, loading, error, storeBranch } = useSelector(
+  const { loading, error, storeBranch } = useSelector(
     (state) => state.allStoreBranch
   );
   const [modal, setModal] = useState(false);
@@ -66,6 +66,9 @@ const StoreBranchList = (args) => {
 
   const { isDeleted } = useSelector((state) => state.storeBranch);
 
+  const { storeBranchCreated } = useSelector((state) => state.newStoreBranch);
+
+  
   const { isDeletedStoreStaff } = useSelector((state) => state.storeStaff);
 
   console.log("Initial storeBranch state:", storeBranch);
@@ -98,6 +101,7 @@ const StoreBranchList = (args) => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
 
   //FOR LIST OF EMPLOYEES PER STORE
@@ -122,35 +126,6 @@ const StoreBranchList = (args) => {
     setStoreIdModal(storebranch);
     toggleStoreRiderModal();
   };
-
-  useEffect(() => {
-    //DISPLAY OF STORE BRANCH
-    dispatch(allStoreBranch());
-
-    //LIST OF EMPLOYEES
-    if (storeIdModal !== null) {
-      dispatch(allStoreStaff(storeIdModal));
-    }
-
-    if (isDeleted) {
-      console.log("store branch deleted ");
-      navigate("/storebranchlist");
-      window.location.reload();
-      dispatch({ type: DELETE_STOREBRANCH_RESET });
-    }
-
-    if (isDeletedStoreStaff) {
-      console.log("store branch deleted ");
-      navigate("/storebranchlist");
-      //window.location.reload();
-      dispatch({ type: DELETE_STORESTAFF_RESET });
-    }
-
-    if (error) {
-      console.log(error);
-      dispatch(clearErrors());
-    }
-  }, [dispatch, isDeleted, navigate, storeIdModal, isDeletedStoreStaff]);
 
   const deleteStoreBranchHandler = (id) => {
     swal({
@@ -197,8 +172,8 @@ const StoreBranchList = (args) => {
     formData.set("storeImage", storeImage);
 
     dispatch(createStoreBranch(formData));
-    toggle();
-    window.location.reload();
+
+    //window.location.reload();
   };
 
   const onChange = (e) => {
@@ -348,6 +323,54 @@ const StoreBranchList = (args) => {
 
     return data;
   };
+
+  useEffect(() => {
+    //DISPLAY OF STORE BRANCH
+    dispatch(allStoreBranch());
+
+    //LIST OF EMPLOYEES
+    if (storeIdModal !== null) {
+      dispatch(allStoreStaff(storeIdModal));
+    }
+
+    if (storeBranchCreated) {
+      console.log("success registration");
+      swal("New Store Branch Created!", "", "success");
+      toggle();
+      navigate("/storebranchlist", { replace: true });
+      dispatch({
+        type: CREATE_STOREBRANCH_RESET,
+      });
+      reset();
+    }
+
+    if (isDeleted) {
+      console.log("store branch deleted ");
+      navigate("/storebranchlist");
+      window.location.reload();
+      dispatch({ type: DELETE_STOREBRANCH_RESET });
+    }
+
+    if (isDeletedStoreStaff) {
+      console.log("store branch deleted ");
+      navigate("/storebranchlist");
+      //window.location.reload();
+      dispatch({ type: DELETE_STORESTAFF_RESET });
+    }
+
+    if (error) {
+      console.log(error);
+      dispatch(clearErrors());
+    }
+  }, [
+    dispatch,
+    isDeleted,
+    navigate,
+    storeIdModal,
+    isDeletedStoreStaff,
+    storeBranchCreated,
+    reset,
+  ]);
 
   const setStoreStaffRider = () => {
     const data = {

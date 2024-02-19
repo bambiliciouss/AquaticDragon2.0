@@ -23,6 +23,7 @@ import RiderList from "components/admin/RiderList";
 import EmployeeList from "components/admin/EmployeeList";
 import GallonList from "components/admin/GallonList";
 import StoreBranchList from "components/admin/StoreBranchList";
+import TypesGallonList from "components/admin/TypesGallonList";
 
 import UpdateRider from "components/admin/UpdateRider";
 import UpdateEmployee from "components/admin/UpdateEmployee";
@@ -123,6 +124,11 @@ function App() {
         <Route
           path="/storebranchlist"
           element={<StoreBranchList />}
+          exact="true"
+        />
+        <Route
+          path="/typesgallonlist"
+          element={<TypesGallonList />}
           exact="true"
         />
         <Route path="/cart" element={<Cart />} exact="true" />
@@ -238,7 +244,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-          <Route
+        <Route
           path="/store/details/:id"
           element={
             <ProtectedRoute>
