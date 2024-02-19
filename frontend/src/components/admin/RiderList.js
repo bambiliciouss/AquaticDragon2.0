@@ -56,7 +56,7 @@ const RiderList = (args) => {
   const dispatch = useDispatch();
 
   let navigate = useNavigate();
-  const { user,  } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
   const { loading, error, users } = useSelector((state) => state.allUsers);
   const { storestaffcreated } = useSelector((state) => state.newStorestaff);
   const { isDeleted } = useSelector((state) => state.user);
@@ -213,7 +213,12 @@ const RiderList = (args) => {
     dispatch(newrider(formData));
     toggle();
     window.location.reload();
-    notifySuccess("An email sent to your rider's email account, please verify");
+
+    swal(
+      "An email sent to your employee's email account, please verify",
+      "",
+      "success"
+    );
   };
 
   const onChange = (e) => {
