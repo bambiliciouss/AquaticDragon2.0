@@ -490,9 +490,15 @@ const UpdateEmployee = () => {
                             </Col>
                           </Row>
 
-                          <div className="text-center">
+                          <div className="text-right">
                             <Button className="my-4" color="info" type="submit">
                               Update
+                            </Button>
+                            <Button
+                              className="my-4 mr-4"
+                              color="secondary"
+                              onClick={() => navigate("/userlist")}>
+                              Back
                             </Button>
                           </div>
                         </Form>

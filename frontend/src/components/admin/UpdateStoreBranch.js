@@ -126,7 +126,6 @@ const UpdateStoreBranch = () => {
     formData.append("address[city]", city);
     formData.append("deliverFee", deliveryFee);
     formData.append("storeImage", storeImage);
-  
 
     dispatch(updateStoreBranch(id, formData));
   };
@@ -316,9 +315,15 @@ const UpdateStoreBranch = () => {
                             </Col>
                           </Row>
 
-                          <div className="text-center">
+                          <div className="text-right">
                             <Button className="my-4" color="info" type="submit">
                               Update
+                            </Button>
+                            <Button
+                              className="my-4 mr-4"
+                              color="secondary"
+                              onClick={() => navigate("/storebranchlist")}>
+                              Back
                             </Button>
                           </div>
                         </Form>

@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useLocation} from "react-router-dom";
 
 import {
   getUserDetails,
@@ -47,6 +47,7 @@ import {
 } from "reactstrap";
 
 const UpdateUser = () => {
+  const location = useLocation();
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const { error, isUpdated } = useSelector((state) => state.user);
@@ -304,15 +305,27 @@ const UpdateUser = () => {
                                     <label className="form-control-label">
                                       Purok No.
                                     </label>
-                                    <input
-                                      type="text"
+                                    <select
                                       className="form-control"
-                                      placeholder="Purok No."
+                                      id="purokSelect"
                                       value={purokNum}
                                       onChange={(e) =>
                                         setPurokNum(e.target.value)
-                                      }
-                                    />
+                                      }>
+                                      <option value="" disabled>
+                                        Select Purok No.
+                                      </option>
+                                      <option value="Purok 1">Purok 1</option>
+                                      <option value="Purok 2">Purok 2</option>
+                                      <option value="Purok 3">Purok 3</option>
+                                      <option value="Purok 4">Purok 4</option>
+                                      <option value="Purok 5">Purok 5</option>
+                                      <option value="Purok 6">Purok 6</option>
+                                      <option value="Purok 7">Purok 7</option>
+                                      <option value="Purok 8">Purok 8</option>
+                                      <option value="Purok 9">Purok 9</option>
+                                      <option value="Purok 10">Purok 10</option>
+                                    </select>
                                   </FormGroup>
                                 </Col>
                               </Row>
@@ -341,15 +354,26 @@ const UpdateUser = () => {
                                     <label className="form-control-label">
                                       Barangay
                                     </label>
-                                    <input
-                                      type="text"
+                                    <select
                                       className="form-control"
-                                      placeholder="Street Name"
+                                      id="barangaySelect"
                                       value={barangay}
                                       onChange={(e) =>
                                         setBarangay(e.target.value)
-                                      }
-                                    />
+                                      }>
+                                      <option value="" disabled>
+                                        Select Barangay
+                                      </option>
+                                      <option value="Central Bicutan">
+                                        Central Bicutan
+                                      </option>
+                                      <option value="Upper Bicutan">
+                                        Upper Bicutan
+                                      </option>
+                                      <option value="New Lower Bicutan">
+                                        New Lower Bicutan
+                                      </option>
+                                    </select>
                                   </FormGroup>
                                 </Col>
                                 <Col lg="6">
@@ -357,22 +381,33 @@ const UpdateUser = () => {
                                     <label className="form-control-label">
                                       City
                                     </label>
-                                    <input
-                                      type="text"
+                                    <select
                                       className="form-control"
-                                      placeholder="Street Name"
+                                      id="citySelect"
                                       value={city}
-                                      onChange={(e) => setCity(e.target.value)}
-                                    />
+                                      onChange={(e) => setCity(e.target.value)}>
+                                      <option value="" disabled>
+                                        Select City
+                                      </option>
+                                      <option value="Taguig City">
+                                        Taguig City
+                                      </option>
+                                    </select>
                                   </FormGroup>
                                 </Col>
                               </Row>
                             </Col>
                           </Row>
 
-                          <div className="text-center">
+                          <div className="text-right">
                             <Button className="my-4" color="info" type="submit">
                               Update
+                            </Button>
+                            <Button
+                              className="my-4 mr-4"
+                              color="secondary"
+                              onClick={() => navigate("/userlist")}>
+                              Back
                             </Button>
                           </div>
                         </Form>

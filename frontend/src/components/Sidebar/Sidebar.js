@@ -193,11 +193,11 @@ const Sidebar = (props) => {
             </NavItem> */}
 
             <NavItem>
-              <NavLink href="/storebranchlist" >
+              <NavLink href="/storebranchlist">
                 <i className="ni ni-shop text-red" /> Store Branch
               </NavLink>
-             
-              <Nav vertical>
+
+              {/* <Nav vertical>
                 <NavItem>
                   <NavLink href="/subpage1" onClick={closeCollapse}>
                     Sub Page 1
@@ -209,9 +209,8 @@ const Sidebar = (props) => {
                   </NavLink>
                 </NavItem>
                
-              </Nav>
+              </Nav> */}
             </NavItem>
-
 
             <NavItem>
               <NavLink href="/orderlist" onClick={closeCollapse}>

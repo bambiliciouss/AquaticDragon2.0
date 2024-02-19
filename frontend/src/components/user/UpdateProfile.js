@@ -364,6 +364,12 @@ const UpdateProfile = () => {
                           <Button className="my-4" color="info" type="submit">
                             Update Profile
                           </Button>
+                          <Button
+                            className="my-4 mr-4"
+                            color="secondary"
+                            onClick={() => navigate("/userlist")}>
+                            Back
+                          </Button>
                         </div>
                       </Form>
                     </CardBody>
