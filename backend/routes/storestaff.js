@@ -11,15 +11,24 @@ const {
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
 const upload = require("../utils/multer");
 
-router.post("/assigned/staff/:id", isAuthenticatedUser, assignStore);
+router.post(
+  "/assigned/staff/:id",
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
+  assignStore
+);
 
 router
   .route("/assigned/staff/details/:id")
-  .get(isAuthenticatedUser, GetStoreStaffDetails);
+  .get(isAuthenticatedUser, authorizeRoles("admin"), GetStoreStaffDetails);
 
 router
   .route("/assigned/staff/:id")
-  .get(isAuthenticatedUser, GetSingleStoreStaffDetails);
+  .get(
+    isAuthenticatedUser,
+    authorizeRoles("admin"),
+    GetSingleStoreStaffDetails
+  );
 
 router.delete(
   "/admin/assigned/staff/:id",
