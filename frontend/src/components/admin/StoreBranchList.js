@@ -45,6 +45,16 @@ import {
 
 import { CREATE_STOREBRANCH_RESET } from "../../constants/storebranchConstants";
 import { useForm } from "react-hook-form";
+
+import {
+  allStoreStaff,
+  deleteStoreStaff,
+} from "../../actions/storestaffAction";
+import {
+  ALL_STORESTAFF_RESET,
+  DELETE_STORESTAFF_RESET,
+} from "../../constants/storestaffConstants";
+
 const StoreBranchList = (args) => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
@@ -55,6 +65,8 @@ const StoreBranchList = (args) => {
   const toggle = () => setModal(!modal);
 
   const { isDeleted } = useSelector((state) => state.storeBranch);
+
+  const { isDeletedStoreStaff } = useSelector((state) => state.storeStaff);
 
   console.log("Initial storeBranch state:", storeBranch);
   const [storeBranches, setstoreBranch] = useState({
@@ -88,19 +100,38 @@ const StoreBranchList = (args) => {
     formState: { errors },
   } = useForm();
 
+  //FOR LIST OF EMPLOYEES PER STORE
+  const [storeEmployeeModalVisible, setStoreEmployeeModalVisible] =
+    useState(false);
+  const [storeRiderModalVisible, setStoreRiderModalVisible] = useState(false);
+  const [storeIdModal, setStoreIdModal] = useState(null);
+  const { storeStaff } = useSelector((state) => state.allStoreStaff);
+
+  const toggleStoreEmployeeModal = () =>
+    setStoreEmployeeModalVisible(!storeEmployeeModalVisible);
+
+  const toggleStoreRiderModal = () =>
+    setStoreRiderModalVisible(!storeRiderModalVisible);
+
+  const openStoreEmployeeModal = (storebranch) => {
+    setStoreIdModal(storebranch);
+    toggleStoreEmployeeModal();
+  };
+
+  const openStoreRiderModal = (storebranch) => {
+    setStoreIdModal(storebranch);
+    toggleStoreRiderModal();
+  };
+
   useEffect(() => {
+    //DISPLAY OF STORE BRANCH
     dispatch(allStoreBranch());
-    // if (!storeBranch || storeBranch.length === 0) {
-    //   dispatch(allStoreBranch());
-    // }
-    // if (storeBranchcreated) {
-    //   console.log("success store branch registration");
-    //   dispatch({
-    //     type: CREATE_STOREBRANCH_RESET,
-    //   });
-    //   navigate("/storebranchlist", { replace: true });
-    //   window.location.reload();
-    // }
+
+    //LIST OF EMPLOYEES
+    if (storeIdModal !== null) {
+      dispatch(allStoreStaff(storeIdModal));
+    }
+
     if (isDeleted) {
       console.log("store branch deleted ");
       navigate("/storebranchlist");
@@ -108,11 +139,18 @@ const StoreBranchList = (args) => {
       dispatch({ type: DELETE_STOREBRANCH_RESET });
     }
 
+    if (isDeletedStoreStaff) {
+      console.log("store branch deleted ");
+      navigate("/storebranchlist");
+      //window.location.reload();
+      dispatch({ type: DELETE_STORESTAFF_RESET });
+    }
+
     if (error) {
       console.log(error);
       dispatch(clearErrors());
     }
-  }, [dispatch, isDeleted, navigate]);
+  }, [dispatch, isDeleted, navigate, storeIdModal, isDeletedStoreStaff]);
 
   const deleteStoreBranchHandler = (id) => {
     swal({
@@ -131,28 +169,34 @@ const StoreBranchList = (args) => {
     });
   };
 
+  const deleteStoreStaffHandler = (id) => {
+    swal({
+      title: "Are you sure you want to delete this assigned staff?",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        swal("Store Staff has been deleted!", "", "success");
+        dispatch(deleteStoreStaff(id));
+      } else {
+        swal("Store Staff is not deleted!", "", "info");
+        console.log(id);
+      }
+    });
+  };
+
   const submitHandler = (e) => {
-    //e.preventDefault();
-
     const formData = new FormData();
-    // formData.set("branchNo", e.branchNo);
-    // formData.set("houseNo", e.houseNo);
-    // formData.set("streetName", e.streetName);
-    // formData.set("purokNum", e.purokNum);
-    // formData.set("barangay", e.barangay);
-    // formData.set("city", e.city);
-
     formData.set("address[houseNo]", e.houseNo);
     formData.set("address[streetName]", e.streetName);
     formData.set("address[purokNum]", e.purokNum);
     formData.set("address[barangay]", e.barangay);
     formData.set("address[city]", e.city);
-
     formData.set("deliverFee", e.deliverFee);
     formData.set("storeImage", storeImage);
 
     dispatch(createStoreBranch(formData));
-
     toggle();
     window.location.reload();
   };
@@ -201,6 +245,10 @@ const StoreBranchList = (args) => {
           label: "Actions",
           field: "actions",
         },
+        {
+          label: "List of assigned Staff",
+          field: "list",
+        },
       ],
 
       rows: [],
@@ -222,7 +270,7 @@ const StoreBranchList = (args) => {
         deliverFee: `₱ ${storeBranches.deliverFee}.00`,
         actions: (
           <Fragment>
-                        <button
+            <button
               className="btn btn-primary py-1 px-2 ml-2"
               onClick={() => navigate(`/store/details/${storeBranches._id}`)}>
               <i className="fa fa-info-circle"></i>
@@ -230,6 +278,112 @@ const StoreBranchList = (args) => {
             <button
               className="btn btn-danger py-1 px-2 ml-2"
               onClick={() => deleteStoreBranchHandler(storeBranches._id)}>
+              <i className="fa fa-trash"></i>
+            </button>
+          </Fragment>
+        ),
+        list: (
+          <Fragment>
+            <button
+              className="btn btn-info py-1 px-2 ml-2"
+              onClick={() => openStoreEmployeeModal(storeBranches._id)}>
+              Employees
+            </button>
+
+            <button
+              className="btn btn-info py-1 px-2 ml-2"
+              onClick={() => openStoreRiderModal(storeBranches._id)}>
+              Riders
+            </button>
+          </Fragment>
+        ),
+      });
+    });
+
+    return data;
+  };
+
+  const setStoreStaffEmployee = () => {
+    const data = {
+      columns: [
+        {
+          label: "Name",
+          field: "name",
+          sort: "asc",
+        },
+        {
+          label: "Email",
+          field: "email",
+          sort: "asc",
+        },
+
+        {
+          label: "Action",
+          field: "action",
+          sort: "asc",
+        },
+      ],
+      rows: [],
+    };
+
+    const employeeStaff = storeStaff.filter(
+      (staff) => staff.user.role === "employee"
+    );
+
+    employeeStaff.forEach((storeStaffs) => {
+      data.rows.push({
+        name: `${storeStaffs.user.fname} ${storeStaffs.user.lname}`,
+        email: storeStaffs.user.email,
+        action: (
+          <Fragment>
+            <button
+              className="btn btn-danger py-1 px-2 ml-2"
+              onClick={() => deleteStoreStaffHandler(storeStaffs._id)}>
+              <i className="fa fa-trash"></i>
+            </button>
+          </Fragment>
+        ),
+      });
+    });
+
+    return data;
+  };
+
+  const setStoreStaffRider = () => {
+    const data = {
+      columns: [
+        {
+          label: "Name",
+          field: "name",
+          sort: "asc",
+        },
+        {
+          label: "Email",
+          field: "email",
+          sort: "asc",
+        },
+        {
+          label: "Action",
+          field: "action",
+          sort: "asc",
+        },
+      ],
+      rows: [],
+    };
+
+    const riderStaff = storeStaff.filter(
+      (staff) => staff.user.role === "rider"
+    );
+
+    riderStaff.forEach((storeStaffs) => {
+      data.rows.push({
+        name: `${storeStaffs.user.fname} ${storeStaffs.user.lname}`,
+        email: storeStaffs.user.email,
+        action: (
+          <Fragment>
+            <button
+              className="btn btn-danger py-1 px-2 ml-2"
+              onClick={() => deleteStoreStaffHandler(storeStaffs._id)}>
               <i className="fa fa-trash"></i>
             </button>
           </Fragment>
@@ -531,6 +685,54 @@ const StoreBranchList = (args) => {
           <AdminFooter />
         </Container>
       </div>
+
+      <Modal
+        className="modal-dialog-centered modal-lg"
+        isOpen={storeEmployeeModalVisible}
+        toggle={toggleStoreEmployeeModal}
+        {...args}>
+        <ModalHeader toggle={toggleStoreEmployeeModal}>
+          List of Employees
+        </ModalHeader>
+        <ModalBody>
+          <MDBDataTable
+            data={setStoreStaffEmployee()}
+            className="px-3"
+            bordered
+            hover
+            noBottomColumns
+            responsive
+          />
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={toggleStoreEmployeeModal}>
+            Close
+          </Button>
+        </ModalFooter>
+      </Modal>
+
+      <Modal
+        className="modal-dialog-centered modal-lg"
+        isOpen={storeRiderModalVisible}
+        toggle={toggleStoreRiderModal}
+        {...args}>
+        <ModalHeader toggle={toggleStoreRiderModal}>List of Riders</ModalHeader>
+        <ModalBody>
+          <MDBDataTable
+            data={setStoreStaffRider()}
+            className="px-3"
+            bordered
+            hover
+            noBottomColumns
+            responsive
+          />
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={toggleStoreRiderModal}>
+            Close
+          </Button>
+        </ModalFooter>
+      </Modal>
     </>
   );
 };

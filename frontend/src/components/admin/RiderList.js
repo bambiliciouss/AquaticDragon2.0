@@ -21,6 +21,12 @@ import "react-toastify/dist/ReactToastify.css";
 import { useForm } from "react-hook-form";
 
 import {
+  createStoreStaff,
+  singleStoreStaff,
+} from "../../actions/storestaffAction";
+import { allStoreBranch } from "actions/storebranchActions";
+
+import {
   Button,
   Card,
   CardHeader,
@@ -42,6 +48,8 @@ import {
   InputGroupText,
   InputGroup,
   Form,
+  Input,
+  CardText,
 } from "reactstrap";
 
 const RiderList = (args) => {
@@ -82,12 +90,15 @@ const RiderList = (args) => {
     email: "",
     password: "",
   });
+
   const [role, setRole] = useState("");
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+
   const notifyError = (message = "") =>
     toast.error(message, {
       position: "bottom-left",
@@ -114,15 +125,59 @@ const RiderList = (args) => {
   const [avatarPreview, setAvatarPreview] = useState(
     "/images/default_avatar.jpg"
   );
+  const { storeBranch } = useSelector((state) => state.allStoreBranch);
+  const [userIdModal, setUserIdModal] = useState(null);
+  const { storeStaffdetails } = useSelector((state) => state.singleStoreStaff);
+
+  const handleStaffDetails = async (userId) => {
+    try {
+      await dispatch(singleStoreStaff(userId));
+    } catch (error) {
+      console.error("Error fetching singleStoreStaff:", error);
+      // Handle error if needed
+    }
+  };
+
+  const openUserIdModal = (userId) => {
+    setUserIdModal(userId);
+    dispatch(allStoreBranch());
+    handleStaffDetails(userId);
+    toggleUserIdModal(); // Function to toggle the modal visibility
+  };
+  const [userIdModalVisible, setUserIdModalVisible] = useState(false);
+  const toggleUserIdModal = () => setUserIdModalVisible(!userIdModalVisible);
+
+  const [selectedBranch, setSelectedBranch] = useState(null);
+  const handleBranchSelection = (branch) => {
+    setSelectedBranch((prevSelectedBranch) => {
+      console.log("selected Branch", branch);
+      return branch;
+    });
+  };
+
+  const assignHandler = (e) => {
+    const storeStaffData = {
+      storebranch: selectedBranch,
+    };
+    dispatch(createStoreStaff(storeStaffData, userIdModal));
+    notifySuccess("Store staff created successfully");
+    window.location.reload();
+  };
+
   useEffect(() => {
     setRole("rider");
     dispatch(allUsers());
+    console.log(
+      "eto result beh",
+      storeStaffdetails.map((staff) => staff.storebranch)
+    );
+
     if (isDeleted) {
       console.log("deleted ");
       navigate("/riderlist");
       dispatch({ type: DELETE_USER_RESET });
     }
-  }, [dispatch, isDeleted, navigate]);
+  }, [dispatch, isDeleted, navigate, storeStaffdetails]);
 
   const submitHandler = (e) => {
     //e.preventDefault();
@@ -287,6 +342,11 @@ const RiderList = (args) => {
               className="btn btn-danger py-1 px-2 ml-2"
               onClick={() => deleteUserHandler(user._id)}>
               <i className="fa fa-trash"></i>
+            </button>
+            <button
+              className="btn btn-info py-1 px-2 ml-2"
+              onClick={() => openUserIdModal(user._id)}>
+              Assign Store
             </button>
           </Fragment>
         ),
@@ -774,154 +834,56 @@ const RiderList = (args) => {
           <AdminFooter />
         </Container>
       </div>
-
-      {/* <Modal
+      <Modal
         className="modal-dialog-centered"
-        isOpen={riderDetailsModal}
-        toggle={() => setRiderDetailsModal(!riderDetailsModal)}
+        isOpen={userIdModalVisible}
+        toggle={toggleUserIdModal}
         {...args}>
-        <ModalHeader toggle={() => setRiderDetailsModal(!riderDetailsModal)}>
-          Rider Details
-        </ModalHeader>
+        <ModalHeader toggle={toggleUserIdModal}>Store Branch </ModalHeader>
         <ModalBody>
-          <p>
-            <strong>Profile:</strong>{" "}
-            <img
-              src={selectedRider.avatar?.url || "/images/default_avatar.jpg"}
-              alt="Avatar"
-              style={{ width: 50, height: 50 }}
-            />
-          </p>
-     
-          <FormGroup>
-            <label className="form-control-label">First Name</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="First Name"
-              value={selectedRider.fname}
-              //onChange={(e) => setFname(e.target.value)}
-            />
-          </FormGroup>
-          <FormGroup>
-            <label className="form-control-label">Last Name</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="First Name"
-              value={selectedRider.lname}
-              //onChange={(e) => setFname(e.target.value)}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <label className="form-control-label">Phone No.</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="First Name"
-              value={selectedRider.phone}
-              //onChange={(e) => setFname(e.target.value)}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <label className="form-control-label">House No</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="First Name"
-              value={selectedRider.houseNo}
-              //onChange={(e) => setFname(e.target.value)}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <label className="form-control-label">Purok No</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="First Name"
-              value={selectedRider.purokNum}
-              //onChange={(e) => setFname(e.target.value)}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <label className="form-control-label">Street Name</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="First Name"
-              value={selectedRider.streetName}
-              //onChange={(e) => setFname(e.target.value)}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <label className="form-control-label">Barangay</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="First Name"
-              value={selectedRider.barangay}
-              //onChange={(e) => setFname(e.target.value)}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <label className="form-control-label">City</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="First Name"
-              value={selectedRider.city}
-              //onChange={(e) => setFname(e.target.value)}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <label className="form-control-label">Email</label>
-            <input
-              type="email"
-              className="form-control"
-              placeholder="First Name"
-              value={selectedRider.email}
-              //onChange={(e) => setFname(e.target.value)}
-            />
-          </FormGroup>
-
-
-
-          <p>
-            <strong>Medical Certificate:</strong>{" "}
-            <img
-              src={selectedRider.medcert?.url || "/images/default_avatar.jpg"}
-              alt="MedCert"
-              style={{ width: 100, height: 100 }}
-            />
-          </p>
-          <p>
-            <strong>Barangay Clearance:</strong>{" "}
-            <img
-              src={
-                selectedRider.barangayclearance?.url ||
-                "/images/default_avatar.jpg"
-              }
-              alt="BarangayClearance"
-              style={{ width: 100, height: 100 }}
-            />
-          </p>
+          <>
+            {storeBranch.map((branch) => (
+              <Row key={branch._id}>
+                <Col sm="12">
+                  <Card body>
+                    <FormGroup check>
+                      <label className="form-check-label">
+                        <Input
+                          type="radio"
+                          name="branchSelection"
+                          checked={
+                            (selectedBranch &&
+                              selectedBranch._id === branch._id) ||
+                            storeStaffdetails.some(
+                              (staff) => staff.storebranch._id === branch._id
+                            )
+                          }
+                          onChange={() => handleBranchSelection(branch)}
+                        />
+                        <CardText>Branch No: {branch.branchNo}</CardText>
+                        <CardText style={{ fontSize: "0.9rem" }}>
+                          Address: {branch.address.houseNo}{" "}
+                          {branch.address.purokNum} {branch.address.streetName}{" "}
+                          {branch.address.barangay} {branch.address.city},
+                        </CardText>
+                      </label>
+                    </FormGroup>
+                  </Card>
+                </Col>
+              </Row>
+              //  <div style={{ marginBottom: "20px" }}></div>
+            ))}
+          </>
         </ModalBody>
-
         <ModalFooter>
-          <Button
-            color="secondary"
-            onClick={() => setRiderDetailsModal(!riderDetailsModal)}>
+          <Button color="primary" onClick={assignHandler}>
+            Assign Branch
+          </Button>
+          <Button color="secondary" onClick={toggleUserIdModal}>
             Close
           </Button>
         </ModalFooter>
-      </Modal> */}
+      </Modal>
     </>
   );
 };
