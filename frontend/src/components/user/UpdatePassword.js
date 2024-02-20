@@ -104,63 +104,133 @@ const UpdatePassword = () => {
           marginLeft: "20%",
           marginRight: "20%",
         }}>
-        <div className="user-profile">
-          <div class="wrapper ">
-            <div className="content">
-              <div className="row">
-                <div className="col-md-12">
-                  <Card className="bg-secondary shadow">
-                    <CardHeader className="bg-white border-0">
-                      <Row className="align-items-center">
-                        <Col xs="8">
-                          <h3 className="mb-0">Update Password</h3>
-                        </Col>
-                      </Row>
-                    </CardHeader>
-                    <CardBody>
-                      <Form
-                        onSubmit={submitHandler}
-                        encType="multipart/form-data">
-                        <Row>
-                          <Col lg="12">
-                            <FormGroup>
-                              <label className="form-control-label">
-                                Old Password
-                              </label>
-                              <input
-                                type="password"
-                                className="form-control"
-                                placeholder="Old Password"
-                                value={oldPassword}
-                                onChange={(e) => setOldPassword(e.target.value)}
-                              />
-                            </FormGroup>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col lg="12">
-                            <FormGroup>
-                              <label className="form-control-label">
-                                New Password
-                              </label>
-                              <input
-                                type="password"
-                                className="form-control"
-                                placeholder="New Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                              />
-                            </FormGroup>
-                          </Col>
-                        </Row>
-                        <div className="text-center">
-                          <Button className="my-4" color="info" type="submit">
-                            Update Password
-                          </Button>
-                        </div>
-                      </Form>
-                    </CardBody>
-                  </Card>
+        <div className="row">
+          {/* Sidebar */}
+          <div className="col-md-3">
+            <div>
+              <h5
+                className="title"
+                style={{
+                  marginBottom: "10px",
+                  paddingTop: "10px",
+                }}>
+                <i
+                  className="now-ui-icons users_single-02"
+                  style={{ marginRight: "5px" }}></i>
+                My Account
+              </h5>
+
+              <ul style={{ listStyleType: "none", paddingLeft: "0" }}>
+                <li>
+                  <a className="nav-link active" href="/my-profile">
+                    Profile
+                  </a>
+                </li>
+                <li>
+                  <a className="nav-link" href="/password/update">
+                    Change Password
+                  </a>
+                </li>
+                <li>
+                  <a className="nav-link" href="/my-qr">
+                    QR Code
+                  </a>
+                </li>
+              </ul>
+
+              <h5
+                className="title"
+                style={{
+                  marginBottom: "10px",
+                  paddingTop: "10px",
+                }}>
+                <i
+                  className="now-ui-icons ui-1_simple-add"
+                  style={{ marginRight: "5px" }}></i>
+                My Gallons
+              </h5>
+
+              <ul style={{ listStyleType: "none", paddingLeft: "0" }}>
+                <li>
+                  <a className="nav-link" href="/my-gallon">
+                    List of my Gallon/s
+                  </a>
+                </li>
+                <li>
+                  <a className="nav-link" href="/register-gallon">
+                    Register New Gallon
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="col-md-9">
+            <div className="user-profile">
+              <div class="wrapper ">
+                <div className="content">
+                  <div className="row">
+                    <div className="col-md-12">
+                      <Card className="bg-secondary shadow">
+                        <CardHeader className="bg-white border-0">
+                          <Row className="align-items-center">
+                            <Col xs="8">
+                              <h3 className="mb-0">Change Password</h3>
+                            </Col>
+                          </Row>
+                        </CardHeader>
+                        <CardBody>
+                          <Form
+                            onSubmit={submitHandler}
+                            encType="multipart/form-data">
+                            <Row>
+                              <Col lg="12">
+                                <FormGroup>
+                                  <label className="form-control-label">
+                                    Old Password
+                                  </label>
+                                  <input
+                                    type="password"
+                                    className="form-control"
+                                    placeholder="Old Password"
+                                    value={oldPassword}
+                                    onChange={(e) =>
+                                      setOldPassword(e.target.value)
+                                    }
+                                  />
+                                </FormGroup>
+                              </Col>
+                            </Row>
+                            <Row>
+                              <Col lg="12">
+                                <FormGroup>
+                                  <label className="form-control-label">
+                                    New Password
+                                  </label>
+                                  <input
+                                    type="password"
+                                    className="form-control"
+                                    placeholder="New Password"
+                                    value={password}
+                                    onChange={(e) =>
+                                      setPassword(e.target.value)
+                                    }
+                                  />
+                                </FormGroup>
+                              </Col>
+                            </Row>
+                            <div className="text-center">
+                              <Button
+                                className="my-4"
+                                color="info"
+                                type="submit">
+                                Update Password
+                              </Button>
+                            </div>
+                          </Form>
+                        </CardBody>
+                      </Card>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

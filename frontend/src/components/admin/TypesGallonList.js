@@ -55,6 +55,7 @@ const TypesGallonList = () => {
     reset,
   } = useForm(); // Destructure the reset function from useForm
   console.log("INTIAL DATA: ", typeofGallon);
+
   useEffect(() => {
     dispatch(allTypesGallon());
     if (isDeleted) {
@@ -76,7 +77,6 @@ const TypesGallonList = () => {
       console.log(error);
       dispatch(clearErrors());
     }
-    
   }, [dispatch, isDeleted, navigate, typesGalloncreated, error, reset]); // Add reset to dependency array
 
   const deletetypesGallonHandler = (id) => {
@@ -228,12 +228,12 @@ const TypesGallonList = () => {
                               })}></input>
                           </InputGroup>
                           {errors.price && (
-                             <h2
-                             className="h1-seo"
-                             style={{
-                               color: "red",
-                               fontSize: "small",
-                             }}>
+                            <h2
+                              className="h1-seo"
+                              style={{
+                                color: "red",
+                                fontSize: "small",
+                              }}>
                               {errors.price.message}
                             </h2>
                           )}

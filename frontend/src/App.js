@@ -13,6 +13,9 @@ import Profile from "components/user/Profile";
 import UpdateProfile from "components/user/UpdateProfile";
 import UpdatePassword from "components/user/UpdatePassword";
 
+import MyQRCode from "components/user/MyQRCode";
+import QRCodeDetails from "components/user/QRCodeDetails";
+
 // import AdminRegistration from "components/admin/AdminRegistration";
 import RegisterGallon from "components/gallon/RegisterGallon";
 import MyGallon from "components/gallon/MyGallon";
@@ -112,6 +115,23 @@ function App() {
             </ProtectedRoute>
           }
           exact="true"
+        />
+        <Route
+          path="/my-qr"
+          element={
+            <ProtectedRoute>
+              <MyQRCode />
+            </ProtectedRoute>
+          }
+          exact="true"
+        />
+        <Route
+          path="/details/:id"
+          element={
+            <ProtectedRoute>
+              <QRCodeDetails />
+            </ProtectedRoute>
+          }
         />
         {/* <Route path="/admin" element={<AdminRegistration />} exact="true" />
          */}

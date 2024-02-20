@@ -21,6 +21,9 @@ import {
 } from "reactstrap";
 import { CREATE_GALLON_RESET } from "../../constants/gallonConstants";
 import { useForm } from "react-hook-form";
+
+import { allTypesGallon } from "actions/typesgallonAction";
+
 const RegisterGallon = () => {
   const [gallon, setGallon] = useState({
     type: "",
@@ -28,6 +31,7 @@ const RegisterGallon = () => {
   });
 
   const { type, gallonAge } = gallon;
+  const { typeofGallon } = useSelector((state) => state.allTypesGallon);
 
   const [gallonImage, setgallonImage] = useState("");
   const [avatarPreview, setAvatarPreview] = useState("/images/gallon.png");
@@ -46,8 +50,11 @@ const RegisterGallon = () => {
   } = useForm();
 
   useEffect(() => {
+    dispatch(allTypesGallon());
+
     if (galloncreated) {
       console.log("success gallon registration");
+      swal("Your Gallon Created!", "", "success");
       navigate("/my-gallon", { replace: true });
       dispatch({
         type: CREATE_GALLON_RESET,
@@ -62,7 +69,7 @@ const RegisterGallon = () => {
 
   const submitHandler = (e) => {
     //e.preventDefault();
-
+    // console.log(e);
     const formData = new FormData();
     formData.set("type", e.type);
     formData.set("gallonAge", e.gallonAge);
@@ -138,6 +145,11 @@ const RegisterGallon = () => {
                     Change Password
                   </a>
                 </li>
+                <li>
+                  <a className="nav-link" href="/my-qr">
+                    QR Code
+                  </a>
+                </li>
               </ul>
 
               <h5
@@ -185,7 +197,7 @@ const RegisterGallon = () => {
                             <CardBody>
                               <Row>
                                 <Col>
-                                  <FormGroup>
+                                  {/* <FormGroup>
                                     <label className="form-control-label">
                                       Type
                                     </label>
@@ -208,7 +220,34 @@ const RegisterGallon = () => {
                                         Round 5 Gallons
                                       </option>
                                     </select>
+                                  </FormGroup> */}
+
+                                  <FormGroup>
+                                    <label className="form-control-label">
+                                      Type
+                                    </label>
+                                    <select
+                                      className="form-control"
+                                      id="typeSelect"
+                                      name="type"
+                                      defaultValue=""
+                                      {...register("type", {
+                                        required: "Please select gallon type",
+                                      })}
+                                      style={{ backgroundColor: "#f2f2f2" }}>
+                                      <option value="" disabled>
+                                        Select Type
+                                      </option>
+                                      {typeofGallon.map((gallon) => (
+                                        <option
+                                          key={gallon._id}
+                                          value={gallon._id}>
+                                          {gallon.typeofGallon}
+                                        </option>
+                                      ))}
+                                    </select>
                                   </FormGroup>
+
                                   {errors.type && (
                                     <h2
                                       className="h1-seo"

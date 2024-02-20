@@ -73,13 +73,19 @@ const gallonSchema = new mongoose.Schema({
     ref: "User",
   },
 
+  // type: {
+  //   type: String,
+  //   required: [true, "Please select gallon type"],
+  //   enum: {
+  //     values: ["Slim 5 Gallons", "Round 5 Gallons"],
+  //     message: "Please select the correct type of gallon",
+  //   },
+  // },
+
   type: {
-    type: String,
-    required: [true, "Please select gallon type"],
-    enum: {
-      values: ["Slim 5 Gallons", "Round 5 Gallons"],
-      message: "Please select the correct type of gallon",
-    },
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "TypeOfGallon",
   },
 
   gallonImage: {

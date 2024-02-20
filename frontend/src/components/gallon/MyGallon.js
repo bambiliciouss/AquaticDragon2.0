@@ -21,6 +21,9 @@ import {
   Table,
   Pagination,
 } from "reactstrap";
+
+import * as htmlToImage from "html-to-image";
+
 const MyGallon = () => {
   const dispatch = useDispatch();
   let location = useLocation();
@@ -67,6 +70,20 @@ const MyGallon = () => {
     document.scrollingElement.scrollTop = 0;
   }, [location]);
 
+  const containerRef = useRef(null);
+
+  const downloadImage = () => {
+    htmlToImage
+      .toPng(containerRef.current, { backgroundColor: "white" })
+      .then(function (dataUrl) {
+        var link = document.createElement("a");
+        link.download = "qrcode.png";
+        link.href = dataUrl;
+        link.click();
+      });
+  };
+  const { user } = useSelector((state) => state.auth);
+
   return (
     <>
       <AuthNavbar />
@@ -105,6 +122,11 @@ const MyGallon = () => {
                 <li>
                   <a className="nav-link" href="/password/update">
                     Change Password
+                  </a>
+                </li>
+                <li>
+                  <a className="nav-link" href="/my-qr">
+                    QR Code
                   </a>
                 </li>
               </ul>
@@ -168,7 +190,7 @@ const MyGallon = () => {
                             responsive>
                             <table className="table text-center">
                               <thead className="thead-light">
-                                <th scope="col">QR Code</th>
+                                {/* <th scope="col">QR Code</th> */}
                                 <th scope="col">Type of Gallon</th>
                                 <th scope="col">Gallon Age (In Days)</th>
                                 <th scope="col">Gallon Image</th>
@@ -178,16 +200,37 @@ const MyGallon = () => {
                                 {itemsToDisplay.map((gallons) => (
                                   <tr key={gallons._id}>
                                     {/* <td>{gallons._id}</td> */}
-                                    <td>
-                                      <QRCode
-                                        value={gallons._id}
+                                    {/* <td>
+                                      <div
+                                        ref={containerRef}
                                         style={{
-                                          width: "100px",
-                                          height: "100px",
-                                        }}
-                                      />
-                                    </td>
-                                    <td>{gallons.type}</td>
+                                          backgroundColor: "white",
+                                          padding: "10px",
+                                        }}>
+                                        <QRCode
+                                          value={gallons._id}
+                                          size={150}
+                                        />
+                                        <div
+                                          style={{
+                                            textAlign: "center",
+                                            marginTop: "10px",
+                                            fontWeight: "bold",
+                                            fontSize: "14px",
+                                          }}>
+                                         {user ? user.fname : ""}  {user ? user.lname : ""}
+                                        </div>
+                                      </div>
+                                      <Button
+                                      block
+                                        className="my-1 mr-1"
+                                        color="secondary"
+                                        onClick={downloadImage}>
+                                        Download QR Code
+                                      </Button>
+                                    </td> */}
+
+                                    <td>{gallons.type.typeofGallon}</td>
                                     <td>{gallons.gallonAge}</td>
                                     <td>
                                       {gallons.gallonImage && (

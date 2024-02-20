@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState, useRef } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -37,7 +37,8 @@ import {
   InputGroupAddon,
   InputGroupText,
 } from "reactstrap";
-
+import * as htmlToImage from "html-to-image";
+import QRCode from "react-qr-code";
 const UserList = () => {
   const dispatch = useDispatch();
 
@@ -45,31 +46,6 @@ const UserList = () => {
   const { user } = useSelector((state) => state.auth);
   const { loading, error, users } = useSelector((state) => state.allUsers);
   const { isDeleted } = useSelector((state) => state.user);
-
-  const [modal, setModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-
-  useEffect(() => {
-    dispatch(allUsers());
-    if (isDeleted) {
-      navigate("/userlist");
-      dispatch({ type: DELETE_USER_RESET });
-    }
-  }, [dispatch, isDeleted, navigate]);
-
-  const toggleModal = () => {
-    setModal(!modal);
-  };
-
-  const showUserDetails = (user) => {
-    setSelectedUser(user);
-    toggleModal();
-  };
-
-  const closeModal = () => {
-    setSelectedUser(null);
-    toggleModal();
-  };
 
   const deleteUserHandler = (id) => {
     swal({
@@ -87,6 +63,56 @@ const UserList = () => {
     });
   };
 
+  const [modal, setModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUserfname, setSelectedUserfname] = useState(null);
+  const [selectedUserlname, setSelectedUserlname] = useState(null);
+
+  const toggleModal = () => {
+    setModal(!modal);
+  };
+
+  const showUserDetails = (user) => {
+    setSelectedUser(user._id);
+    setSelectedUserfname(user.fname);
+    setSelectedUserlname(user.lname);
+    toggleModal();
+  };
+
+  const closeModal = () => {
+    setSelectedUser(null);
+    toggleModal();
+  };
+
+  const userId = user?._id;
+  const [qrdetails, setQrDetails] = useState();
+
+  const containerRef = useRef(null);
+
+  const downloadImage = () => {
+    const fileName = `${selectedUserfname}_${selectedUserlname}_QRCODE.png`;
+
+    htmlToImage
+      .toPng(containerRef.current, { backgroundColor: "white" })
+      .then(function (dataUrl) {
+        var link = document.createElement("a");
+        link.download = fileName;
+        link.href = dataUrl;
+        link.click();
+      });
+  };
+
+  useEffect(() => {
+    dispatch(allUsers());
+    if (isDeleted) {
+      navigate("/userlist");
+      dispatch({ type: DELETE_USER_RESET });
+    }
+
+    setQrDetails(`http://localhost:3000/details/${selectedUser}`);
+  }, [dispatch, isDeleted, navigate, selectedUser]);
+  console.log("result", qrdetails);
+
   const setUsers = () => {
     // const filter = user ? users.filter((x) => x._id !== user._id) : users;
     const filter = user
@@ -100,6 +126,11 @@ const UserList = () => {
           field: "image",
           sort: "asc",
         },
+        // {
+        //   label: "QR Code",
+        //   field: "qr",
+        //   sort: "asc",
+        // },
 
         {
           label: "Name",
@@ -148,12 +179,11 @@ const UserList = () => {
         ),
         actions: (
           <Fragment>
-            {" "}
-            {/* <button
-              className="btn btn-info py-1 px-2 ml-2"
+            <button
+              className="btn btn-default py-1 px-2 ml-2"
               onClick={() => showUserDetails(user)}>
-              <i className="fa fa-info-circle"></i>
-            </button> */}
+              QR Code
+            </button>
             <button
               className="btn btn-primary py-1 px-2 ml-2"
               onClick={() => navigate(`/user/details/${user._id}`)}>
@@ -166,6 +196,56 @@ const UserList = () => {
             </button>
           </Fragment>
         ),
+        // qr: (
+        //   <Fragment
+        //     style={{
+        //       display: "flex",
+        //       justifyContent: "center",
+        //       alignItems: "center",
+        //       flexDirection: "column", // Stack children vertically
+        //     }}>
+        //     <div
+        //       ref={containerRef1}
+        //       style={{
+        //         backgroundColor: "white",
+        //         padding: "10px",
+        //         display: "flex",
+        //         flexDirection: "column",
+        //         alignItems: "center",
+        //         justifyContent: "center",
+        //         height: "auto",
+        //         width: "auto",
+        //         border: "10px solid darkblue",
+        //       }}>
+        //       <div
+        //         style={{
+        //           textAlign: "center",
+        //           margin: "10px",
+        //           fontWeight: "bold",
+        //           fontSize: "14px",
+        //         }}>
+        //         Aquatic Dragon Water Refilling Station
+        //       </div>
+        //       {/* <QRCode value={user?._id} size={200} /> */}
+        //       <QRCode
+        //         value={`http://localhost:3000/details/${user._id}`}
+        //         size={200}
+        //       />
+        //       <div
+        //         style={{
+        //           textAlign: "center",
+        //           marginTop: "10px",
+        //           fontWeight: "bold",
+        //           fontSize: "20px",
+        //         }}>
+        //         {user.fname} {user.lname}
+        //       </div>
+        //     </div>
+        //     <Button className="my-2 mr-2" color="primary" onClick={download}>
+        //       Download QR Code
+        //     </Button>
+        //   </Fragment>
+        // ),
       });
     });
 
@@ -212,34 +292,55 @@ const UserList = () => {
       </div>
 
       <Modal isOpen={modal} toggle={toggleModal}>
-        <ModalHeader toggle={closeModal}>User Details</ModalHeader>
-        <ModalBody>
-          {selectedUser && (
-            <div>
-              <p>
-                <strong>Name:</strong>{" "}
-                {`${selectedUser.fname} ${selectedUser.lname}`}
-              </p>
-              <p>
-                <strong>Phone:</strong> {selectedUser.phone}
-              </p>
-              <p>
-                <strong>Address:</strong>{" "}
-                {`${selectedUser.houseNo}, ${selectedUser.purokNum}, ${selectedUser.streetName}, ${selectedUser.barangay}, ${selectedUser.city}`}
-              </p>
-              <p>
-                <strong>Email:</strong> {selectedUser.email}
-              </p>
-              <p>
-                <strong>Profile Image:</strong>
-              </p>
-              <img
-                src={selectedUser.avatar.url}
-                alt={selectedUser.title}
-                style={{ width: 100, height: 100 }}
-              />
+        <ModalHeader toggle={closeModal}>Customer QR Code</ModalHeader>
+        <ModalBody
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column", // Stack children vertically
+          }}>
+          {" "}
+          <div
+            ref={containerRef}
+            style={{
+              backgroundColor: "white",
+              padding: "10px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "auto",
+              width: "auto",
+              border: "8px solid darkblue",
+            }}>
+            <img
+              src="/images/qr_header.png"
+              alt="QR Header"
+              style={{
+                display: "block",
+                marginLeft: "auto",
+                marginRight: "auto",
+                marginTop: "10px",
+                marginBottom: "10px",
+                width: "300px",
+                height: "100px",
+              }}
+            />
+            {qrdetails && <QRCode value={qrdetails} size={260} />}
+            <div
+              style={{
+                textAlign: "center",
+                marginTop: "10px",
+                fontWeight: "bold",
+                fontSize: "20px",
+              }}>
+              {selectedUserfname} {selectedUserlname}
             </div>
-          )}
+          </div>
+          <Button className="my-2 mr-2" color="primary" onClick={downloadImage}>
+            Download QR Code
+          </Button>
         </ModalBody>
         <ModalFooter>
           <Button color="secondary" onClick={closeModal}>

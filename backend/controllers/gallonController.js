@@ -27,7 +27,6 @@ exports.registerGallon = async (req, res, next) => {
 
     const gallon = await Gallon.create({
       type,
-
       user: req.user.id,
       gallonImage: {
         public_id: result.public_id,
@@ -79,7 +78,10 @@ exports.updateGallon = async (req, res, next) => {
 
 exports.myGallons = async (req, res, next) => {
   try {
-    const gallon = await Gallon.find({ user: req.user._id });
+    const gallon = await Gallon.find({ user: req.user._id }).populate(
+      "type",
+      "typeofGallon"
+    );
     res.status(200).json({
       success: true,
       gallon,
@@ -129,7 +131,10 @@ exports.deleteMyGallon = async (req, res, next) => {
 
 exports.AllGallons = async (req, res, next) => {
   try {
-    const gallons = await Gallon.find({ deleted: false }).populate("user", "fname lname");
+    const gallons = await Gallon.find({ deleted: false }).populate(
+      "user",
+      "fname lname"
+    );
     res.status(200).json({
       success: true,
       gallons,

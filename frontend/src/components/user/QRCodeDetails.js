@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import AuthNavbar from "components/Navbars/AuthNavbar.js";
 import AuthFooter from "components/Footers/AuthFooter.js";
 import MetaData from "components/layout/MetaData";
-import { useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   Button,
   Card,
@@ -16,98 +16,43 @@ import {
   Row,
   Col,
 } from "reactstrap";
-const Profile = () => {
-  const { user, loading } = useSelector((state) => state.auth);
+import { getUserDetails } from "actions/userActions";
+const QRCodeDetails = () => {
+  const dispatch = useDispatch();
+  const { id } = useParams();
+
   let navigate = useNavigate();
   let location = useLocation();
 
+  const { user } = useSelector((state) => state.userDetails);
   React.useEffect(() => {
+    dispatch(getUserDetails(id));
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
   }, [location]);
 
   return (
     <>
-      <AuthNavbar />
-      <MetaData title={"My Profile"} />
+      <MetaData title={"QR Code Details"} />
 
       <div
         className="user-profile-container"
         style={{
           minHeight: "700px",
-          marginTop: "100px",
+          marginTop: "20px",
+          marginBottom: "20px",
           marginLeft: "15%",
           marginRight: "15%",
         }}>
         <div className="row">
           {/* Sidebar */}
-          <div className="col-md-3">
-            <div>
-              <h5
-                className="title"
-                style={{
-                  marginBottom: "10px",
-                  paddingTop: "10px",
-                }}>
-                <i
-                  className="now-ui-icons users_single-02"
-                  style={{ marginRight: "5px" }}></i>
-                <i
-                  className="fa fa-info-circle"
-                  style={{ marginRight: "5px" }}></i>
-                My Account
-              </h5>
 
-              <ul style={{ listStyleType: "none", paddingLeft: "0" }}>
-                <li>
-                  <a className="nav-link active" href="/my-profile">
-                    Profile
-                  </a>
-                </li>
-                <li>
-                  <a className="nav-link" href="/password/update">
-                    Change Password
-                  </a>
-                </li>
-                <li>
-                  <a className="nav-link" href="/my-qr">
-                    QR Code
-                  </a>
-                </li>
-              </ul>
-
-              <h5
-                className="title"
-                style={{
-                  marginBottom: "10px",
-                  paddingTop: "10px",
-                }}>
-                <i
-                  className="now-ui-icons ui-1_simple-add"
-                  style={{ marginRight: "5px" }}></i>
-                My Gallons
-              </h5>
-
-              <ul style={{ listStyleType: "none", paddingLeft: "0" }}>
-                <li>
-                  <a className="nav-link" href="/my-gallon">
-                    List of my Gallon/s
-                  </a>
-                </li>
-                <li>
-                  <a className="nav-link" href="/register-gallon">
-                    Register New Gallon
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="col-md-9">
+          <div className="col-md-12">
             <Card className="bg-secondary shadow">
               <CardHeader className="bg-white border-0">
                 <Row className="align-items-center">
                   <Col xs="8">
-                    <h3 className="mb-0">My account</h3>
+                    <h3 className="mb-0">Customer Details</h3>
                   </Col>
                 </Row>
               </CardHeader>
@@ -127,7 +72,7 @@ const Profile = () => {
                               height: "150px",
                               borderRadius: "40%",
                             }}
-                            src={user && user.avatar && user.avatar.url}
+                            src={user.avatar && user.avatar.url}
                             alt="User"
                           />
                           <div className="button-container text-center">
@@ -338,9 +283,8 @@ const Profile = () => {
           </div>
         </div>
       </div>
-      <AuthFooter />
     </>
   );
 };
 
-export default Profile;
+export default QRCodeDetails;
