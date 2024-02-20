@@ -4,7 +4,7 @@ const upload = require("../utils/multer");
 
 const {
   createMachineCleaningRecord,
-  getStoreMachineCleaningDetails,
+  getAllStoreMachineCleaningDetails,
   updateStoreMachineCleaning,
   getSingleStoreMachineCleaningDetails,
   deleteSingleStoreMachineCleaning,
@@ -22,7 +22,7 @@ router.post(
 router.get(
   "/store/machinecleaning/record/:id",
   isAuthenticatedUser,
-  getStoreMachineCleaningDetails
+  getAllStoreMachineCleaningDetails
 );
 
 router.put(
