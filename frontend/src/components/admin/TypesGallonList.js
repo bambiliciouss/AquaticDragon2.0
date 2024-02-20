@@ -114,7 +114,7 @@ const TypesGallonList = () => {
           sort: "asc",
         },
         {
-          label: "Price",
+          label: "Refill Price",
           field: "price",
           sort: "asc",
         },
@@ -187,7 +187,7 @@ const TypesGallonList = () => {
                           <InputGroup className="input-group-alternative">
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
-                                <i className="ni ni-lock-circle-open" />
+                                <i className="ni ni-caps-small" />
                               </InputGroupText>
                             </InputGroupAddon>
                             <input
@@ -215,11 +215,11 @@ const TypesGallonList = () => {
                           <InputGroup className="input-group-alternative">
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
-                                <i className="ni ni-lock-circle-open" />
+                                <i className="ni ni-money-coins" />
                               </InputGroupText>
                             </InputGroupAddon>
                             <input
-                              placeholder="Price..."
+                              placeholder="Refill Price..."
                               className="form-control"
                               type="text"
                               name="price"

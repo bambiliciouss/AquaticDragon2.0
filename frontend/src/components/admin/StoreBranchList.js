@@ -68,7 +68,6 @@ const StoreBranchList = (args) => {
 
   const { storeBranchCreated } = useSelector((state) => state.newStoreBranch);
 
-  
   const { isDeletedStoreStaff } = useSelector((state) => state.storeStaff);
 
   console.log("Initial storeBranch state:", storeBranch);
@@ -435,7 +434,7 @@ const StoreBranchList = (args) => {
             <CardHeader className="bg-white border-0">
               <Row className="align-items-center">
                 <Col xs="8">
-                  <h3 className="mb-0">List of Store Branch </h3>
+                  <h3 className="mb-0">List of Store(s) </h3>
                 </Col>
                 <Col md="4">
                   <Button
@@ -460,7 +459,7 @@ const StoreBranchList = (args) => {
                           <InputGroup className="input-group-alternative mb-3">
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
-                                <i className="ni ni-circle-08" />
+                                <i className="ni ni-square-pin" />
                               </InputGroupText>
                             </InputGroupAddon>
                             <input
@@ -488,7 +487,7 @@ const StoreBranchList = (args) => {
                           <InputGroup className="input-group-alternative mb-3">
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
-                                <i className="ni ni-mobile-button" />
+                                <i className="ni ni-square-pin" />
                               </InputGroupText>
                             </InputGroupAddon>
                             <input
@@ -516,7 +515,7 @@ const StoreBranchList = (args) => {
                           <InputGroup className="input-group-alternative mb-3">
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
-                                <i className="ni ni-email-83" />
+                                <i className="ni ni-square-pin" />
                               </InputGroupText>
                             </InputGroupAddon>
                             <input
@@ -543,7 +542,7 @@ const StoreBranchList = (args) => {
                           <InputGroup className="input-group-alternative">
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
-                                <i className="ni ni-lock-circle-open" />
+                                <i className="ni ni-square-pin" />
                               </InputGroupText>
                             </InputGroupAddon>
                             <input
@@ -571,7 +570,7 @@ const StoreBranchList = (args) => {
                           <InputGroup className="input-group-alternative">
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
-                                <i className="ni ni-lock-circle-open" />
+                                <i className="ni ni-square-pin" />
                               </InputGroupText>
                             </InputGroupAddon>
                             <input
@@ -598,7 +597,7 @@ const StoreBranchList = (args) => {
                           <InputGroup className="input-group-alternative">
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
-                                <i className="ni ni-lock-circle-open" />
+                                <i className="ni ni-delivery-fast" />
                               </InputGroupText>
                             </InputGroupAddon>
                             <input

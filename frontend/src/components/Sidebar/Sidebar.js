@@ -194,7 +194,7 @@ const Sidebar = (props) => {
 
             <NavItem>
               <NavLink href="/storebranchlist">
-                <i className="ni ni-shop text-red" /> Store Branch
+                <i className="ni ni-shop text-red" /> Stores
               </NavLink>
 
               {/* <Nav vertical>

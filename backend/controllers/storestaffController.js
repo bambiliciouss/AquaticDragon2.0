@@ -121,6 +121,7 @@ exports.deleteStoreStaff = async (req, res, next) => {
     return res
       .status(404)
       .json({ success: false, message: "Store Staff not found" });
+  //return next(new ErrorHandler("Store Staff not found", 404));
 
   res.status(200).json({ success: true, message: "Store Staff  deleted" });
 };

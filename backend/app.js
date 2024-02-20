@@ -8,6 +8,7 @@ const order = require("./routes/order");
 const typeofgallon = require("./routes/typeofgallon");
 const storeStaff = require("./routes/storestaff");
 const machineCleaning = require("./routes/machinecleaning");
+const product = require("./routes/product");
 const errorMiddleware = require("./middlewares/errors");
 
 app.use(cookieParser());
@@ -21,6 +22,7 @@ app.use("/api/v1", order);
 app.use("/api/v1", typeofgallon);
 app.use("/api/v1", storeStaff);
 app.use("/api/v1", machineCleaning);
+app.use("/api/v1", product);
 app.use(errorMiddleware);
 
 module.exports = app;
