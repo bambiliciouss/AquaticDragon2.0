@@ -862,6 +862,7 @@ exports.addAddress = async (req, res) => {
 };
 
 exports.editAddress = async (req, res) => {
+  console.log("data result ", req.body);
   try {
     const userId = req.user.id;
     const addressId = req.params.id;
@@ -873,7 +874,7 @@ exports.editAddress = async (req, res) => {
     if (!user) {
       return res
         .status(404)
-        .json({ success: false, message: "address not found" });
+        .json({ success: false, message: "Address not found" });
     }
 
     const { houseNo, streetName, purokNum, barangay, city, isDefault } =
@@ -906,8 +907,10 @@ exports.editAddress = async (req, res) => {
       });
     }
 
-    user.addresses[addressIndex] = updatedAddress;
-
+    user.addresses[addressIndex] = {
+      ...user.addresses[addressIndex]._doc,
+      ...updatedAddress,
+    };
     await user.save();
 
     return res
@@ -966,17 +969,20 @@ exports.getAllAddresses = async (req, res) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     const addresses = user.addresses;
     return res.status(200).json({ success: true, addresses });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ success: false, message: 'Internal Server Error' });
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
   }
 };
-
 
 exports.getAddressDetails = async (req, res) => {
   try {
@@ -987,25 +993,70 @@ exports.getAddressDetails = async (req, res) => {
     // Fetch the user based on the user ID and the specified address ID
     const user = await User.findOne({
       _id: userId,
-      'addresses._id': addressId,
+      "addresses._id": addressId,
     });
 
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User or address not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "User or address not found" });
     }
 
     // Find the specific address within the user's addresses array
-    const address = user.addresses.find((addr) => addr._id.toString() === addressId);
+    const address = user.addresses.find(
+      (addr) => addr._id.toString() === addressId
+    );
 
     if (!address) {
-      return res.status(404).json({ success: false, message: 'Address not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Address not found" });
     }
 
     // Respond with the address details
     return res.status(200).json({ success: true, address });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ success: false, message: 'Internal Server Error' });
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
   }
 };
 
+exports.setDefaultAddress = async (req, res) => {
+  try {
+    const addressId = req.params.id;
+    const userId = req.user.id;
+
+    // Find the user by userId
+    const user = await User.findById(userId);
+
+    // Check if the user exists
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    // Loop through user's addresses to set isDefault
+    user.addresses.forEach((address) => {
+      if (address._id.toString() === addressId) {
+        address.isDefault = true;
+      } else {
+        address.isDefault = false;
+      }
+    });
+
+    // Save the updated user
+    await user.save();
+
+    res
+      .status(200)
+      .json({ success: true, message: "Default address set successfully" });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};

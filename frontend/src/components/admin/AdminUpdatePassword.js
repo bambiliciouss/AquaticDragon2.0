@@ -127,6 +127,12 @@ const AdminUpdatePassword = () => {
                   <Button className="my-4" color="info" type="submit">
                     Update Password
                   </Button>
+                  <Button
+                    className="my-4 mr-4"
+                    color="secondary"
+                    onClick={() => navigate("/admin-profile")}>
+                    Back
+                  </Button>
                 </div>
               </Form>
             </CardBody>

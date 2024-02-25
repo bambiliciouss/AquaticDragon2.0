@@ -23,7 +23,8 @@ const {
   editAddress,
   deleteAddress,
   getAllAddresses,
-  getAddressDetails
+  getAddressDetails,
+  setDefaultAddress,
 } = require("../controllers/authController");
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
@@ -63,6 +64,11 @@ router.put("/me/update/address/:id", isAuthenticatedUser, editAddress);
 router.delete("/me/address/:id", isAuthenticatedUser, deleteAddress);
 router.get("/me/addresses", isAuthenticatedUser, getAllAddresses);
 router.get("/me/address/details/:id", isAuthenticatedUser, getAddressDetails);
+router.put(
+  "/me/setdefault/address/:id",
+  isAuthenticatedUser,
+  setDefaultAddress
+);
 
 router.put("/password/update", isAuthenticatedUser, updatePassword);
 

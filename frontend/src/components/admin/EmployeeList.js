@@ -838,7 +838,7 @@ const EmployeeList = (args) => {
                           }
                           onChange={() => handleBranchSelection(branch)}
                         />
-                        <CardText>Branch No: {branch.branchNo}</CardText>
+                        <CardText>Branch No: {branch.branch}</CardText>
                         <CardText style={{ fontSize: "0.9rem" }}>
                           Address: {branch.address.houseNo}{" "}
                           {branch.address.purokNum} {branch.address.streetName}{" "}

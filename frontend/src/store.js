@@ -63,6 +63,13 @@ import {
   singleBarangayHealthReducer,
   barangayHealthReducer,
 } from "reducers/barangayhealthReducers";
+
+import {
+  newAddressReducer,
+  allAddressReducer,
+  singleAddressReducer,
+  addressReducer,
+} from "reducers/addressReducers";
 const reducers = combineReducers({
   auth: authReducer,
   user: userReducer,
@@ -102,6 +109,11 @@ const reducers = combineReducers({
   allBarangayHealth: allBarangayHealthReducer,
   singleBarangayHealth: singleBarangayHealthReducer,
   barangayHealthrecord: barangayHealthReducer,
+
+  newAddress: newAddressReducer,
+  allAddress: allAddressReducer,
+  singleAddress: singleAddressReducer,
+  addressrecord: addressReducer,
 });
 
 let initialState = {

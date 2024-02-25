@@ -98,7 +98,7 @@ function App() {
           }
           exact="true"
         />
-          <Route
+        <Route
           path="/admin/update"
           element={
             <ProtectedRoute>
