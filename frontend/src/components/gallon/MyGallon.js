@@ -230,7 +230,8 @@ const MyGallon = () => {
                                       </Button>
                                     </td> */}
 
-                                    <td>{gallons.type.typeofGallon}</td>
+                                    <td>{gallons.type?.typeofGallon}</td>
+
                                     <td>{gallons.gallonAge}</td>
                                     <td>
                                       {gallons.gallonImage && (

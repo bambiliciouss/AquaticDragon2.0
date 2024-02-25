@@ -25,10 +25,18 @@ router.get(
   getAllStoreMachineCleaningDetails
 );
 
+// router.put(
+//   "/store/machinecleaning/record/:id",
+//   isAuthenticatedUser,
+//   upload.single("cleaningImage"),
+//   updateStoreMachineCleaning
+// );
+
 router.put(
   "/store/machinecleaning/record/:id",
-  isAuthenticatedUser,
   upload.single("cleaningImage"),
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
   updateStoreMachineCleaning
 );
 

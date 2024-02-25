@@ -182,7 +182,7 @@ const RiderList = (args) => {
       console.log("success ");
       swal("The Rider is now assigned to the store!", "", "success");
       toggleUserIdModal();
-      navigate("/employeelist", { replace: true });
+      navigate("/riderlist", { replace: true });
       dispatch({
         type: CREATE_STORESTAFF_RESET,
       });
@@ -867,12 +867,23 @@ const RiderList = (args) => {
                         <Input
                           type="radio"
                           name="branchSelection"
+                          // checked={
+                          //   (selectedBranch &&
+                          //     selectedBranch._id === branch._id) ||
+                          //   storeStaffdetails.some(
+                          //     (staff) => staff.storebranch._id === branch._id
+                          //   )
+                          // }
+                          // onChange={() => handleBranchSelection(branch)}
                           checked={
                             (selectedBranch &&
+                              branch &&
                               selectedBranch._id === branch._id) ||
-                            storeStaffdetails.some(
-                              (staff) => staff.storebranch._id === branch._id
-                            )
+                            (storeStaffdetails &&
+                              branch &&
+                              storeStaffdetails.some(
+                                (staff) => staff.storebranch._id === branch._id
+                              ))
                           }
                           onChange={() => handleBranchSelection(branch)}
                         />

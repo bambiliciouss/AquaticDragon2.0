@@ -100,13 +100,13 @@ const UpdateStoreBranch = () => {
     }
 
     if (error) {
-      notifyError(error);
+      swal(error, "", "error");
       dispatch(clearErrors());
     }
 
     if (isUpdated) {
-      notifySuccess("Update Successfully");
-
+      //notifySuccess("Update Successfully");
+      swal("Updated Successfully", "", "success");
       navigate("/storebranchlist", { replace: true });
       dispatch({
         type: UPDATE_STOREBRANCH_RESET,

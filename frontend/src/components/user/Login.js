@@ -28,7 +28,7 @@ import MetaData from "components/layout/MetaData";
 import Loader from "../layout/Loader";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import swal from "sweetalert";
 const Login = () => {
   let navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -75,7 +75,8 @@ const Login = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      notifySuccess("Login Successfully");
+      // notifySuccess("Login Successfully");
+      swal("Login Successfully", "", "success");
 
       if (user && user.role === "admin") {
         navigate("/dashboard");
@@ -83,7 +84,8 @@ const Login = () => {
         navigate("/");
       }
     } else if (error) {
-      notifyError(error);
+      //notifyError(error);
+      swal(error, "", "error");
       console.log(error);
     }
   }, [dispatch, isAuthenticated, error, navigate]);

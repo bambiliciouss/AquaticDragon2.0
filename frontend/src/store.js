@@ -49,6 +49,14 @@ import {
   allTypesGallonReducer,
   typesGallonReducer,
 } from "./reducers/typesgallonReducers";
+
+import {
+  newMachineCleaningReducer,
+  allMachineCleaningReducer,
+  singleMachineCleaningReducer,
+  machineCleaningReducer
+} from "reducers/machinecleaningReducers";
+
 const reducers = combineReducers({
   auth: authReducer,
   user: userReducer,
@@ -69,6 +77,7 @@ const reducers = combineReducers({
   order: orderReducer,
   userDetails: userDetailsReducer,
   storeDetails: storeDetailsReducer,
+
   newStorestaff: newStorestaffReducer,
   allStoreStaff: allStoreStaffReducer,
   singleStoreStaff: singleStoreStaffReducer,
@@ -77,6 +86,11 @@ const reducers = combineReducers({
   newTypesGallon: newTypesGallonReducer,
   allTypesGallon: allTypesGallonReducer,
   typesGallon: typesGallonReducer,
+
+  newMachineCleaning: newMachineCleaningReducer,
+  allMachineCleaning: allMachineCleaningReducer,
+  singleMachineCleaning: singleMachineCleaningReducer,
+  machinerecord:machineCleaningReducer
 });
 
 let initialState = {

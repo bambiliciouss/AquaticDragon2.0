@@ -155,11 +155,15 @@ const EmployeeList = (args) => {
   };
 
   const assignHandler = (e) => {
-    const storeStaffData = {
-      storebranch: selectedBranch,
-    };
-    dispatch(createStoreStaff(storeStaffData, userIdModal));
-    // notifySuccess("Store staff created successfully");
+    if (selectedBranch) {
+      const storeStaffData = {
+        storebranch: selectedBranch,
+      };
+      dispatch(createStoreStaff(storeStaffData, userIdModal));
+    } else {
+      // Handle the case when selectedBranch is null, e.g., show an error message
+      console.error("Please select a branch before assigning.");
+    }
     // window.location.reload();
   };
 

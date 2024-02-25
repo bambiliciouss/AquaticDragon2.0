@@ -157,6 +157,7 @@ const UpdateUser = () => {
     formData.append("role", role);
 
     dispatch(updateRider(id, formData));
+    //console.log(formData)
   };
 
   const onChange = (e) => {

@@ -23,10 +23,11 @@ exports.registerStoreBranch = async (req, res, next) => {
       );
     });
 
-    const { address, deliverFee } = req.body;
+    const { address, deliverFee, branch } = req.body;
     //console.log(req.body);
 
     const storeBranch = await StoreBranch.create({
+      branch,
       address,
       deliverFee,
       user: req.user.id,
@@ -144,7 +145,7 @@ exports.updateStoreBranch = async (req, res, next) => {
     res.status(200).json({
       success: true,
       storeBranch,
-      message: "pasok bhie"
+      message: "pasok bhie",
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

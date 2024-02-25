@@ -27,11 +27,13 @@ import EmployeeList from "components/admin/EmployeeList";
 import GallonList from "components/admin/GallonList";
 import StoreBranchList from "components/admin/StoreBranchList";
 import TypesGallonList from "components/admin/TypesGallonList";
+import MachineCleaningList from "components/admin/MachineCleaningList";
 
 import UpdateRider from "components/admin/UpdateRider";
 import UpdateEmployee from "components/admin/UpdateEmployee";
 import UpdateUser from "components/admin/UpdateUser";
 import UpdateStoreBranch from "components/admin/UpdateStoreBranch";
+import UpdateMachineCleaning from "components/admin/UpdateMachineCleaning";
 // import EmployeeRegistration from "components/employee/EmployeeRegistration";
 // import RiderRegistration from "components/rider/RiderRegistration";
 // import StoreBranchRegistration from "components/StoreBranch/StoreBranchRegistration";
@@ -125,14 +127,7 @@ function App() {
           }
           exact="true"
         />
-        <Route
-          path="/details/:id"
-          element={
-            <ProtectedRoute>
-              <QRCodeDetails />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/details/:id" element={<QRCodeDetails />} exact="true" />
         {/* <Route path="/admin" element={<AdminRegistration />} exact="true" />
          */}
         {/* ADMIN */}
@@ -269,6 +264,22 @@ function App() {
           element={
             <ProtectedRoute>
               <UpdateStoreBranch />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/create/store/machincecleaning/:id"
+          element={
+            <ProtectedRoute>
+              <MachineCleaningList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/update/store/machincecleaning/:id"
+          element={
+            <ProtectedRoute>
+              <UpdateMachineCleaning />
             </ProtectedRoute>
           }
         />

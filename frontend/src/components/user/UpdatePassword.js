@@ -23,7 +23,7 @@ import {
   Row,
   Col,
 } from "reactstrap";
-
+import swal from "sweetalert";
 const UpdatePassword = () => {
   const [oldPassword, setOldPassword] = useState("");
   const [password, setPassword] = useState("");
@@ -56,13 +56,14 @@ const UpdatePassword = () => {
   useEffect(() => {
     if (error) {
       console.log(error);
-      notifyError(error);
+      swal(error, "", "error");
       dispatch(clearErrors());
     }
 
     if (isUpdated) {
       console.log("Password updated successfully");
-      notifySuccess("Password updated successfully");
+      // notifySuccess("Password updated successfully");
+      swal("Updated Successfully!", "", "success");
       navigate("/my-profile");
 
       dispatch({

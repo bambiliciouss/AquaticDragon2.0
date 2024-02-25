@@ -36,7 +36,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../actions/userActions";
 import { useNavigate } from "react-router-dom";
-
+import swal from "sweetalert";
 const AdminNavbar = () => {
   const { user, loading } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.cart);
@@ -45,6 +45,7 @@ const AdminNavbar = () => {
 
   const logoutHandler = () => {
     dispatch(logout());
+    swal("Logout Sucessfully", "", "success");
   };
 
   const Avatar = ({ src, alt, size }) => {

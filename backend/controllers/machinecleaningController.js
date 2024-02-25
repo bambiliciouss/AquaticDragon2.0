@@ -55,6 +55,7 @@ exports.getAllStoreMachineCleaningDetails = async (req, res, next) => {
     }
     const storeStoreMachineCleaning = await MachineCleaning.find({
       storebranch: storeId,
+      deleted: false,
     });
 
     // if (!storeStaff || storeStaff.length === 0) {
@@ -70,6 +71,54 @@ exports.getAllStoreMachineCleaningDetails = async (req, res, next) => {
   }
 };
 
+// exports.updateStoreMachineCleaning = async (req, res, next) => {
+//   const newUserData = {
+//     notes: req.body.notes,
+//   };
+//   console.log("celeaning iimage url", req.body.cleaningImage.url);
+//   try {
+//     if (req.body.cleaningImage && req.body.cleaningImage !== "") {
+//       const machineCleaning = await MachineCleaning.findById(req.params.id);
+//       const image_id = machineCleaning.cleaningImage.public_id;
+
+//       console.log("public_id", image_id);
+//       const deleteResult = await cloudinary.uploader.destroy(image_id);
+
+//       const uploadResult = await cloudinary.v2.uploader.upload(
+//         req.body.cleaningImage,
+//         {
+//           folder: "machinecleaning",
+//           width: 150,
+//           crop: "scale",
+//         },
+//         (err, result) => {
+//           console.log("Cloudinary Upload Result:", err, result);
+//         }
+//       );
+
+//       newUserData.cleaningImage = {
+//         public_id: uploadResult.public_id,
+//         url: uploadResult.secure_url,
+//       };
+//     }
+//     const machineCleaning = await MachineCleaning.findByIdAndUpdate(
+//       req.params.id,
+//       newUserData,
+//       {
+//         new: true,
+//         runValidators: true,
+//       }
+//     );
+
+//     res.status(200).json({
+//       success: true,
+//       machineCleaning,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// };
+
 exports.updateStoreMachineCleaning = async (req, res, next) => {
   const newStoreData = {
     notes: req.body.notes,
@@ -77,8 +126,8 @@ exports.updateStoreMachineCleaning = async (req, res, next) => {
 
   try {
     if (req.body.cleaningImage && req.body.cleaningImage !== "") {
-      const machineCleaning = await MachineCleaning.findById(req.params.id);
-      const image_id = machineCleaning.cleaningImage.public_id;
+      const machine = await MachineCleaning.findById(req.params.id);
+      const image_id = machine.cleaningImage.public_id;
       const res = await cloudinary.uploader.destroy(image_id);
       const result = await cloudinary.v2.uploader.upload(
         req.body.cleaningImage,
@@ -87,8 +136,8 @@ exports.updateStoreMachineCleaning = async (req, res, next) => {
           width: 150,
           crop: "scale",
         },
-        (err, res) => {
-          console.log(err, res);
+        (err) => {
+          console.log(err);
         }
       );
       newStoreData.cleaningImage = {
@@ -113,6 +162,57 @@ exports.updateStoreMachineCleaning = async (req, res, next) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// exports.updateStoreMachineCleaning = async (req, res, next) => {
+//   const newUserData = {
+//     notes: req.body.notes,
+//   };
+//   //console.log(req.file);
+//   console.log("result to beh", req.body);
+//   try {
+//     if (req.body.cleaningImage !== "") {
+//       const mc = await MachineCleaning.findById(req.user.id);
+
+//       // Check if the user has an existing avatar
+//       if (mc.cleaningImage && mc.cleaningImage.public_id) {
+//           const image_id = mc.cleaningImage.public_id;
+
+//           // Destroy the previous avatar
+//           await cloudinary.v2.uploader.destroy(image_id);
+//       }
+
+//       // Upload the new avatar
+//       const uploadResult = await cloudinary.v2.uploader.upload(
+//           req.body.cleaningImage,
+//           {
+//               folder: "machinecleaning",
+//               width: 150,
+//               crop: "scale",
+//           }
+//       );
+
+//       newUserData.cleaningImage = {
+//           public_id: uploadResult.public_id,
+//           url: uploadResult.secure_url,
+//       };
+//     }
+//     const machineCleaning = await MachineCleaning.findByIdAndUpdate(
+//       req.params.id,
+//       newUserData,
+//       {
+//         new: true,
+//         runValidators: true,
+//       }
+//     );
+
+//     res.status(200).json({
+//       success: true,
+//       machineCleaning,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// };
 
 exports.getSingleStoreMachineCleaningDetails = async (req, res, next) => {
   try {

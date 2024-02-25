@@ -12,7 +12,7 @@ import {
   loadUser,
   clearErrors,
 } from "../../actions/userActions";
-
+import swal from "sweetalert";
 import { UPDATE_PROFILE_RESET } from "../../constants/userConstants";
 import {
   Button,
@@ -81,12 +81,12 @@ const UpdateProfile = () => {
     }
 
     if (error) {
-      notifyError(error);
+      swal(error, "", "error");
       dispatch(clearErrors());
     }
 
     if (isUpdated) {
-      notifySuccess("Update Successfully");
+      swal("Updated Successfully!", "", "success");
 
       dispatch(loadUser());
       navigate("/my-profile", { replace: true });

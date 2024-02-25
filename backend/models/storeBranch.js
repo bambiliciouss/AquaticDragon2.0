@@ -6,8 +6,13 @@ const storeSchema = new mongoose.Schema({
     ref: "User",
   },
 
-  branchNo: {
-    type: Number,
+  // branchNo: {
+  //   type: Number,
+  //   unique: true,
+  // },
+
+  branch: {
+    type: String,
     unique: true,
   },
   address: {
@@ -63,22 +68,22 @@ const storeSchema = new mongoose.Schema({
   },
 });
 
-storeSchema.pre("save", async function (next) {
-  if (!this.isNew) {
-    return next();
-  }
+// storeSchema.pre("save", async function (next) {
+//   if (!this.isNew) {
+//     return next();
+//   }
 
-  try {
-    const lastBranch = await this.constructor.findOne(
-      {},
-      { branchNo: 1 },
-      { sort: { branchNo: -1 } }
-    );
-    this.branchNo = (lastBranch && lastBranch.branchNo + 1) || 1;
-    next();
-  } catch (error) {
-    next(error);
-  }
-});
+//   try {
+//     const lastBranch = await this.constructor.findOne(
+//       {},
+//       { branchNo: 1 },
+//       { sort: { branchNo: -1 } }
+//     );
+//     this.branchNo = (lastBranch && lastBranch.branchNo + 1) || 1;
+//     next();
+//   } catch (error) {
+//     next(error);
+//   }
+// });
 
 module.exports = mongoose.model("StoreBranch", storeSchema);

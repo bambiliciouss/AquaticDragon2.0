@@ -121,6 +121,9 @@ exports.LoginUser = async (req, res, next) => {
     if (!user) {
       return next(new ErrorHandler("Email or password is incorrect", 401));
     }
+    if (user.deleted) {
+      return next(new ErrorHandler("Account has been deleted", 401));
+    }
 
     const isPasswordMatched = await user.comparePassword(password);
     if (!isPasswordMatched) {
@@ -149,9 +152,10 @@ exports.LoginUser = async (req, res, next) => {
       sendToken(user, 200, res);
     }
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Verify your Email Account", error: error.message });
+    // res
+    //   .status(500)
+    //   .json({ message: "Verify your Email Account", error: error.message });
+    next(new ErrorHandler("Verify your Email Account", 500, error.message));
   }
 };
 
@@ -762,6 +766,8 @@ exports.updateProfileEmployee = async (req, res, next) => {
 };
 
 exports.UpdateUser = async (req, res, next) => {
+  console.log("DATA TO BHIE", req.body.avatar);
+
   const newUserData = {
     fname: req.body.fname,
     lname: req.body.lname,

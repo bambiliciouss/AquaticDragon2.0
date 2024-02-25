@@ -461,3 +461,30 @@ export const updateUser = (id, userData) => async (dispatch) => {
     });
   }
 };
+
+export const getUserQRDetails = (id) => async (dispatch) => {
+  try {
+    dispatch({ type: USER_DETAILS_REQUEST });
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    };
+
+    const { data } = await axios.get(`/api/v1/user/qr/${id}`, config);
+
+    // Log user details
+    console.log("userdetails", data.user);
+
+    dispatch({
+      type: USER_DETAILS_SUCCESS,
+      payload: data.user,
+    });
+  } catch (error) {
+    dispatch({
+      type: USER_DETAILS_FAIL,
+      payload: error.response.data.message,
+    });
+  }
+};

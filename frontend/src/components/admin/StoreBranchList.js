@@ -72,7 +72,7 @@ const StoreBranchList = (args) => {
 
   console.log("Initial storeBranch state:", storeBranch);
   const [storeBranches, setstoreBranch] = useState({
-    branchNo: "",
+    branch: "",
     houseNo: "",
     streetName: "",
     purokNum: "",
@@ -145,13 +145,13 @@ const StoreBranchList = (args) => {
 
   const deleteStoreStaffHandler = (id) => {
     swal({
-      title: "Are you sure you want to delete this assigned staff?",
+      title: "Are you sure you want to remove this assigned staff?",
       icon: "warning",
       buttons: true,
       dangerMode: true,
     }).then((willDelete) => {
       if (willDelete) {
-        swal("Store Staff has been deleted!", "", "success");
+        swal("Store Staff has been removed!", "", "success");
         dispatch(deleteStoreStaff(id));
       } else {
         swal("Store Staff is not deleted!", "", "info");
@@ -168,6 +168,7 @@ const StoreBranchList = (args) => {
     formData.set("address[barangay]", e.barangay);
     formData.set("address[city]", e.city);
     formData.set("deliverFee", e.deliverFee);
+    formData.set("branch", e.branch);
     formData.set("storeImage", storeImage);
 
     dispatch(createStoreBranch(formData));
@@ -201,7 +202,7 @@ const StoreBranchList = (args) => {
           sort: "asc",
         },
         {
-          label: "Branch No",
+          label: "Branch",
           field: "branchNo",
           sort: "asc",
         },
@@ -223,6 +224,10 @@ const StoreBranchList = (args) => {
           label: "List of assigned Staff",
           field: "list",
         },
+        {
+          label: "Machine Cleaning Records",
+          field: "machine",
+        },
       ],
 
       rows: [],
@@ -239,7 +244,7 @@ const StoreBranchList = (args) => {
             style={{ width: 70, height: 70 }}
           />
         ),
-        branchNo: storeBranches.branchNo,
+        branchNo: storeBranches.branch,
         address: `${storeBranches.address.houseNo} ${storeBranches.address.purokNum} ${storeBranches.address.streetName} ${storeBranches.address.barangay} ${storeBranches.address.city}`,
         deliverFee: `₱ ${storeBranches.deliverFee}.00`,
         actions: (
@@ -253,6 +258,25 @@ const StoreBranchList = (args) => {
               className="btn btn-danger py-1 px-2 ml-2"
               onClick={() => deleteStoreBranchHandler(storeBranches._id)}>
               <i className="fa fa-trash"></i>
+            </button>
+
+            {/* <button
+              className="btn btn-primary py-1 px-2 ml-2"
+              onClick={() =>
+                navigate(`/create/store/machincecleaning/${storeBranches._id}`)
+              }>
+              <i className="fa fa-info-circle"></i> View
+            </button> */}
+          </Fragment>
+        ),
+        machine: (
+          <Fragment>
+            <button
+              className="btn btn-primary py-1 px-2 ml-2"
+              onClick={() =>
+                navigate(`/create/store/machincecleaning/${storeBranches._id}`)
+              }>
+              View
             </button>
           </Fragment>
         ),
@@ -455,6 +479,33 @@ const StoreBranchList = (args) => {
                         Register New Store Branch
                       </ModalHeader>
                       <ModalBody>
+                      <FormGroup>
+                          <InputGroup className="input-group-alternative mb-3">
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
+                                <i className="ni ni-square-pin" />
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <input
+                              placeholder="Branch..."
+                              className="form-control"
+                              type="text"
+                              name="branch"
+                              {...register("branch", {
+                                required: "Please enter a valid info",
+                              })}></input>
+                          </InputGroup>
+                          {errors.branch && (
+                            <h2
+                              className="h1-seo"
+                              style={{
+                                color: "red",
+                                fontSize: "small",
+                              }}>
+                              {errors.branch.message}
+                            </h2>
+                          )}
+                        </FormGroup>
                         <FormGroup>
                           <InputGroup className="input-group-alternative mb-3">
                             <InputGroupAddon addonType="prepend">

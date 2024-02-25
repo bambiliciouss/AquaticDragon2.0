@@ -85,7 +85,7 @@ const Cart = () => {
                                     </div>
 
                                     <div className="col-6 col-lg-3 mt-3 mt-lg-0">
-                                      <p id="card_item_price">{item.age}</p>
+                                      <p id="card_item_price">{item.age}days</p>
                                     </div>
 
                                     <div className="col-6 col-lg-3 mt-3 mt-lg-0">

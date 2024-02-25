@@ -16,7 +16,7 @@ import {
   Row,
   Col,
 } from "reactstrap";
-import { getUserDetails } from "actions/userActions";
+import { getUserQRDetails } from "actions/userActions";
 const QRCodeDetails = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
@@ -26,7 +26,7 @@ const QRCodeDetails = () => {
 
   const { user } = useSelector((state) => state.userDetails);
   React.useEffect(() => {
-    dispatch(getUserDetails(id));
+    dispatch(getUserQRDetails(id));
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
   }, [location]);
@@ -68,22 +68,14 @@ const QRCodeDetails = () => {
                           <img
                             className="avatar border-gray"
                             style={{
-                              width: "150px",
-                              height: "150px",
-                              borderRadius: "40%",
+                              width: "180px",
+                              height: "180px",
+                              borderRadius: "30%",
                             }}
                             src={user.avatar && user.avatar.url}
                             alt="User"
                           />
-                          <div className="button-container text-center">
-                            <div className="btn-container d-block">
-                              <button
-                                className="btn btn-info btn-sm mb-2"
-                                onClick={() => navigate("/me/update")}>
-                                Edit Profile
-                              </button>
-                            </div>
-                          </div>
+                        
                         </div>
                       </Col>
                       <Col lg="9">
