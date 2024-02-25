@@ -219,7 +219,6 @@ const EmployeeList = (args) => {
       "",
       "success"
     );
-
   };
 
   const deleteUserHandler = (id) => {
@@ -457,7 +456,7 @@ const EmployeeList = (args) => {
                           <InputGroup className="input-group-alternative mb-3">
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
-                                <i className="ni ni-mobile-button" />
+                                <span disabled>+63</span>
                               </InputGroupText>
                             </InputGroupAddon>
                             <input
@@ -467,6 +466,16 @@ const EmployeeList = (args) => {
                               name="phone"
                               {...register("phone", {
                                 required: "Please enter a valid phone no.",
+                                pattern: {
+                                  value: /^[0-9]*$/,
+                                  message:
+                                    "Phone number must contain only numeric characters.",
+                                },
+                                maxLength: {
+                                  value: 10,
+                                  message:
+                                    "Phone number must be 10 characters or less.",
+                                },
                               })}
                             />
                           </InputGroup>
@@ -797,71 +806,6 @@ const EmployeeList = (args) => {
           <AdminFooter />
         </Container>
       </div>
-
-      {/* <Modal
-        className="modal-dialog-centered"
-        isOpen={employeeDetailsModal}
-        toggle={() => setEmployeeDetailsModal(!employeeDetailsModal)}
-        {...args}>
-        <ModalHeader
-          toggle={() => setEmployeeDetailsModal(!employeeDetailsModal)}>
-          Employee Details
-        </ModalHeader>
-        <ModalBody>
-          <p>
-            <strong>Profile:</strong>{" "}
-            <img
-              src={selectedEmployee.avatar?.url || "/images/default_avatar.jpg"}
-              alt="Avatar"
-              style={{ width: 50, height: 50 }}
-            />
-          </p>
-          <p>
-            <strong>Name:</strong>{" "}
-            {`${selectedEmployee.fname} ${selectedEmployee.lname}`}
-          </p>
-          <p>
-            <strong>Phone:</strong> {selectedEmployee.phone}
-          </p>
-          <p>
-            <strong>Address:</strong>{" "}
-            {`${selectedEmployee.houseNo}, ${selectedEmployee.purokNum}, ${selectedEmployee.streetName}, ${selectedEmployee.barangay}, ${selectedEmployee.city}`}
-          </p>
-          <p>
-            <strong>Email:</strong> {selectedEmployee.email}
-          </p>
-
-          <p>
-            <strong>Medical Certificate:</strong>{" "}
-            <img
-              src={
-                selectedEmployee.medcert?.url || "/images/default_avatar.jpg"
-              }
-              alt="MedCert"
-              style={{ width: 100, height: 100 }}
-            />
-          </p>
-          <p>
-            <strong>Barangay Clearance:</strong>{" "}
-            <img
-              src={
-                selectedEmployee.barangayclearance?.url ||
-                "/images/default_avatar.jpg"
-              }
-              alt="BarangayClearance"
-              style={{ width: 100, height: 100 }}
-            />
-          </p>
-        </ModalBody>
-
-        <ModalFooter>
-          <Button
-            color="secondary"
-            onClick={() => setEmployeeDetailsModal(!employeeDetailsModal)}>
-            Close
-          </Button>
-        </ModalFooter>
-      </Modal> */}
 
       <Modal
         className="modal-dialog-centered"

@@ -13,6 +13,10 @@ import Profile from "components/user/Profile";
 import UpdateProfile from "components/user/UpdateProfile";
 import UpdatePassword from "components/user/UpdatePassword";
 
+import AdminProfile from "components/admin/AdminProfile";
+import AdminUpdatePassword from "components/admin/AdminUpdatePassword";
+import AdminUpdateProfile from "components/admin/AdminUpdateProfile";
+
 import MyQRCode from "components/user/MyQRCode";
 import QRCodeDetails from "components/user/QRCodeDetails";
 
@@ -84,6 +88,7 @@ function App() {
           exact="true"
         />
         <Route path="/my-profile" element={<Profile />} exact="true" />
+        <Route path="/admin-profile" element={<AdminProfile />} exact="true" />
         <Route
           path="/me/update"
           element={
@@ -93,11 +98,29 @@ function App() {
           }
           exact="true"
         />
+          <Route
+          path="/admin/update"
+          element={
+            <ProtectedRoute>
+              <AdminUpdateProfile />
+            </ProtectedRoute>
+          }
+          exact="true"
+        />
         <Route
           path="/password/update"
           element={
             <ProtectedRoute>
               <UpdatePassword />
+            </ProtectedRoute>
+          }
+          exact="true"
+        />
+        <Route
+          path="/admin/password/update"
+          element={
+            <ProtectedRoute>
+              <AdminUpdatePassword />
             </ProtectedRoute>
           }
           exact="true"

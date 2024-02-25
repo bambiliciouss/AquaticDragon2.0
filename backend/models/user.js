@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
   phone: {
     type: String,
     required: [false, "Please enter your phone number"],
-    maxLength: [12, "Your phone number cannot exceed 11 characters"],
+    maxLength: [12, "Your phone number cannot exceed 12 characters"],
     unique: [true, "Phone number is already taken"],
   },
 

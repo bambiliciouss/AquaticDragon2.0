@@ -467,7 +467,7 @@ const RiderList = (args) => {
                           <InputGroup className="input-group-alternative mb-3">
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
-                                <i className="ni ni-mobile-button" />
+                                <span disabled>+63</span>
                               </InputGroupText>
                             </InputGroupAddon>
                             <input
@@ -477,6 +477,16 @@ const RiderList = (args) => {
                               name="phone"
                               {...register("phone", {
                                 required: "Please enter a valid phone no.",
+                                pattern: {
+                                  value: /^[0-9]*$/,
+                                  message:
+                                    "Phone number must contain only numeric characters.",
+                                },
+                                maxLength: {
+                                  value: 10,
+                                  message:
+                                    "Phone number must be 10 characters or less.",
+                                },
                               })}
                             />
                           </InputGroup>

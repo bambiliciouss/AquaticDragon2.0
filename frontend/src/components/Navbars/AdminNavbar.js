@@ -34,8 +34,15 @@ import {
   Media,
 } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../actions/userActions";
+import swal from "sweetalert";
 const AdminNavbar = (props) => {
+  const dispatch = useDispatch();
   const { user, loading } = useSelector((state) => state.auth);
+  const logoutHandler = () => {
+    dispatch(logout());
+    swal("Logout Sucessfully", "", "success");
+  };
 
   return (
     <>
@@ -47,7 +54,7 @@ const AdminNavbar = (props) => {
               to="/">
               {props.brandText}
             </Link>
-            <Form className="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
+            {/* <Form className="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
               <FormGroup className="mb-0">
                 <InputGroup className="input-group-alternative">
                   <InputGroupAddon addonType="prepend">
@@ -58,7 +65,7 @@ const AdminNavbar = (props) => {
                   <Input placeholder="Search" type="text" />
                 </InputGroup>
               </FormGroup>
-            </Form>
+            </Form> */}
             <Nav className="align-items-center d-none d-md-flex" navbar>
               <UncontrolledDropdown nav>
                 <DropdownToggle className="pr-0" nav>
@@ -77,7 +84,7 @@ const AdminNavbar = (props) => {
                   <DropdownItem className="noti-title" header tag="div">
                     <h6 className="text-overflow m-0">Welcome!</h6>
                   </DropdownItem>
-                  <DropdownItem to="/my-profile" tag={Link}>
+                  <DropdownItem to="/admin-profile" tag={Link}>
                     <i className="ni ni-single-02" />
                     <span>My profile</span>
                   </DropdownItem>
@@ -94,9 +101,7 @@ const AdminNavbar = (props) => {
                     <span>Support</span>
                   </DropdownItem> */}
                   <DropdownItem divider />
-                  <DropdownItem
-                    href="#pablo"
-                    onClick={(e) => e.preventDefault()}>
+                  <DropdownItem href="/login" onClick={logoutHandler}>
                     <i className="ni ni-user-run" />
                     <span>Logout</span>
                   </DropdownItem>
