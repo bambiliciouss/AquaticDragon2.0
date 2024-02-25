@@ -19,45 +19,52 @@ const userSchema = new mongoose.Schema({
   phone: {
     type: String,
     required: [false, "Please enter your phone number"],
-    maxLength: [12, "Your phone number cannot exceed 12 characters"],
+    maxLength: [13, "Your phone number cannot exceed 12 characters"],
     unique: [true, "Phone number is already taken"],
   },
 
-  houseNo: {
-    type: String,
-    // required: [false, "Please enter your house no"],
-    maxLength: [100, "Your address cannot exceed 30 characters"],
-    default: "",
-  },
+  addresses: [
+    {
+      houseNo: {
+        type: String,
+        // required: [false, "Please enter your house no"],
+        maxLength: [100, "Your address cannot exceed 30 characters"],
+        default: "",
+      },
 
-  streetName: {
-    type: String,
-    // required: [false, "Please enter your streetname"],
-    maxLength: [100, "Your address cannot exceed 30 characters"],
-    default: "",
-  },
+      streetName: {
+        type: String,
+        // required: [false, "Please enter your streetname"],
+        maxLength: [100, "Your address cannot exceed 30 characters"],
+        default: "",
+      },
 
-  purokNum: {
-    type: String,
-    // required: [false, "Please enter your purok num"],
-    maxLength: [100, "Your address cannot exceed 30 characters"],
-    default: "",
-  },
+      purokNum: {
+        type: String,
+        // required: [false, "Please enter your purok num"],
+        maxLength: [100, "Your address cannot exceed 30 characters"],
+        default: "",
+      },
 
-  barangay: {
-    type: String,
-    // required: [false, "Please enter your barangay"],
-    maxLength: [100, "Your address cannot exceed 30 characters"],
-    default: "",
-  },
+      barangay: {
+        type: String,
+        // required: [false, "Please enter your barangay"],
+        maxLength: [100, "Your address cannot exceed 30 characters"],
+        default: "",
+      },
 
-  city: {
-    type: String,
-    // required: [false, "Please enter your city"],
-    maxLength: [100, "Your address cannot exceed 30 characters"],
-    default: "",
-  },
-
+      city: {
+        type: String,
+        // required: [false, "Please enter your city"],
+        maxLength: [100, "Your address cannot exceed 30 characters"],
+        default: "",
+      },
+      isDefault: {
+        type: Boolean,
+        //default: false,
+      },
+    },
+  ],
   email: {
     type: String,
     required: [true, "Please enter your email"],
@@ -173,14 +180,14 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-userSchema.pre("save", function (next) {
-  // Check if the phone field is present and not empty
-  if (this.phone && this.phone.trim() !== "") {
-    // Add +63 to the phone number
-    this.phone = "+63" + this.phone.trim();
-  }
-  next();
-});
+// userSchema.pre("save", function (next) {
+//   // Check if the phone field is present and not empty
+//   if (this.phone && this.phone.trim() !== "") {
+//     // Add +63 to the phone number
+//     this.phone = "+63" + this.phone.trim();
+//   }
+//   next();
+// });
 
 //generates the token
 userSchema.methods.getJwtToken = function () {

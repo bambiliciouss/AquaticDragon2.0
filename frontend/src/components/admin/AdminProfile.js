@@ -150,144 +150,31 @@ const AdminProfile = () => {
                           </FormGroup>
                         </Col>
                       </Row>
+
+                      <Row>
+                        <Col lg="12">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-address">
+                              Phone No.
+                            </label>
+                            <Input
+                              className="form-control-alternative"
+                              id="input-phone"
+                              type="text"
+                              value={user ? user.phone : ""}
+                              readOnly
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
                     </Col>
                   </Row>
                 </div>
                 <hr className="my-4" />
                 {/* Address */}
-                <h6 className="heading-small text-muted mb-4">
-                  Contact information
-                </h6>
-                <div className="pl-lg-4">
-                  <Row>
-                    <Col md="12">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-address">
-                          Phone No.
-                        </label>
-                        <Input
-                          className="form-control-alternative"
-                          id="input-phone"
-                          type="text"
-                          value={user ? user.phone : ""}
-                          readOnly
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col lg="6">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-city">
-                          House No.
-                        </label>
-                        <Input
-                          className="form-control-alternative"
-                          id="input-city"
-                          type="text"
-                          placeholder={
-                            user && user.houseNo !== ""
-                              ? user.houseNo
-                              : "Update..."
-                          }
-                          value={user ? user.houseNo : ""}
-                          readOnly
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col lg="6">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-country">
-                          Purok No.
-                        </label>
-                        <Input
-                          className="form-control-alternative"
-                          id="input-country"
-                          type="text"
-                          placeholder={
-                            user && user.purokNum !== ""
-                              ? user.purokNum
-                              : "Update..."
-                          }
-                          value={user ? user.purokNum : ""}
-                          readOnly
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-
-                  <Row>
-                    <Col md="12">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-address">
-                          Street Name.
-                        </label>
-                        <Input
-                          className="form-control-alternative"
-                          id="input-phone"
-                          type="text"
-                          placeholder={
-                            user && user.streetName !== ""
-                              ? user.streetName
-                              : "Update..."
-                          }
-                          value={user ? user.streetName : ""}
-                          readOnly
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col lg="6">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-city">
-                          Barangay
-                        </label>
-                        <Input
-                          className="form-control-alternative"
-                          id="input-city"
-                          type="text"
-                          placeholder={
-                            user && user.barangay !== ""
-                              ? user.barangay
-                              : "Update..."
-                          }
-                          value={user ? user.barangay : ""}
-                          readOnly
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col lg="6">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-country">
-                          City
-                        </label>
-                        <Input
-                          className="form-control-alternative"
-                          id="input-country"
-                          type="text"
-                          placeholder={
-                            user && user.city !== "" ? user.city : "Update..."
-                          }
-                          value={user ? user.city : ""}
-                          readOnly
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                </div>
+                <h6 className="heading-small text-muted mb-4">Addresses</h6>
               </Form>
             </CardBody>
           </Card>

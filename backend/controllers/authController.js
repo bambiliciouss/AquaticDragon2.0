@@ -6,6 +6,7 @@ const Token = require("../models/token");
 const sendEmail = require("../utils/sendEmail");
 const sendEmailReset = require("../utils/sendEmailReset");
 const crypto = require("crypto");
+const mongoose = require("mongoose");
 
 exports.registerUser = async (req, res, next) => {
   try {
@@ -818,3 +819,193 @@ exports.UpdateUser = async (req, res, next) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+exports.addAddress = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    const { houseNo, streetName, purokNum, barangay, city } = req.body;
+
+    const newAddress = {
+      houseNo,
+      streetName,
+      purokNum,
+      barangay,
+      city,
+      isDefault: true,
+    };
+
+    if (newAddress.isDefault) {
+      user.addresses.forEach((address) => {
+        address.isDefault = false;
+      });
+    }
+    user.addresses.push(newAddress);
+    await user.save();
+
+    return res
+      .status(201)
+      .json({ success: true, message: "Address added successfully", user });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+exports.editAddress = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const addressId = req.params.id;
+
+    const user = await User.findOne({
+      "addresses._id": addressId,
+    });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "address not found" });
+    }
+
+    const { houseNo, streetName, purokNum, barangay, city, isDefault } =
+      req.body;
+
+    const addressIndex = user.addresses.findIndex(
+      (address) => address._id.toString() === addressId
+    );
+
+    if (addressIndex === -1) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid address ID" });
+    }
+
+    const updatedAddress = {
+      houseNo,
+      streetName,
+      purokNum,
+      barangay,
+      city,
+      isDefault: isDefault || false,
+    };
+
+    if (updatedAddress.isDefault) {
+      user.addresses.forEach((address, index) => {
+        if (index !== addressIndex) {
+          address.isDefault = false;
+        }
+      });
+    }
+
+    user.addresses[addressIndex] = updatedAddress;
+
+    await user.save();
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Address updated successfully", user });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+exports.deleteAddress = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const addressId = req.params.id;
+
+    const user = await User.findOne({
+      _id: userId,
+      "addresses._id": addressId,
+    });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Address not found" });
+    }
+
+    const addressIndex = user.addresses.findIndex(
+      (address) => address._id.toString() === addressId
+    );
+
+    if (addressIndex === -1) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid address ID" });
+    }
+    user.addresses.splice(addressIndex, 1);
+    await user.save();
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Address deleted successfully", user });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+exports.getAllAddresses = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    const addresses = user.addresses;
+    return res.status(200).json({ success: true, addresses });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+
+exports.getAddressDetails = async (req, res) => {
+  try {
+    // Get the user ID from the authenticated user (you should have user authentication middleware)
+    const userId = req.user.id;
+    const addressId = req.params.id; // Assuming the address ID is passed as a parameter
+
+    // Fetch the user based on the user ID and the specified address ID
+    const user = await User.findOne({
+      _id: userId,
+      'addresses._id': addressId,
+    });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User or address not found' });
+    }
+
+    // Find the specific address within the user's addresses array
+    const address = user.addresses.find((addr) => addr._id.toString() === addressId);
+
+    if (!address) {
+      return res.status(404).json({ success: false, message: 'Address not found' });
+    }
+
+    // Respond with the address details
+    return res.status(200).json({ success: true, address });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+

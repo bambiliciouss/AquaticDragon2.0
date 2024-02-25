@@ -19,6 +19,11 @@ const {
   registerRider,
   updateProfileRider,
   updateProfileEmployee,
+  addAddress,
+  editAddress,
+  deleteAddress,
+  getAllAddresses,
+  getAddressDetails
 } = require("../controllers/authController");
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
@@ -53,7 +58,14 @@ router.put(
   updateProfile
 );
 
+router.post("/me/address", isAuthenticatedUser, addAddress);
+router.put("/me/update/address/:id", isAuthenticatedUser, editAddress);
+router.delete("/me/address/:id", isAuthenticatedUser, deleteAddress);
+router.get("/me/addresses", isAuthenticatedUser, getAllAddresses);
+router.get("/me/address/details/:id", isAuthenticatedUser, getAddressDetails);
+
 router.put("/password/update", isAuthenticatedUser, updatePassword);
+
 router.post("/password/forgot", forgotPassword);
 router.put("/password/reset/:token", resetPassword);
 
@@ -99,7 +111,7 @@ router.put(
     { name: "barangayclearance", maxCount: 1 },
   ]),
   isAuthenticatedUser,
-  updateProfileRider
+  updateProfileEmployee
 );
 
 router.put(
