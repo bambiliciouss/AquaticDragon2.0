@@ -11,7 +11,7 @@ const autoAgeUp = async () => {
       const currentDate = new Date();
       const createdAtDate = gallon.createdAt;
       const ageInMilliseconds = currentDate - createdAtDate;
-     
+
       gallon.gallonAge = Math.round(ageInMilliseconds / (1000 * 60 * 60 * 24));
       await gallon.save();
     });
@@ -21,7 +21,7 @@ const autoAgeUp = async () => {
   }
 };
 
-// Schedule the job
+// Schedule the task to run every 1day
 cron.schedule("0 0 * * *", autoAgeUp);
 
 // Export the function if needed
