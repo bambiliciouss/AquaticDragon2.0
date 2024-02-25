@@ -12,6 +12,11 @@ const storeBarangayHealthSchema = new mongoose.Schema({
     ref: "StoreBranch",
   },
 
+  dateVisited: {
+    type: Date,
+    default: Date.now,
+  },
+
   certPotability: {
     public_id: {
       type: String,

@@ -228,6 +228,11 @@ const StoreBranchList = (args) => {
           label: "Machine Cleaning Records",
           field: "machine",
         },
+
+        {
+          label: "Barangay Health Records",
+          field: "barangay",
+        },
       ],
 
       rows: [],
@@ -280,6 +285,18 @@ const StoreBranchList = (args) => {
             </button>
           </Fragment>
         ),
+        barangay: (
+          <Fragment>
+            <button
+              className="btn btn-primary py-1 px-2 ml-2"
+              onClick={() =>
+                navigate(`/store/barangaycleaning/${storeBranches._id}`)
+              }>
+              View
+            </button>
+          </Fragment>
+        ),
+
         list: (
           <Fragment>
             <button
@@ -479,7 +496,7 @@ const StoreBranchList = (args) => {
                         Register New Store Branch
                       </ModalHeader>
                       <ModalBody>
-                      <FormGroup>
+                        <FormGroup>
                           <InputGroup className="input-group-alternative mb-3">
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>

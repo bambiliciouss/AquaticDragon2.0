@@ -54,9 +54,15 @@ import {
   newMachineCleaningReducer,
   allMachineCleaningReducer,
   singleMachineCleaningReducer,
-  machineCleaningReducer
+  machineCleaningReducer,
 } from "reducers/machinecleaningReducers";
 
+import {
+  newBarangayHealthReducer,
+  allBarangayHealthReducer,
+  singleBarangayHealthReducer,
+  barangayHealthReducer,
+} from "reducers/barangayhealthReducers";
 const reducers = combineReducers({
   auth: authReducer,
   user: userReducer,
@@ -90,7 +96,12 @@ const reducers = combineReducers({
   newMachineCleaning: newMachineCleaningReducer,
   allMachineCleaning: allMachineCleaningReducer,
   singleMachineCleaning: singleMachineCleaningReducer,
-  machinerecord:machineCleaningReducer
+  machinerecord: machineCleaningReducer,
+
+  newBarangayHealth: newBarangayHealthReducer,
+  allBarangayHealth: allBarangayHealthReducer,
+  singleBarangayHealth: singleBarangayHealthReducer,
+  barangayHealthrecord: barangayHealthReducer,
 });
 
 let initialState = {

@@ -28,12 +28,14 @@ import GallonList from "components/admin/GallonList";
 import StoreBranchList from "components/admin/StoreBranchList";
 import TypesGallonList from "components/admin/TypesGallonList";
 import MachineCleaningList from "components/admin/MachineCleaningList";
+import BarangayHealthList from "components/admin/BarangayHealthList";
 
 import UpdateRider from "components/admin/UpdateRider";
 import UpdateEmployee from "components/admin/UpdateEmployee";
 import UpdateUser from "components/admin/UpdateUser";
 import UpdateStoreBranch from "components/admin/UpdateStoreBranch";
 import UpdateMachineCleaning from "components/admin/UpdateMachineCleaning";
+import UpdateBarangayHealth from "components/admin/UpdateBarangayHealth";
 // import EmployeeRegistration from "components/employee/EmployeeRegistration";
 // import RiderRegistration from "components/rider/RiderRegistration";
 // import StoreBranchRegistration from "components/StoreBranch/StoreBranchRegistration";
@@ -280,6 +282,22 @@ function App() {
           element={
             <ProtectedRoute>
               <UpdateMachineCleaning />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/store/barangaycleaning/:id"
+          element={
+            <ProtectedRoute>
+              <BarangayHealthList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/update/store/barangayhealth/:id"
+          element={
+            <ProtectedRoute>
+              <UpdateBarangayHealth />
             </ProtectedRoute>
           }
         />

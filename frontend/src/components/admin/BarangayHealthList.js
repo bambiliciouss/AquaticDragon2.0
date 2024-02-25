@@ -30,43 +30,38 @@ import Header2 from "components/Headers/Header2";
 import AdminFooter from "components/Footers/AdminFooter.js";
 
 import { useNavigate, useParams } from "react-router-dom";
-
-import {
-  createMachineCleaning,
-  allMachineCleaning,
-  deleteMachineCleaning,
-  clearErrors,
-} from "actions/machinecleaningActions";
-import {
-  CREATE_MACHINECLEANING_RESET,
-  DELETE_MACHINECLEANING_RESET,
-} from "../../constants/machinecleaningConstants";
-
 import { getStoreDetails } from "actions/storebranchActions";
+import ReactHTMLTableToExcel from "react-html-table-to-excel";
 
-const MachineCleaningList = () => {
+import {
+  CREATE_BARANGAYHEALTH_RESET,
+  DELETE_BARANGAYHEALTH_RESET,
+} from "constants/barangayHealthConstants";
+import {
+  createBarangayHealth,
+  allBarangayHealth,
+  deleteBarangayHealth,
+} from "actions/barangayhealthActions";
+const BarangayHealthList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
   const { storeBranch } = useSelector((state) => state.storeDetails);
-  const { machinecleaningcreated } = useSelector(
-    (state) => state.newMachineCleaning
-  );
-  const { machinecleaning, error } = useSelector(
-    (state) => state.allMachineCleaning
-  );
-  const { machinecleaningdetails } = useSelector(
-    (state) => state.singleMachineCleaning
-  );
-
-  const { isDeleted } = useSelector((state) => state.machinerecord);
-
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
 
-  const [notes, setNotes] = useState("");
-  const [cleaningImage, setcleaningImage] = useState("");
-  const [cleaningImagePreview, setcleaningImagePreview] = useState(
+  const { barangayhealthcreated } = useSelector(
+    (state) => state.newBarangayHealth
+  );
+  const { barangayhealth, error } = useSelector(
+    (state) => state.allBarangayHealth
+  );
+
+  const { isDeleted } = useSelector((state) => state.barangayHealthrecord);
+
+  const [dateVisited, setdateVisited] = useState("");
+  const [certPotability, setcertPotability] = useState("");
+  const [certPotabilityPreview, setcertPotabilityPreview] = useState(
     "/images/default_avatar.jpg"
   );
 
@@ -78,55 +73,30 @@ const MachineCleaningList = () => {
   } = useForm();
 
   useEffect(() => {
-    dispatch(allMachineCleaning(id));
     dispatch(getStoreDetails(id));
+    dispatch(allBarangayHealth(id));
 
-    if (machinecleaningcreated) {
-      console.log("success adding of record");
+    if (barangayhealthcreated) {
       swal("Record Saved!", "", "success");
       setModal(false);
-      navigate(`/create/store/machincecleaning/${id}`, { replace: true });
+      navigate(`/store/barangaycleaning/${id}`, { replace: true });
       dispatch({
-        type: CREATE_MACHINECLEANING_RESET,
+        type: CREATE_BARANGAYHEALTH_RESET,
       });
       reset();
-      setcleaningImage("");
-      setcleaningImagePreview("/images/default_avatar.jpg");
+      setcertPotability("");
+      setcertPotabilityPreview("/images/default_avatar.jpg");
     }
-
     if (error) {
       console.log(error);
       dispatch(clearErrors());
     }
 
     if (isDeleted) {
-      navigate(`/create/store/machincecleaning/${id}`);
-      dispatch({ type: DELETE_MACHINECLEANING_RESET });
+      navigate(`/store/barangaycleaning/${id}`);
+      dispatch({ type: DELETE_BARANGAYHEALTH_RESET });
     }
-  }, [dispatch, navigate, machinecleaningcreated, error, isDeleted]);
-
-  const submitHandler = (e) => {
-    const formData = new FormData();
-    formData.set("notes", e.notes);
-    formData.set("cleaningImage", cleaningImage);
-
-    dispatch(createMachineCleaning(formData, id));
-  };
-
-  const onChange = (e) => {
-    if (e.target.name === "cleaningImage") {
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        if (reader.readyState === 2) {
-          setcleaningImagePreview(reader.result);
-          setcleaningImage(reader.result);
-        }
-      };
-
-      reader.readAsDataURL(e.target.files[0]);
-    }
-  };
+  }, [dispatch, barangayhealthcreated, error, isDeleted]);
 
   const deleterecord = (id) => {
     swal({
@@ -137,28 +107,45 @@ const MachineCleaningList = () => {
     }).then((willDelete) => {
       if (willDelete) {
         swal("Record has been deleted!", "", "success");
-        dispatch(deleteMachineCleaning(id));
+        dispatch(deleteBarangayHealth(id));
       } else {
         swal("Record is not deleted!", "", "info");
       }
     });
   };
 
-  const setMCRecord = () => {
+  const onChange = (e) => {
+    if (e.target.name === "certPotability") {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          setcertPotabilityPreview(reader.result);
+          setcertPotability(reader.result);
+        }
+      };
+
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+
+  const submitHandler = (e) => {
+    const formData = new FormData();
+    formData.set("dateVisited", e.dateVisited);
+    formData.set("certPotability", certPotability);
+
+    dispatch(createBarangayHealth(formData, id));
+  };
+
+  const setBHRecord = () => {
     const data = {
       columns: [
         {
-          label: "Documentation",
+          label: "Certificate",
           field: "image",
         },
         {
-          label: "Notes",
-          field: "notes",
-          sort: "desc",
-        },
-
-        {
-          label: "Date",
+          label: "Date Visited",
           field: "date",
           sort: "desc",
         },
@@ -170,46 +157,37 @@ const MachineCleaningList = () => {
       ],
       rows: [],
     };
-
-    // const sortedMachineCleaning = [...machinecleaning].sort((a, b) => {
-    //   const dateA = new Date(a.createdAt);
-    //   const dateB = new Date(b.createdAt);
-    //   return dateB - dateA;
-    // });
-
-    const sortedMachineCleaning = machinecleaning.sort((a, b) => {
-      return new Date(b.createdAt) - new Date(a.createdAt);
+    const sortedData = [...barangayhealth].sort((a, b) => {
+      return new Date(b.dateVisited) - new Date(a.dateVisited);
     });
 
-    sortedMachineCleaning.forEach((machinecleanings) => {
-      // machinecleaning.forEach((machinecleanings) => {
-      const dateObject = new Date(machinecleanings.createdAt);
+    // barangayhealth.forEach((barangayhealths) => {
+    sortedData.forEach((barangayhealths) => {
+      const dateObject = new Date(barangayhealths.dateVisited);
       data.rows.push({
-        notes: machinecleanings.notes,
+        date: dateObject.toLocaleDateString(),
         image: (
           <img
             style={{ width: 100, height: 100 }}
-            src={machinecleanings.cleaningImage.url}
+            src={barangayhealths.certPotability.url}
             alt="image"
             img
           />
         ),
         // date: machinecleanings.createdAt,
-        date: dateObject.toLocaleDateString(),
+        // date: dateObject.toLocaleDateString(),
         actions: (
           <Fragment>
             <button
               className="btn btn-primary py-1 px-2 ml-2"
               onClick={() =>
-                navigate(
-                  `/update/store/machincecleaning/${machinecleanings._id}`
-                )
+                navigate(`/update/store/barangayhealth/${barangayhealths._id}`)
               }>
               <i className="fa fa-info-circle"></i>
             </button>
             <button
               className="btn btn-danger py-1 px-2 ml-2"
-              onClick={() => deleterecord(machinecleanings._id)}>
+              onClick={() => deleterecord(barangayhealths._id)}>
               <i className="fa fa-trash"></i>
             </button>
           </Fragment>
@@ -222,7 +200,7 @@ const MachineCleaningList = () => {
 
   return (
     <>
-      <MetaData title={"Machine Cleaning"} />
+      <MetaData title={"Barangay Health"} />
       <Sidebar
         logo={{
           innerLink: "/",
@@ -239,7 +217,7 @@ const MachineCleaningList = () => {
               <Row className="align-items-center">
                 <Col xs="8">
                   <h3 className="mb-0">
-                    Machine Cleaning Records ( {storeBranch.branch} )
+                    Barangay Health Sanitation Records ({storeBranch.branch})
                   </h3>
                 </Col>
                 <Col md="4">
@@ -264,7 +242,7 @@ const MachineCleaningList = () => {
                           <Col md="12">
                             <div className="form-group">
                               <label htmlFor="avatar_upload">
-                                Documentation
+                                Certification
                               </label>
 
                               <div className="row">
@@ -277,7 +255,7 @@ const MachineCleaningList = () => {
                                         width: "200px",
                                         height: "200px",
                                       }}
-                                      src={cleaningImagePreview}
+                                      src={certPotabilityPreview}
                                       alt="User"
                                     />
                                   </div>
@@ -285,11 +263,11 @@ const MachineCleaningList = () => {
                                   <div className="custom-file">
                                     <input
                                       type="file"
-                                      name="storeImage"
+                                      name="certPotability"
                                       className="custom-file-input"
-                                      id="cleaningImage"
+                                      id="certPotability"
                                       accept="images/*"
-                                      {...register("cleaningImage", {
+                                      {...register("certPotability", {
                                         required: true,
                                       })}
                                       onChange={(e) => {
@@ -305,7 +283,7 @@ const MachineCleaningList = () => {
                                   </div>
                                 </div>
                               </div>
-                              {errors.cleaningImage && !cleaningImage && (
+                              {errors.certPotability && !certPotability && (
                                 <h2
                                   className="h1-seo"
                                   style={{
@@ -320,23 +298,23 @@ const MachineCleaningList = () => {
                         </Row>
                         <FormGroup>
                           <span style={{ fontWeight: "bold" }}>Notes:</span>{" "}
-                          <textarea
+                          <input
                             placeholder="Add Notes here ..."
                             className="form-control"
-                            type="text"
-                            name="notes"
-                            {...register("notes", {
+                            type="date"
+                            name="dateVisited"
+                            {...register("dateVisited", {
                               required: "Please enter notes.",
                             })}
                           />
-                          {errors.notes && (
+                          {errors.dateVisited && (
                             <h2
                               className="h1-seo"
                               style={{
                                 color: "red",
                                 fontSize: "small",
                               }}>
-                              {errors.notes.message}
+                              {errors.dateVisited.message}
                             </h2>
                           )}
                         </FormGroup>
@@ -356,15 +334,24 @@ const MachineCleaningList = () => {
             </CardHeader>
             <CardBody style={{ overflowX: "auto" }}>
               <MDBDataTable
-                data={setMCRecord()}
+                data={setBHRecord()}
                 className="px-3"
                 bordered
                 hover
                 noBottomColumns
                 responsive
+                id="barangayHealthTable"
               />
             </CardBody>
           </Card>
+
+          {/* <ReactHTMLTableToExcel
+            className="btn btn-success"
+            table="barangayHealthTable"
+            filename="barangay_health_records"
+            sheet="sheet 1"
+            buttonText="Export to Excel"
+          /> */}
         </Container>
         <Container fluid>
           <AdminFooter />
@@ -374,4 +361,4 @@ const MachineCleaningList = () => {
   );
 };
 
-export default MachineCleaningList;
+export default BarangayHealthList;

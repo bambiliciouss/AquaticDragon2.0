@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 
 exports.createBarangayHealthRecord = async (req, res, next) => {
   try {
+    const { dateVisited } = req.body;
     const result = await new Promise((resolve, reject) => {
       cloudinary.v2.uploader.upload(
         req.body.certPotability,
@@ -30,6 +31,7 @@ exports.createBarangayHealthRecord = async (req, res, next) => {
         public_id: result.public_id,
         url: result.secure_url,
       },
+      dateVisited,
     });
 
     res.status(201).json({
@@ -51,6 +53,7 @@ exports.getAllStoreBarangayHealthRecord = async (req, res, next) => {
     }
     const barangayhealth = await BarangayHealth.find({
       storebranch: storeId,
+      deleted: false,
     });
     res.status(200).json({
       success: true,
@@ -64,7 +67,7 @@ exports.getAllStoreBarangayHealthRecord = async (req, res, next) => {
 };
 
 exports.updateBarangayHealthRecord = async (req, res, next) => {
-  const newStoreData = {};
+  const newStoreData = { dateVisited: req.body.dateVisited };
 
   try {
     if (req.body.certPotability && req.body.certPotability !== "") {
