@@ -10,6 +10,7 @@ const storeStaff = require("./routes/storestaff");
 const machineCleaning = require("./routes/machinecleaning");
 const product = require("./routes/product");
 const barangayhealth = require("./routes/barangayhealth");
+const othergalloninventory = require("./routes/othergalloninventory");
 const errorMiddleware = require("./middlewares/errors");
 
 app.use(cookieParser());
@@ -25,6 +26,7 @@ app.use("/api/v1", storeStaff);
 app.use("/api/v1", machineCleaning);
 app.use("/api/v1", product);
 app.use("/api/v1", barangayhealth);
+app.use("/api/v1", othergalloninventory);
 app.use(errorMiddleware);
 
 module.exports = app;

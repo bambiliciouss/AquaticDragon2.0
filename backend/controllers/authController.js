@@ -896,7 +896,7 @@ exports.editAddress = async (req, res) => {
       purokNum,
       barangay,
       city,
-      isDefault: isDefault || false,
+      isDefault: true,
     };
 
     if (updatedAddress.isDefault) {
