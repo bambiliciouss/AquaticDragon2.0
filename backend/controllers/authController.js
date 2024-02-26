@@ -949,14 +949,34 @@ exports.deleteAddress = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Invalid address ID" });
     }
-    user.addresses.splice(addressIndex, 1);
+
+    const address = user.addresses[addressIndex];
+
+    // Check if the address is already marked as deleted
+    if (address.isDeleted) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Address is already deleted" });
+    }
+
+    // Mark the address as deleted
+    user.addresses[addressIndex].isDeleted = true;
+
     await user.save();
 
     return res
       .status(200)
-      .json({ success: true, message: "Address deleted successfully", user });
+      .json({ success: true, message: "Address marked as deleted", user });
   } catch (error) {
     console.error(error);
+
+    // Handle specific database-related errors
+    if (error.name === "MongoError" && error.code === 11000) {
+      return res
+        .status(500)
+        .json({ success: false, message: "Duplicate key error" });
+    }
+
     return res
       .status(500)
       .json({ success: false, message: "Internal Server Error" });
@@ -974,8 +994,11 @@ exports.getAllAddresses = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
-    const addresses = user.addresses;
-    return res.status(200).json({ success: true, addresses });
+    const activeAddresses = user.addresses.filter(
+      (address) => !address.isDeleted
+    );
+
+    return res.status(200).json({ success: true, addresses: activeAddresses });
   } catch (error) {
     console.error(error);
     return res
