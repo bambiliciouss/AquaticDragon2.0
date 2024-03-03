@@ -162,6 +162,7 @@ const WalkInPOS = (args) => {
 
         inventory: (
           <Fragment>
+            
             <button
               className="btn btn-primary py-1 px-2 ml-2"
               onClick={() =>

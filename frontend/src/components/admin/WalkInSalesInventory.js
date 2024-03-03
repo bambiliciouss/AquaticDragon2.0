@@ -185,15 +185,13 @@ const WalkInSalesInventory = () => {
         total: `₱ ${walkinposs.quantity * walkinposs.price}.00`,
         actions: (
           <Fragment>
-            {/* <button
+            <button
               className="btn btn-primary py-1 px-2 ml-2"
               onClick={() =>
-                navigate(
-                  `/update/store/machincecleaning/${machinecleanings._id}`
-                )
+                navigate(`/admin/POS/inventory/update/${walkinposs._id}`)
               }>
               <i className="fa fa-info-circle"></i>
-            </button> */}
+            </button>
             <button
               className="btn btn-danger py-1 px-2 ml-2"
               onClick={() => deleterecord(walkinposs._id)}>

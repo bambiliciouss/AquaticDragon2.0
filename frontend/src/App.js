@@ -44,6 +44,7 @@ import UpdateStoreBranch from "components/admin/UpdateStoreBranch";
 import UpdateMachineCleaning from "components/admin/UpdateMachineCleaning";
 import UpdateBarangayHealth from "components/admin/UpdateBarangayHealth";
 import UpdateTypeGallon from "components/admin/UpdateTypeGallon";
+import UpdateWalkInSalesInventory from "components/admin/UpdateWalkInSalesInventory";
 
 import WalkInPOS from "components/admin/WalkInPOS";
 import WalkInSalesInventory from "components/admin/WalkInSalesInventory";
@@ -370,6 +371,14 @@ function App() {
           element={
             <ProtectedRoute>
               <WalkInSalesInventory />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/POS/inventory/update/:id"
+          element={
+            <ProtectedRoute>
+              <UpdateWalkInSalesInventory />
             </ProtectedRoute>
           }
         />

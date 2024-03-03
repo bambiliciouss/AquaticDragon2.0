@@ -105,15 +105,16 @@ export const getWalkinposDetails = (id) => async (dispatch) => {
       withCredentials: true,
     };
 
-    const { data } = await axios.get(`/api/v1/admin/walkinpos/${id}`, config);
-
-    // Log user details
-    console.log("WALKINPOS DETAILS", data.walkinpos);
+    const { data } = await axios.get(
+      `/api/v1/details/othergallon/inventory/${id}`,
+      config
+    );
 
     dispatch({
       type: SINGLE_WALKINPOS_SUCCESS,
-      payload: data.walkinpos,
+      payload: data.otherGallon,
     });
+    console.log("WALKINPOS DETAILS", data.otherGallon);
   } catch (error) {
     dispatch({
       type: SINGLE_WALKINPOS_FAIL,
@@ -133,7 +134,7 @@ export const updateWalkinpos = (id, walkinposData) => async (dispatch) => {
     };
 
     const { data } = await axios.put(
-      `/api/v1/admin/walkinpos/update/${id}`,
+      `/api/v1/update/othergallon/inventory/${id}`,
       walkinposData,
       config
     );
