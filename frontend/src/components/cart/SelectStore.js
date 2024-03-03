@@ -9,7 +9,6 @@ import {
   Row,
   Col,
   CardHeader,
-  
 } from "reactstrap";
 import AuthNavbar from "components/Navbars/AuthNavbar.js";
 import MetaData from "../layout/MetaData";
@@ -62,13 +61,13 @@ const SelectStore = () => {
                   <Card style={{ width: "20rem" }}>
                     <CardImg alt="..." src={storeBranches.storeImage.url} top />
                     <CardBody>
-                      <CardTitle>
-                        Branch No. {storeBranches.branchNo}{" "}
-                      </CardTitle>
+                      <CardTitle>{storeBranches.branch}</CardTitle>
                       <CardText>
-                        Address: {storeBranches.houseNo},{" "}
-                        {storeBranches.purokNum}, {storeBranches.streetName},{" "}
-                        {storeBranches.barangay}, {storeBranches.city}
+                        Address: {storeBranches.address.houseNo}
+                        {storeBranches.address.purokNum}{" "}
+                        {storeBranches.address.streetName}
+                        {storeBranches.address.barangay}{" "}
+                        {storeBranches.address.city}
                       </CardText>
                       <CardText>
                         Delivery Fee: {storeBranches.deliverFee}

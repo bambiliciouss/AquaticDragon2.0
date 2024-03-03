@@ -235,7 +235,7 @@ const BarangayHealthList = () => {
                     toggle={toggle}>
                     <Form role="form" onSubmit={handleSubmit(submitHandler)}>
                       <ModalHeader toggle={toggle}>
-                        Machine Cleaning Record
+                        Barangay Health Sanitation Record
                       </ModalHeader>
                       <ModalBody>
                         <Row>
@@ -297,7 +297,9 @@ const BarangayHealthList = () => {
                           </Col>
                         </Row>
                         <FormGroup>
-                          <span style={{ fontWeight: "bold" }}>Notes:</span>{" "}
+                          <span style={{ fontWeight: "bold" }}>
+                            Date Visited
+                          </span>{" "}
                           <input
                             placeholder="Add Notes here ..."
                             className="form-control"

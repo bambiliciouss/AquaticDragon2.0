@@ -18,7 +18,12 @@ const otherGallonSchema = new mongoose.Schema({
 
   price: {
     type: Number,
-    default: 30,
+    default: 0,
+  },
+
+  quantity: {
+    type: Number,
+    default: 1,
   },
   createdAt: {
     type: Date,

@@ -34,15 +34,21 @@ import TypesGallonList from "components/admin/TypesGallonList";
 import MachineCleaningList from "components/admin/MachineCleaningList";
 import BarangayHealthList from "components/admin/BarangayHealthList";
 
+import MachineCleaning from "components/admin/MachineCleaning";
+import BarangayHealth from "components/admin/BarangayHealth";
+
 import UpdateRider from "components/admin/UpdateRider";
 import UpdateEmployee from "components/admin/UpdateEmployee";
 import UpdateUser from "components/admin/UpdateUser";
 import UpdateStoreBranch from "components/admin/UpdateStoreBranch";
 import UpdateMachineCleaning from "components/admin/UpdateMachineCleaning";
 import UpdateBarangayHealth from "components/admin/UpdateBarangayHealth";
-// import EmployeeRegistration from "components/employee/EmployeeRegistration";
-// import RiderRegistration from "components/rider/RiderRegistration";
-// import StoreBranchRegistration from "components/StoreBranch/StoreBranchRegistration";
+import UpdateTypeGallon from "components/admin/UpdateTypeGallon";
+
+import WalkInPOS from "components/admin/WalkInPOS";
+import WalkInSalesInventory from "components/admin/WalkInSalesInventory";
+
+import GallonOrder from "components/cart/GallonOrder";
 
 import Cart from "components/cart/Cart";
 import ContainerStatus from "components/cart/ContainerStatus";
@@ -167,8 +173,27 @@ function App() {
           exact="true"
         />
         <Route
+          path="/machinecleaning"
+          element={<MachineCleaning />}
+          exact="true"
+        />
+        <Route
+          path="/barangayhealth"
+          element={<BarangayHealth />}
+          exact="true"
+        />
+        <Route
           path="/typesgallonlist"
           element={<TypesGallonList />}
+          exact="true"
+        />
+        <Route
+          path="/gallon/order"
+          element={
+            <ProtectedRoute>
+              <GallonOrder />
+            </ProtectedRoute>
+          }
           exact="true"
         />
         <Route path="/cart" element={<Cart />} exact="true" />
@@ -321,6 +346,30 @@ function App() {
           element={
             <ProtectedRoute>
               <UpdateBarangayHealth />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/update/typegallon/details/:id"
+          element={
+            <ProtectedRoute>
+              <UpdateTypeGallon />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/POS/"
+          element={
+            <ProtectedRoute>
+              <WalkInPOS />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/POS/inventory/:id"
+          element={
+            <ProtectedRoute>
+              <WalkInSalesInventory />
             </ProtectedRoute>
           }
         />

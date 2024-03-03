@@ -200,7 +200,7 @@ const UpdateProfile = () => {
                           </Col>
                         </Row>
                         <Row>
-                          <Col lg="5">
+                          <Col lg="12">
                             <FormGroup>
                               <label className="form-control-label">
                                 Phone No.
@@ -214,117 +214,7 @@ const UpdateProfile = () => {
                               />
                             </FormGroup>
                           </Col>
-                          <Col lg="3">
-                            <FormGroup>
-                              <label className="form-control-label">
-                                Unit, Building, House No.
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Unit, Building, House No."
-                                value={houseNo}
-                                onChange={(e) => setHouseNo(e.target.value)}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col lg="4">
-                            {/* <FormGroup>
-                              <label className="form-control-label">
-                                Purok No.
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Purok No."
-                                value={purokNum}
-                                onChange={(e) => setPurokNum(e.target.value)}
-                              />
-                            </FormGroup> */}
-                            <FormGroup>
-                              <label className="form-control-label">
-                                Purok No.
-                              </label>
-                              <select
-                                className="form-control"
-                                id="purokSelect"
-                                value={purokNum}
-                                onChange={(e) => setPurokNum(e.target.value)}>
-                                <option value="" disabled>
-                                  Select Purok No.
-                                </option>
-                                <option value="Purok 1">Purok 1</option>
-                                <option value="Purok 2">Purok 2</option>
-                                <option value="Purok 3">Purok 3</option>
-                                <option value="Purok 4">Purok 4</option>
-                                <option value="Purok 5">Purok 5</option>
-                                <option value="Purok 6">Purok 6</option>
-                                <option value="Purok 7">Purok 7</option>
-                                <option value="Purok 8">Purok 8</option>
-                                <option value="Purok 9">Purok 9</option>
-                                <option value="Purok 10">Purok 10</option>
-                              </select>
-                            </FormGroup>
-                          </Col>
-                        </Row>
-
-                        <Row>
-                          <Col lg="12">
-                            <FormGroup>
-                              <label className="form-control-label">
-                                Street Name
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Street Name"
-                                value={streetName}
-                                onChange={(e) => setStreetName(e.target.value)}
-                              />
-                            </FormGroup>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col lg="6">
-                            <FormGroup>
-                              <label className="form-control-label">
-                                Barangay
-                              </label>
-                              <select
-                                className="form-control"
-                                id="barangaySelect"
-                                value={barangay}
-                                onChange={(e) => setBarangay(e.target.value)}>
-                                <option value="" disabled>
-                                  Select Barangay
-                                </option>
-                                <option value="Central Bicutan">
-                                  Central Bicutan
-                                </option>
-                                <option value="Upper Bicutan">
-                                  Upper Bicutan
-                                </option>
-                                <option value="New Lower Bicutan">
-                                  New Lower Bicutan
-                                </option>
-                              </select>
-                            </FormGroup>
-                          </Col>
-                          <Col lg="6">
-                            <FormGroup>
-                              <label className="form-control-label">City</label>
-                              <select
-                                className="form-control"
-                                id="citySelect"
-                                value={city}
-                                onChange={(e) => setCity(e.target.value)}>
-                                <option value="" disabled>
-                                  Select City
-                                </option>
-                                <option value="Taguig City">Taguig City</option>
-                              </select>
-                            </FormGroup>
-                          </Col>
+                         
                         </Row>
                         <label className="form-control-label">Avatar</label>
 

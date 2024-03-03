@@ -6,17 +6,16 @@ import {
   CLEAR_CART,
 } from "../constants/cartConstants";
 
-export const addItemToCart = (id, quantity, price) => async (dispatch, getState) => {
-  const { data } = await axios.get(`/api/v1/gallon/${id}`);
+export const addItemToCart = (id, quantity) => async (dispatch, getState) => {
+  const { data } = await axios.get(`/api/v1/admin/typeofgallon/${id}`);
+  console.log(data);
   dispatch({
     type: ADD_TO_CART,
     payload: {
-      gallon: data.gallon._id,
-      image: data.gallon.gallonImage.url,
-      age: data.gallon.gallonAge,
-      type: data.gallon.type,
+      gallon: data.gallonType._id,
+      type: data.gallonType.typeofGallon,
+      price: data.gallonType.price,
       quantity,
-      price,
     },
   });
   localStorage.setItem("cartItems", JSON.stringify(getState().cart.cartItems));

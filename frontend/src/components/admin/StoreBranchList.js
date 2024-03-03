@@ -281,7 +281,7 @@ const StoreBranchList = (args) => {
               onClick={() =>
                 navigate(`/create/store/machincecleaning/${storeBranches._id}`)
               }>
-              View
+              View Record
             </button>
           </Fragment>
         ),
@@ -292,7 +292,7 @@ const StoreBranchList = (args) => {
               onClick={() =>
                 navigate(`/store/barangaycleaning/${storeBranches._id}`)
               }>
-              View
+              View Record
             </button>
           </Fragment>
         ),

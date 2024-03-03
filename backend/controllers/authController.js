@@ -43,17 +43,8 @@ exports.registerUser = async (req, res, next) => {
       fname,
       lname,
       phone,
-      // houseNo,
-      // streetName,
-      // purokNum,
-      // barangay,
-      // city,
       email,
       password,
-      // avatar: {
-      //   public_id: result.public_id,
-      //   url: result.secure_url,
-      // },
       role,
       terms,
     });
@@ -61,6 +52,7 @@ exports.registerUser = async (req, res, next) => {
     const token = await new Token({
       userId: user._id,
       token: crypto.randomBytes(32).toString("hex"),
+      expiresAt: new Date(Date.now() + 60 * 1000),
       // expiresAt: new Date(Date.now() + (24 * 60 * 60 * 1000)), // Set expiration to 24 hours from now
     }).save();
 
@@ -132,31 +124,68 @@ exports.LoginUser = async (req, res, next) => {
       //return res.status(400).send({ message: "Invalid Password" });
     }
 
+    // if (!user.verified) {
+    //   let token = await Token.findOne({ userId: user._id });
+
+    //   if (!token) {
+    //     token = await new Token({
+    //       userId: user._id,
+    //       token: crypto.randomBytes(32).toString("hex"),
+    //       expiresAt: new Date(Date.now() + 60 * 1000),
+    //     }).save();
+
+    //     const url = `${process.env.BASE_URL}/${user._id}/verify/${token.token}`;
+    //     await sendEmail(user.email, "Aquatic Dragon", url, user);
+
+    //     res.status(400).json({
+    //       message:
+    //         "Your email account is not verified, verification link is sent to your account please verify first",
+    //     });
+    //   } else {
+    //     res.status(400).json({
+    //       message: "Please  check your email to verify your account.",
+    //     });
+    //   }
+    // } else {
+    //   sendToken(user, 200, res);
+    // }
+
     if (!user.verified) {
-      //return next(new ErrorHandler("Account is not verified", 401));
-      let token = await Token.findOne({ email });
-      if (!token) {
-        token = await new Token({
-          userId: user._id,
-          token: crypto.randomBytes(32).toString("hex"),
-        }).save();
+      let token = await Token.findOne({ userId: user._id });
 
-        const url = `${process.env.BASE_URL}/${user._id}/verify/${token.token}`;
-        await sendEmail(user.email, "Aquatic Dragon", url, user);
+      if (!token || token.expiresAt < new Date()) {
+        // If token does not exist or is expired, generate a new one
+        try {
+          // Try to find and update the existing token
+          token = await Token.findOneAndUpdate(
+            { userId: user._id },
+            {
+              token: crypto.randomBytes(32).toString("hex"),
+              expiresAt: new Date(Date.now() + 60 * 1000),
+            },
+            { new: true, upsert: true }
+          );
+
+          const url = `${process.env.BASE_URL}/${user._id}/verify/${token.token}`;
+          await sendEmail(user.email, "Aquatic Dragon", url, user);
+
+          res.status(400).json({
+            message:
+              "Your email account is not verified. Token has expired, a new verification link is sent to your account, please verify first",
+          });
+        } catch (error) {
+          return next(new ErrorHandler(error.message));
+        }
+      } else {
+        res.status(400).json({
+          message: "Please check your email to verify your account.",
+        });
       }
-
-      res.status(400).json({
-        message:
-          "Your email account is not verified, verification link is sent to your account please verify first",
-      });
     } else {
       sendToken(user, 200, res);
     }
   } catch (error) {
-    // res
-    //   .status(500)
-    //   .json({ message: "Verify your Email Account", error: error.message });
-    next(new ErrorHandler("Verify your Email Account", 500, error.message));
+    next(new ErrorHandler(error.message));
   }
 };
 
@@ -424,15 +453,20 @@ exports.registerEmployee = async (req, res, next) => {
       role,
     } = req.body;
 
-    const user = await User.create({
-      fname,
-      lname,
-      phone,
+    const address = {
       houseNo,
       streetName,
       purokNum,
       barangay,
       city,
+      isDefault: true,
+    };
+
+    const user = await User.create({
+      fname,
+      lname,
+      phone,
+      addresses: [address],
       email,
       password,
       medcert: {
@@ -449,7 +483,7 @@ exports.registerEmployee = async (req, res, next) => {
     const token = await new Token({
       userId: user._id,
       token: crypto.randomBytes(32).toString("hex"),
-      // expiresAt: new Date(Date.now() + (24 * 60 * 60 * 1000)), // Set expiration to 24 hours from now
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
     }).save();
 
     const url = `${process.env.BASE_URL}/${user._id}/verify/${token.token}`;
@@ -511,15 +545,20 @@ exports.registerRider = async (req, res, next) => {
       role,
     } = req.body;
 
-    const user = await User.create({
-      fname,
-      lname,
-      phone,
+    const address = {
       houseNo,
       streetName,
       purokNum,
       barangay,
       city,
+      isDefault: true,
+    };
+
+    const user = await User.create({
+      fname,
+      lname,
+      phone,
+      addresses: [address],
       email,
       password,
       medcert: {
@@ -540,6 +579,7 @@ exports.registerRider = async (req, res, next) => {
     const token = await new Token({
       userId: user._id,
       token: crypto.randomBytes(32).toString("hex"),
+      expiresAt:new Date(Date.now() + 5 * 60 * 1000)
     }).save();
 
     const url = `${process.env.BASE_URL}/${user._id}/verify/${token.token}`;
@@ -564,11 +604,15 @@ exports.updateProfileRider = async (req, res, next) => {
     fname: req.body.fname,
     lname: req.body.lname,
     phone: req.body.phone,
+  };
+
+  const newAddressData = {
     houseNo: req.body.houseNo,
     streetName: req.body.streetName,
     purokNum: req.body.purokNum,
     barangay: req.body.barangay,
     city: req.body.city,
+    isDefault: true,
   };
 
   try {
@@ -653,10 +697,11 @@ exports.updateProfileRider = async (req, res, next) => {
       };
     }
 
-    const user = await User.findByIdAndUpdate(req.params.id, newUserData, {
-      new: true,
-      runValidators: true,
-    });
+    const user = await User.findById(req.params.id);
+    if (user.addresses && user.addresses.length > 0) {
+      user.addresses[0] = { ...user.addresses[0], ...newAddressData };
+      await user.save();
+    }
     res.status(200).json({
       success: true,
       user,
@@ -677,11 +722,15 @@ exports.updateProfileEmployee = async (req, res, next) => {
     fname: req.body.fname,
     lname: req.body.lname,
     phone: req.body.phone,
+  };
+
+  const newAddressData = {
     houseNo: req.body.houseNo,
     streetName: req.body.streetName,
     purokNum: req.body.purokNum,
     barangay: req.body.barangay,
     city: req.body.city,
+    isDefault: true,
   };
 
   try {
@@ -747,10 +796,11 @@ exports.updateProfileEmployee = async (req, res, next) => {
       };
     }
 
-    const user = await User.findByIdAndUpdate(req.params.id, newUserData, {
-      new: true,
-      runValidators: true,
-    });
+    const user = await User.findById(req.params.id);
+    if (user.addresses && user.addresses.length > 0) {
+      user.addresses[0] = { ...user.addresses[0], ...newAddressData };
+      await user.save();
+    }
     res.status(200).json({
       success: true,
       user,
@@ -1076,6 +1126,30 @@ exports.setDefaultAddress = async (req, res) => {
     res
       .status(200)
       .json({ success: true, message: "Default address set successfully" });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+exports.admingetAllAddresses = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    const activeAddresses = user.addresses.filter(
+      (address) => !address.isDeleted
+    );
+
+    return res.status(200).json({ success: true, addresses: activeAddresses });
   } catch (error) {
     console.error(error);
     return res

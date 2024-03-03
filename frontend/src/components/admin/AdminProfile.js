@@ -259,7 +259,7 @@ const AdminProfile = () => {
 
   return (
     <>
-      <MetaData title={"Type of Gallon(s)"} />
+      <MetaData title={"Profile"} />
       <Sidebar
         logo={{
           innerLink: "/",
@@ -275,7 +275,7 @@ const AdminProfile = () => {
             <CardHeader className="bg-white border-0">
               <Row className="align-items-center">
                 <Col xs="8">
-                  <h3 className="mb-0">My account</h3>
+                  <h3 className="mb-0">My Profile</h3>
                 </Col>
               </Row>
             </CardHeader>
@@ -560,15 +560,18 @@ const AdminProfile = () => {
                   </ModalFooter>
                 </Form>
               </Modal>
-
-              <MDBDataTable
-                data={setAddresses()}
-                className="px-3"
-                bordered
-                hover
-                noBottomColumns
-                responsive
-              />
+              {useraddress.length === 0 ? (
+                <p>No address registered</p>
+              ) : (
+                <MDBDataTable
+                  data={setAddresses()}
+                  className="px-3"
+                  bordered
+                  hover
+                  noBottomColumns
+                  responsive
+                />
+              )}
             </CardBody>
           </Card>
         </Container>

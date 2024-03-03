@@ -5,12 +5,13 @@ const mongoose = require("mongoose");
 
 exports.addOtherGallonInventory = async (req, res) => {
   try {
-    const { othertypeGallon, price } = req.body;
+    const { othertypeGallon, price, quantity } = req.body;
     const otherGallon = await OtherGallon.create({
       user: req.user.id,
       storebranch: req.params.id,
       othertypeGallon,
       price,
+      quantity,
     });
     res
       .status(201)
@@ -62,6 +63,7 @@ exports.updateOtherGallonStoreInventory = async (req, res, next) => {
     const newData = {
       othertypeGallon: req.body.othertypeGallon,
       price: req.body.price,
+      quantity: req.body.quantity,
     };
 
     const otherGallon = await OtherGallon.findByIdAndUpdate(

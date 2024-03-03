@@ -81,8 +81,6 @@ const Sidebar = (props) => {
     };
   }
 
-
-
   return (
     <Navbar
       className="navbar-vertical fixed-left navbar-light bg-white"
@@ -183,11 +181,11 @@ const Sidebar = (props) => {
                 <i className="ni ni-user-run text-orange" /> Riders
               </NavLink>
             </NavItem>
-            <NavItem>
+            {/* <NavItem>
               <NavLink href="/gallonlist" onClick={closeCollapse}>
                 <i className="ni ni-settings-gear-65 text-yellow" /> Gallons
               </NavLink>
-            </NavItem>
+            </NavItem> */}
             {/* <NavItem>
               <NavLink href="/storebranchlist" onClick={closeCollapse}>
                 <i className="ni ni-shop text-red" /> Store Branch
@@ -197,6 +195,14 @@ const Sidebar = (props) => {
             <NavItem>
               <NavLink href="/storebranchlist">
                 <i className="ni ni-shop text-red" /> Stores
+              </NavLink>
+
+              <NavLink href="/machinecleaning">
+                <i className="ni ni-collection text-blue" /> Machine Cleaning
+              </NavLink>
+
+              <NavLink href="/barangayhealth">
+                <i className="ni ni-collection text-pink" /> Barangay Sanitation
               </NavLink>
 
               {/* <Nav vertical>
@@ -212,6 +218,12 @@ const Sidebar = (props) => {
                 </NavItem>
                
               </Nav> */}
+            </NavItem>
+
+            <NavItem>
+              <NavLink href="/admin/POS/" onClick={closeCollapse}>
+                <i className="ni ni-active-40 text-yellow" /> Walk In POS
+              </NavLink>
             </NavItem>
 
             <NavItem>

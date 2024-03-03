@@ -59,8 +59,8 @@ const OrderSummary = () => {
     order.storeBranch = [
       {
         store: storeBranchinfo._id,
-        branchNo: storeBranchinfo.branchNo,
-        address: `${storeBranchinfo.houseNo}, ${storeBranchinfo.purokNum}, ${storeBranchinfo.streetName}, ${storeBranchinfo.barangay}, ${storeBranchinfo.city}  `,
+        branchNo: storeBranchinfo.branch,
+        address: `${storeBranchinfo.address.houseNo}, ${storeBranchinfo.address.purokNum}, ${storeBranchinfo.address.streetName}, ${storeBranchinfo.address.barangay}, ${storeBranchinfo.address.city}  `,
         deliveryFee: storeBranchinfo.deliverFee,
       },
     ];
@@ -71,13 +71,16 @@ const OrderSummary = () => {
     order.paymentInfo = paymentinfo.paymentMethod;
   }
 
+  const defaultAddress =
+    user?.addresses?.find((address) => address.isDefault) || {};
+
   order.deliveryAddress = [
     {
-      houseNo: user.houseNo,
-      streetName: user.streetName,
-      purokNum: user.purokNum,
-      barangay: user.barangay,
-      city: user.city,
+      houseNo: defaultAddress.houseNo,
+      streetName: defaultAddress.streetName,
+      purokNum: defaultAddress.purokNum,
+      barangay: defaultAddress.barangay,
+      city: defaultAddress.city,
     },
   ];
 
@@ -140,8 +143,9 @@ const OrderSummary = () => {
                       <i className="ni ni-square-pin" /> Delivery Address
                     </CardTitle>
                     <CardText>
-                      {user.houseNo}, {user.purokNum}, {user.streetName},{" "}
-                      {user.barangay}, {user.city}`
+                      {defaultAddress.houseNo} {defaultAddress.purokNum}{" "}
+                      {defaultAddress.streetName} {defaultAddress.barangay}{" "}
+                      {defaultAddress.city}
                     </CardText>
                   </Card>
                 </Col>
@@ -160,7 +164,7 @@ const OrderSummary = () => {
                       {cartItems.map((item) => (
                         <Row>
                           <Col sm="5">
-                            <div style={{ textAlign: "center" }}>
+                            {/* <div style={{ textAlign: "center" }}>
                               <img
                                 src={item.image}
                                 alt={item.image}
@@ -170,7 +174,8 @@ const OrderSummary = () => {
                                   display: "inline-block",
                                 }}
                               />
-                            </div>
+                            </div> */}
+                            {item.type}
                           </Col>
                           <Col sm="3" style={{ textAlign: "center" }}>
                             {item.quantity} pc
@@ -197,9 +202,11 @@ const OrderSummary = () => {
                     <CardText>
                       <Row>
                         <Col sm="8">
-                          {storeBranchinfo.houseNo},{storeBranchinfo.purokNum},
-                          {storeBranchinfo.streetName},
-                          {storeBranchinfo.barangay}, {storeBranchinfo.city}{" "}
+                          {storeBranchinfo.address.houseNo}{" "}
+                          {storeBranchinfo.address.purokNum},
+                          {storeBranchinfo.address.streetName}
+                          {storeBranchinfo.address.barangay}{" "}
+                          {storeBranchinfo.address.city}{" "}
                         </Col>
                         <Col sm="4" style={{ textAlign: "right" }}>
                           {" "}

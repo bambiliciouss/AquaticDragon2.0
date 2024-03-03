@@ -66,65 +66,8 @@ const MyQRCode = () => {
         }}>
         <div className="row">
           {/* Sidebar */}
-          <div className="col-md-3">
-            <div>
-              <h5
-                className="title"
-                style={{
-                  marginBottom: "10px",
-                  paddingTop: "10px",
-                }}>
-                <i
-                  className="now-ui-icons users_single-02"
-                  style={{ marginRight: "5px" }}></i>
-                My Account
-              </h5>
-
-              <ul style={{ listStyleType: "none", paddingLeft: "0" }}>
-                <li>
-                  <a className="nav-link active" href="/my-profile">
-                    Profile
-                  </a>
-                </li>
-                <li>
-                  <a className="nav-link" href="/password/update">
-                    Change Password
-                  </a>
-                </li>
-                <li>
-                  <a className="nav-link" href="/my-qr">
-                    QR Code
-                  </a>
-                </li>
-              </ul>
-
-              <h5
-                className="title"
-                style={{
-                  marginBottom: "10px",
-                  paddingTop: "10px",
-                }}>
-                <i
-                  className="now-ui-icons ui-1_simple-add"
-                  style={{ marginRight: "5px" }}></i>
-                My Gallons
-              </h5>
-
-              <ul style={{ listStyleType: "none", paddingLeft: "0" }}>
-                <li>
-                  <a className="nav-link" href="/my-gallon">
-                    List of my Gallon/s
-                  </a>
-                </li>
-                <li>
-                  <a className="nav-link" href="/register-gallon">
-                    Register New Gallon
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="col-md-9">
+       
+          <div className="col-md-12">
             <Card className="bg-secondary shadow">
               <CardHeader className="bg-white border-0">
                 <Row className="align-items-center">

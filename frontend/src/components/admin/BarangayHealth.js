@@ -1,0 +1,136 @@
+import React, { Fragment, useEffect, useState } from "react";
+
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+
+import { MDBDataTable } from "mdbreact";
+
+import Sidebar from "components/Sidebar/Sidebar";
+import MetaData from "components/layout/MetaData";
+import AdminNavbar from "components/Navbars/AdminNavbar";
+import Header2 from "components/Headers/Header2";
+import AdminFooter from "components/Footers/AdminFooter.js";
+
+import { DELETE_STOREBRANCH_RESET } from "../../constants/storebranchConstants";
+import swal from "sweetalert";
+import { allStoreBranch, deleteStoreBranch } from "actions/storebranchActions";
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardBody,
+  NavItem,
+  NavLink,
+  Nav,
+  Progress,
+  Table,
+  Container,
+  Row,
+  Col,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  FormGroup,
+  InputGroupAddon,
+  InputGroupText,
+  InputGroup,
+  Form,
+} from "reactstrap";
+
+const BarangayHealth = (args) => {
+  const dispatch = useDispatch();
+  let navigate = useNavigate();
+  const { loading, error, storeBranch } = useSelector(
+    (state) => state.allStoreBranch
+  );
+
+  console.log("Initial storeBranch state:", storeBranch);
+
+  const setStoreBranch = () => {
+    const data = {
+      columns: [
+        {
+          label: "Branch",
+          field: "branchNo",
+          sort: "asc",
+        },
+
+        {
+          //label: "Barangay Health Records",
+          field: "barangay",
+        },
+      ],
+
+      rows: [],
+    };
+
+    storeBranch.forEach((storeBranches) => {
+      data.rows.push({
+        branchNo: storeBranches.branch,
+
+        barangay: (
+          <Fragment>
+            <button
+              className="btn btn-primary py-1 px-2 ml-2"
+              onClick={() =>
+                navigate(`/store/barangaycleaning/${storeBranches._id}`)
+              }>
+              View Record
+            </button>
+          </Fragment>
+        ),
+      });
+    });
+
+    return data;
+  };
+
+  useEffect(() => {
+    //DISPLAY OF STORE BRANCH
+    dispatch(allStoreBranch());
+  }, [dispatch]);
+
+  return (
+    <>
+      <MetaData title={"Barangay Health"} />
+      <Sidebar
+        logo={{
+          innerLink: "/",
+          imgSrc: require("../../assets/img/brand/logo2.1.jpg"),
+          imgAlt: "...",
+        }}
+      />
+      <div className="main-content">
+        <AdminNavbar />
+        <Header2 />
+        <Container className="mt--7" fluid>
+          <Card className="bg-secondary shadow">
+            <CardHeader className="bg-white border-0">
+              <Row className="align-items-center">
+                <Col xs="8">
+                  <h3 className="mb-0">Barangay Health Sanitation Records </h3>
+                </Col>
+              </Row>
+            </CardHeader>
+            <CardBody style={{ overflowX: "auto" }}>
+              <MDBDataTable
+                data={setStoreBranch()}
+                className="px-3"
+                bordered
+                hover
+                noBottomColumns
+                responsive
+              />
+            </CardBody>
+          </Card>
+        </Container>
+        <Container fluid>
+          <AdminFooter />
+        </Container>
+      </div>
+    </>
+  );
+};
+
+export default BarangayHealth;

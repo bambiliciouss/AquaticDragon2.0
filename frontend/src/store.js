@@ -48,6 +48,7 @@ import {
   newTypesGallonReducer,
   allTypesGallonReducer,
   typesGallonReducer,
+  singleTypeOfGallonReducer,
 } from "./reducers/typesgallonReducers";
 
 import {
@@ -70,6 +71,14 @@ import {
   singleAddressReducer,
   addressReducer,
 } from "reducers/addressReducers";
+
+import {
+  newWalkinPosReducer,
+  allWalkinPosReducer,
+  singleWalkinPosReducer,
+  walkinPosReducer,
+} from "reducers/walkinPOSReducer";
+
 const reducers = combineReducers({
   auth: authReducer,
   user: userReducer,
@@ -99,6 +108,7 @@ const reducers = combineReducers({
   newTypesGallon: newTypesGallonReducer,
   allTypesGallon: allTypesGallonReducer,
   typesGallon: typesGallonReducer,
+  singleTypeOfGallon: singleTypeOfGallonReducer,
 
   newMachineCleaning: newMachineCleaningReducer,
   allMachineCleaning: allMachineCleaningReducer,
@@ -114,6 +124,11 @@ const reducers = combineReducers({
   allAddress: allAddressReducer,
   singleAddress: singleAddressReducer,
   addressrecord: addressReducer,
+
+  newWalkinPos: newWalkinPosReducer,
+  allWalkinPos: allWalkinPosReducer,
+  singleWalkinPos: singleWalkinPosReducer,
+  walkinPos: walkinPosReducer,
 });
 
 let initialState = {

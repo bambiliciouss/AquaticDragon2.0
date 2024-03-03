@@ -25,6 +25,7 @@ const {
   getAllAddresses,
   getAddressDetails,
   setDefaultAddress,
+  admingetAllAddresses,
 } = require("../controllers/authController");
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
@@ -69,6 +70,8 @@ router.put(
   isAuthenticatedUser,
   setDefaultAddress
 );
+
+router.get("/me/addresses/:id", isAuthenticatedUser, admingetAllAddresses);
 
 router.put("/password/update", isAuthenticatedUser, updatePassword);
 

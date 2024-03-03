@@ -75,21 +75,22 @@ const Cart = () => {
                                 <hr />
                                 <div className="cart-item" key={item.gallon_id}>
                                   <div className="row">
-                                    <div className="col-4 col-lg-3">
+                                    {/* <div className="col-4 col-lg-3">
                                       <img
                                         src={item.image}
-                                        alt="Laptop"
+                                        alt="......."
                                         height="90"
                                         width="115"
                                       />
-                                    </div>
-
-                                    <div className="col-6 col-lg-3 mt-3 mt-lg-0">
-                                      <p id="card_item_price">{item.age}days</p>
-                                    </div>
-
+                                    </div> */}
                                     <div className="col-6 col-lg-3 mt-3 mt-lg-0">
                                       <p id="card_item_price">{item.type}</p>
+                                    </div>
+
+                                    <div className="col-6 col-lg-3 mt-3 mt-lg-0">
+                                      <p id="card_item_price">
+                                        {item.quantity}
+                                      </p>
                                     </div>
 
                                     <div className="col-4 col-lg-1 mt-4 mt-lg-0">
@@ -130,7 +131,7 @@ const Cart = () => {
                               <p>
                                 Total:{" "}
                                 <span className="order-summary-values">
-                                ₱
+                                  ₱
                                   {cartItems
                                     .reduce(
                                       (acc, item) =>

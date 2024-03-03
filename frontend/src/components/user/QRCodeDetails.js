@@ -17,6 +17,7 @@ import {
   Col,
 } from "reactstrap";
 import { getUserQRDetails } from "actions/userActions";
+import { AdminallAddress } from "actions/addressAction";
 const QRCodeDetails = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
@@ -24,13 +25,20 @@ const QRCodeDetails = () => {
   let navigate = useNavigate();
   let location = useLocation();
 
+  const { useraddress } = useSelector((state) => state.allAddress);
+
   const { user } = useSelector((state) => state.userDetails);
   React.useEffect(() => {
     dispatch(getUserQRDetails(id));
+    dispatch(AdminallAddress(id));
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
   }, [location]);
 
+  const defaultAddress =
+    user?.addresses?.find((address) => address.isDefault) || {};
+
+  console.log("info", defaultAddress);
   return (
     <>
       <MetaData title={"QR Code Details"} />
@@ -75,7 +83,6 @@ const QRCodeDetails = () => {
                             src={user.avatar && user.avatar.url}
                             alt="User"
                           />
-                        
                         </div>
                       </Col>
                       <Col lg="9">
@@ -131,6 +138,24 @@ const QRCodeDetails = () => {
                             </FormGroup>
                           </Col>
                         </Row>
+                        <Row>
+                          <Col md="12">
+                            <FormGroup>
+                              <label
+                                className="form-control-label"
+                                htmlFor="input-address">
+                                Phone No.
+                              </label>
+                              <Input
+                                className="form-control-alternative"
+                                id="input-phone"
+                                type="text"
+                                value={user ? user.phone : ""}
+                                readOnly
+                              />
+                            </FormGroup>
+                          </Col>
+                        </Row>
                       </Col>
                     </Row>
                   </div>
@@ -140,24 +165,6 @@ const QRCodeDetails = () => {
                     Contact information
                   </h6>
                   <div className="pl-lg-4">
-                    <Row>
-                      <Col md="12">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-address">
-                            Phone No.
-                          </label>
-                          <Input
-                            className="form-control-alternative"
-                            id="input-phone"
-                            type="text"
-                            value={user ? user.phone : ""}
-                            readOnly
-                          />
-                        </FormGroup>
-                      </Col>
-                    </Row>
                     <Row>
                       <Col lg="6">
                         <FormGroup>
@@ -171,11 +178,11 @@ const QRCodeDetails = () => {
                             id="input-city"
                             type="text"
                             placeholder={
-                              user && user.houseNo !== ""
-                                ? user.houseNo
+                              defaultAddress && defaultAddress.houseNo !== ""
+                                ? defaultAddress.houseNo
                                 : "Update..."
                             }
-                            value={user ? user.houseNo : ""}
+                            value={defaultAddress ? defaultAddress.houseNo : ""}
                             readOnly
                           />
                         </FormGroup>
@@ -192,11 +199,13 @@ const QRCodeDetails = () => {
                             id="input-country"
                             type="text"
                             placeholder={
-                              user && user.purokNum !== ""
-                                ? user.purokNum
+                              defaultAddress && defaultAddress.purokNum !== ""
+                                ? defaultAddress.purokNum
                                 : "Update..."
                             }
-                            value={user ? user.purokNum : ""}
+                            value={
+                              defaultAddress ? defaultAddress.purokNum : ""
+                            }
                             readOnly
                           />
                         </FormGroup>
@@ -216,11 +225,13 @@ const QRCodeDetails = () => {
                             id="input-phone"
                             type="text"
                             placeholder={
-                              user && user.streetName !== ""
-                                ? user.streetName
+                              defaultAddress && defaultAddress.streetName !== ""
+                                ? defaultAddress.streetName
                                 : "Update..."
                             }
-                            value={user ? user.streetName : ""}
+                            value={
+                              defaultAddress ? defaultAddress.streetName : ""
+                            }
                             readOnly
                           />
                         </FormGroup>
@@ -239,11 +250,13 @@ const QRCodeDetails = () => {
                             id="input-city"
                             type="text"
                             placeholder={
-                              user && user.barangay !== ""
-                                ? user.barangay
+                              defaultAddress && defaultAddress.barangay !== ""
+                                ? defaultAddress.barangay
                                 : "Update..."
                             }
-                            value={user ? user.barangay : ""}
+                            value={
+                              defaultAddress ? defaultAddress.barangay : ""
+                            }
                             readOnly
                           />
                         </FormGroup>
@@ -260,9 +273,11 @@ const QRCodeDetails = () => {
                             id="input-country"
                             type="text"
                             placeholder={
-                              user && user.city !== "" ? user.city : "Update..."
+                              defaultAddress && defaultAddress.city !== ""
+                                ? defaultAddress.city
+                                : "Update..."
                             }
-                            value={user ? user.city : ""}
+                            value={defaultAddress ? defaultAddress.city : ""}
                             readOnly
                           />
                         </FormGroup>

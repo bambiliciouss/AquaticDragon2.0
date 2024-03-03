@@ -205,3 +205,22 @@ export const setDefaultAddress = (id) => async (dispatch) => {
     });
   }
 };
+
+export const AdminallAddress = (id) => async (dispatch) => {
+  try {
+    dispatch({ type: ALL_ADDRESS_REQUEST });
+    const { data } = await axios.get(`/api/v1/me/addresses/${id}`);
+    dispatch({
+      type: ALL_ADDRESS_SUCCESS,
+      payload: data.addresses,
+    });
+    console.log(data.addresses);
+  } catch (error) {
+    dispatch({
+      type: ALL_ADDRESS_FAIL,
+      payload: error.response
+        ? error.response.data.message
+        : "Unknown error occurred",
+    });
+  }
+};

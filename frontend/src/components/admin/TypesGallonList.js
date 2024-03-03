@@ -56,6 +56,11 @@ const TypesGallonList = () => {
   } = useForm(); // Destructure the reset function from useForm
   console.log("INTIAL DATA: ", typeofGallon);
 
+  const [gallonImage, setgallonImage] = useState("");
+  const [gallonImagePreview, setgallonImagePreview] = useState(
+    "/images/default_avatar.jpg"
+  );
+
   useEffect(() => {
     dispatch(allTypesGallon());
     if (isDeleted) {
@@ -101,13 +106,32 @@ const TypesGallonList = () => {
     const formData = new FormData();
     formData.set("typeofGallon", data.gallonType);
     formData.set("price", data.price);
+    formData.set("gallonImage", gallonImage);
 
     dispatch(createTypesGallon(formData));
   };
 
+  const onChange = (e) => {
+    if (e.target.name === "gallonImage") {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          setgallonImagePreview(reader.result);
+          setgallonImage(reader.result);
+        }
+      };
+
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
   const setGallonTypes = () => {
     const data = {
       columns: [
+        {
+          label: "Gallon Image",
+          field: "image",
+        },
         {
           label: "Type of Gallon",
           field: "typeofGallon",
@@ -128,10 +152,25 @@ const TypesGallonList = () => {
 
     typeofGallon.forEach((typeofGallon) => {
       data.rows.push({
+        image: (
+          <img
+            style={{ width: 100, height: 100 }}
+            src={typeofGallon.gallonImage.url}
+            alt="image"
+            img
+          />
+        ),
         typeofGallon: typeofGallon.typeofGallon,
         price: `₱ ${typeofGallon.price}.00`,
         actions: (
           <Fragment>
+            <button
+              className="btn btn-primary py-1 px-2 ml-2"
+              onClick={() =>
+                navigate(`/update/typegallon/details/${typeofGallon._id}`)
+              }>
+              <i className="fa fa-info-circle"></i>
+            </button>
             <button
               className="btn btn-danger py-1 px-2 ml-2"
               onClick={() => deletetypesGallonHandler(typeofGallon._id)}>
@@ -183,6 +222,59 @@ const TypesGallonList = () => {
                         Register New Type of Gallon
                       </ModalHeader>
                       <ModalBody>
+                        <FormGroup>
+                          <label htmlFor="avatar_upload">Gallon Image</label>
+
+                          <div className="row">
+                            <div className="col-sm-3"></div>
+                            <div className="col-sm-6">
+                              <div className="text-center">
+                                <img
+                                  className="avatar border-gray"
+                                  style={{
+                                    width: "200px",
+                                    height: "200px",
+                                  }}
+                                  src={gallonImagePreview}
+                                  alt="User"
+                                />
+                              </div>
+
+                              <div className="custom-file">
+                                <input
+                                  type="file"
+                                  name="gallonImage"
+                                  className="custom-file-input"
+                                  id="gallonImage"
+                                  accept="images/*"
+                                  {...register("gallonImage", {
+                                    required: true,
+                                  })}
+                                  onChange={(e) => {
+                                    onChange(e);
+                                    e.target.blur();
+                                  }}
+                                />
+                                <label
+                                  className="custom-file-label"
+                                  htmlFor="customFile">
+                                  Choose Image
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                          {errors.gallonImage && !gallonImage && (
+                            <h2
+                              className="h1-seo"
+                              style={{
+                                color: "red",
+                                fontSize: "small",
+                              }}>
+                              Please select a valid image.
+                            </h2>
+                          )}
+                        </FormGroup>
+
                         <FormGroup>
                           <InputGroup className="input-group-alternative">
                             <InputGroupAddon addonType="prepend">

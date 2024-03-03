@@ -44,7 +44,10 @@ import {
   InputGroupText,
   InputGroup,
   Form,
+  Badge,
 } from "reactstrap";
+
+import { AdminallAddress } from "actions/addressAction";
 
 const UpdateUser = () => {
   const location = useLocation();
@@ -53,6 +56,8 @@ const UpdateUser = () => {
   const { error, isUpdated } = useSelector((state) => state.user);
   const { user } = useSelector((state) => state.userDetails);
   const { id } = useParams();
+
+  const { useraddress } = useSelector((state) => state.allAddress);
 
   const [fname, setFname] = useState("");
   const [lname, setLname] = useState("");
@@ -66,6 +71,8 @@ const UpdateUser = () => {
   const [avatarPreview, setAvatarPreview] = useState(
     "/images/default_avatar.jpg"
   );
+
+  const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
   const [medcert, setMedcert] = useState("");
   const [medcertPreview, setMedcertPreview] = useState(
@@ -108,6 +115,7 @@ const UpdateUser = () => {
 
   useEffect(() => {
     setRole("rider");
+    dispatch(AdminallAddress(id));
 
     if (user && user._id !== id) {
       dispatch(getUserDetails(id));
@@ -120,6 +128,7 @@ const UpdateUser = () => {
       setPurokNum(user.purokNum);
       setBarangay(user.barangay);
       setCity(user.city);
+      setEmail(user.email);
       setAvatarPreview(user.avatar.url);
       setMedcertPreview(user.medcert.url);
       setBarangayclearancePreview(user.barangayclearance.url);
@@ -174,6 +183,64 @@ const UpdateUser = () => {
     }
   };
 
+  const setAddresses = () => {
+    const data = {
+      columns: [
+        {
+          label: "Address",
+          field: "address",
+          sort: "asc",
+        },
+        {
+          label: "Set Default",
+          field: "default",
+          sort: "asc",
+        },
+
+        // {
+        //   label: "Actions",
+        //   field: "actions",
+        // },
+      ],
+
+      rows: [],
+    };
+
+    useraddress.forEach((useraddresses) => {
+      data.rows.push({
+        address: `${useraddresses.houseNo} ${useraddresses.purokNum} ${useraddresses.streetName} ${useraddresses.barangay} ${useraddresses.city}`,
+        actions: (
+          <Fragment>
+            {/* <button
+              className="btn btn-primary py-1 px-2 ml-2"
+              onClick={() => EditModal(useraddresses._id)}>
+              <i className="fa fa-info-circle"></i>
+            </button>
+
+            <button
+              className="btn btn-danger py-1 px-2 ml-2"
+              onClick={() => deleteHandler(useraddresses._id)}>
+              <i className="fa fa-trash"></i>
+            </button> */}
+          </Fragment>
+        ),
+        default: (
+          <Fragment>
+            <Badge
+              color={useraddresses.isDefault ? "success" : "secondary"}
+              // href=""
+              // onClick={() => setDefAddress(useraddresses._id)}
+            >
+              {useraddresses.isDefault ? "Default" : "Default"}
+            </Badge>
+          </Fragment>
+        ),
+      });
+    });
+
+    return data;
+  };
+
   return (
     <>
       <MetaData title={"Update Customer"} />
@@ -215,8 +282,8 @@ const UpdateUser = () => {
                                 <img
                                   className="avatar border-gray"
                                   style={{
-                                    width: "200px",
-                                    height: "200px",
+                                    width: "100px",
+                                    height: "100px",
                                     borderRadius: "50%",
                                   }}
                                   src={avatarPreview}
@@ -271,7 +338,7 @@ const UpdateUser = () => {
                                 </Col>
                               </Row>
                               <Row>
-                                <Col lg="5">
+                                <Col lg="12">
                                   <FormGroup>
                                     <label className="form-control-label">
                                       Phone No.
@@ -285,7 +352,7 @@ const UpdateUser = () => {
                                     />
                                   </FormGroup>
                                 </Col>
-                                <Col lg="3">
+                                {/* <Col lg="3">
                                   <FormGroup>
                                     <label className="form-control-label">
                                       Unit, Building, House No.
@@ -328,10 +395,27 @@ const UpdateUser = () => {
                                       <option value="Purok 10">Purok 10</option>
                                     </select>
                                   </FormGroup>
-                                </Col>
+                                </Col> */}
                               </Row>
 
-                              <Row>
+                              {/* <Row>
+                                <Col lg="12">
+                                  <FormGroup>
+                                    <label className="form-control-label">
+                                      Email
+                                    </label>
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                      placeholder="Email"
+                                      value={email}
+                                      onChange={(e) => setEmail(e.target.value)}
+                                    />
+                                  </FormGroup>
+                                </Col>
+                              </Row> */}
+
+                              {/* <Row>
                                 <Col lg="12">
                                   <FormGroup>
                                     <label className="form-control-label">
@@ -396,7 +480,7 @@ const UpdateUser = () => {
                                     </select>
                                   </FormGroup>
                                 </Col>
-                              </Row>
+                              </Row> */}
                             </Col>
                           </Row>
 
@@ -412,6 +496,19 @@ const UpdateUser = () => {
                             </Button>
                           </div>
                         </Form>
+
+                        <Row>
+                          <Col>
+                            <MDBDataTable
+                              data={setAddresses()}
+                              className="px-3"
+                              bordered
+                              hover
+                              noBottomColumns
+                              responsive
+                            />
+                          </Col>
+                        </Row>
                       </CardBody>
                     </Card>
                   </div>

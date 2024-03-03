@@ -14,7 +14,7 @@ const orderSchema = mongoose.Schema({
         required: true,
         ref: "Gallon",
       },
-      image: {
+      type: {
         type: String,
         required: true,
       },
@@ -53,7 +53,8 @@ const orderSchema = mongoose.Schema({
       },
       deliveryFee: {
         type: Number,
-        required: true,
+       // required: true,
+       default:0
       },
     },
  

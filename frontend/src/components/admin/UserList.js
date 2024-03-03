@@ -148,11 +148,11 @@ const UserList = () => {
           sort: "asc",
         },
 
-        {
-          label: "Email",
-          field: "email",
-          sort: "asc",
-        },
+        // {
+        //   label: "Email",
+        //   field: "email",
+        //   sort: "asc",
+        // },
         {
           label: "Actions",
           field: "actions",
@@ -163,11 +163,14 @@ const UserList = () => {
     };
 
     filter.forEach((user) => {
+      const defaultAddress =
+        user.addresses.find((address) => address.isDefault) || {};
+
       data.rows.push({
         name: `${user.fname} ${user.lname}`,
         phone: user.phone,
-        address: `${user.houseNo} ${user.purokNum} ${user.streetName} ${user.barangay} ${user.city}`,
-        email: user.email,
+        address: `${defaultAddress.houseNo} ${defaultAddress.purokNum} ${defaultAddress.streetName} ${defaultAddress.barangay} ${defaultAddress.city}`,
+        // email: user.email,
         image: (
           <img
             className="d-block w-100"
@@ -196,56 +199,6 @@ const UserList = () => {
             </button>
           </Fragment>
         ),
-        // qr: (
-        //   <Fragment
-        //     style={{
-        //       display: "flex",
-        //       justifyContent: "center",
-        //       alignItems: "center",
-        //       flexDirection: "column", // Stack children vertically
-        //     }}>
-        //     <div
-        //       ref={containerRef1}
-        //       style={{
-        //         backgroundColor: "white",
-        //         padding: "10px",
-        //         display: "flex",
-        //         flexDirection: "column",
-        //         alignItems: "center",
-        //         justifyContent: "center",
-        //         height: "auto",
-        //         width: "auto",
-        //         border: "10px solid darkblue",
-        //       }}>
-        //       <div
-        //         style={{
-        //           textAlign: "center",
-        //           margin: "10px",
-        //           fontWeight: "bold",
-        //           fontSize: "14px",
-        //         }}>
-        //         Aquatic Dragon Water Refilling Station
-        //       </div>
-        //       {/* <QRCode value={user?._id} size={200} /> */}
-        //       <QRCode
-        //         value={`http://localhost:3000/details/${user._id}`}
-        //         size={200}
-        //       />
-        //       <div
-        //         style={{
-        //           textAlign: "center",
-        //           marginTop: "10px",
-        //           fontWeight: "bold",
-        //           fontSize: "20px",
-        //         }}>
-        //         {user.fname} {user.lname}
-        //       </div>
-        //     </div>
-        //     <Button className="my-2 mr-2" color="primary" onClick={download}>
-        //       Download QR Code
-        //     </Button>
-        //   </Fragment>
-        // ),
       });
     });
 
@@ -282,6 +235,8 @@ const UserList = () => {
                 hover
                 noBottomColumns
                 responsive
+                // noRecordsFoundLabel={false}
+                // searching={false}
               />
             </CardBody>
           </Card>

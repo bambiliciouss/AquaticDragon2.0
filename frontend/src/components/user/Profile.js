@@ -264,74 +264,12 @@ const Profile = () => {
           marginRight: "15%",
         }}>
         <div className="row">
-          {/* Sidebar */}
-          <div className="col-md-3">
-            <div>
-              <h5
-                className="title"
-                style={{
-                  marginBottom: "10px",
-                  paddingTop: "10px",
-                }}>
-                <i
-                  className="now-ui-icons users_single-02"
-                  style={{ marginRight: "5px" }}></i>
-                <i
-                  className="fa fa-info-circle"
-                  style={{ marginRight: "5px" }}></i>
-                My Account
-              </h5>
-
-              <ul style={{ listStyleType: "none", paddingLeft: "0" }}>
-                <li>
-                  <a className="nav-link active" href="/my-profile">
-                    Profile
-                  </a>
-                </li>
-                <li>
-                  <a className="nav-link" href="/password/update">
-                    Change Password
-                  </a>
-                </li>
-                <li>
-                  <a className="nav-link" href="/my-qr">
-                    QR Code
-                  </a>
-                </li>
-              </ul>
-
-              <h5
-                className="title"
-                style={{
-                  marginBottom: "10px",
-                  paddingTop: "10px",
-                }}>
-                <i
-                  className="now-ui-icons ui-1_simple-add"
-                  style={{ marginRight: "5px" }}></i>
-                My Gallons
-              </h5>
-
-              <ul style={{ listStyleType: "none", paddingLeft: "0" }}>
-                <li>
-                  <a className="nav-link" href="/my-gallon">
-                    List of my Gallon/s
-                  </a>
-                </li>
-                <li>
-                  <a className="nav-link" href="/register-gallon">
-                    Register New Gallon
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="col-md-9">
+          <div className="col-md-12">
             <Card className="bg-secondary shadow">
               <CardHeader className="bg-white border-0">
                 <Row className="align-items-center">
                   <Col xs="8">
-                    <h3 className="mb-0">My account</h3>
+                    <h3 className="mb-0">My Profile</h3>
                   </Col>
                 </Row>
               </CardHeader>
@@ -357,16 +295,22 @@ const Profile = () => {
                           <div className="btn-container d-block">
                             <button
                               className="btn btn-info btn-sm mb-2"
-                              onClick={() => navigate("/admin/update")}>
+                              onClick={() => navigate("/me/update")}>
                               Edit Profile
+                            </button>
+                          </div>
+
+                          <div className="btn-container d-block">
+                            <button
+                              className="btn btn-info btn-sm mb-2"
+                              onClick={() => navigate("/my-qr")}>
+                              My QR Code
                             </button>
                           </div>
                           <div className="btn-container d-block">
                             <button
                               className="btn btn-info btn-sm mb-2"
-                              onClick={() =>
-                                navigate("/admin/password/update")
-                              }>
+                              onClick={() => navigate("/password/update")}>
                               Change Password
                             </button>
                           </div>

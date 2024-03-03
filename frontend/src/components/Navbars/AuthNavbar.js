@@ -146,6 +146,11 @@ const AdminNavbar = () => {
                           Dashboard
                         </DropdownItem>
                       )}
+
+                      <DropdownItem href="/gallon/order">
+                        <i className="now-ui-icons business_chart-bar-32"></i>
+                        Gallons
+                      </DropdownItem>
                       <DropdownItem href="/" onClick={logoutHandler}>
                         <i className="now-ui-icons media-1_button-power"></i>
                         Logout

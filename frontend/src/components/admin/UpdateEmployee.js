@@ -102,17 +102,20 @@ const UpdateEmployee = () => {
   useEffect(() => {
     setRole("employee");
 
+    const defaultAddress =
+    user?.addresses?.find((address) => address.isDefault) || {};
+
     if (user && user._id !== id) {
       dispatch(getUserDetails(id));
     } else {
       setFname(user.fname);
       setLname(user.lname);
       setPhone(user.phone);
-      setHouseNo(user.houseNo);
-      setStreetName(user.streetName);
-      setPurokNum(user.purokNum);
-      setBarangay(user.barangay);
-      setCity(user.city);
+      setHouseNo(defaultAddress.houseNo);
+      setStreetName(defaultAddress.streetName);
+      setPurokNum(defaultAddress.purokNum);
+      setBarangay(defaultAddress.barangay);
+      setCity(defaultAddress.city);
       setAvatarPreview(user.avatar.url);
       setMedcertPreview(user.medcert.url);
       setBarangayclearancePreview(user.barangayclearance.url);
@@ -195,6 +198,8 @@ const UpdateEmployee = () => {
       reader.readAsDataURL(e.target.files[0]);
     }
   };
+
+
 
   return (
     <>

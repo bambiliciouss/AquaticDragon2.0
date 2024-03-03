@@ -333,10 +333,12 @@ const RiderList = (args) => {
     };
 
     filter.forEach((user) => {
+      const defaultAddress =
+        user.addresses.find((address) => address.isDefault) || {};
       data.rows.push({
         name: `${user.fname} ${user.lname}`,
         phone: user.phone,
-        address: `${user.houseNo} ${user.purokNum} ${user.streetName} ${user.barangay} ${user.city}`,
+        address: `${defaultAddress.houseNo} ${defaultAddress.purokNum} ${defaultAddress.streetName} ${defaultAddress.barangay} ${defaultAddress.city}`,
         email: user.email,
         image: (
           <img
