@@ -45,9 +45,13 @@ import UpdateMachineCleaning from "components/admin/UpdateMachineCleaning";
 import UpdateBarangayHealth from "components/admin/UpdateBarangayHealth";
 import UpdateTypeGallon from "components/admin/UpdateTypeGallon";
 import UpdateWalkInSalesInventory from "components/admin/UpdateWalkInSalesInventory";
+import UpdateProduct from "components/admin/UpdateProduct";
 
 import WalkInPOS from "components/admin/WalkInPOS";
 import WalkInSalesInventory from "components/admin/WalkInSalesInventory";
+
+import Product from "components/admin/Product";
+import ProductList from "components/admin/ProductList";
 
 import GallonOrder from "components/cart/GallonOrder";
 
@@ -100,7 +104,8 @@ function App() {
           path="/me/update"
           element={
             <ProtectedRoute>
-              <UpdateProfile />
+              {" "}
+              <UpdateProfile />{" "}
             </ProtectedRoute>
           }
           exact="true"
@@ -379,6 +384,30 @@ function App() {
           element={
             <ProtectedRoute>
               <UpdateWalkInSalesInventory />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/product"
+          element={
+            <ProtectedRoute>
+              <Product />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/product/store/:id"
+          element={
+            <ProtectedRoute>
+              <ProductList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/product/update/:id"
+          element={
+            <ProtectedRoute>
+              <UpdateProduct />
             </ProtectedRoute>
           }
         />

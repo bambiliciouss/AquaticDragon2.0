@@ -19,7 +19,25 @@ const productSchema = new mongoose.Schema({
     ref: "TypeOfGallon",
   },
 
-  stock: {
+  stocks: [
+    {
+      quantity: {
+        type: Number,
+        required: true,
+        default: 0,
+      },
+      datedAt: {
+        type: Date,
+        default: Date.now,
+      },
+      deleted: {
+        type: Boolean,
+        default: false,
+      },
+    },
+  ],
+
+  price: {
     type: Number,
     required: true,
     default: 0,

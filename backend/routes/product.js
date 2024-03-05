@@ -4,15 +4,19 @@ const router = express.Router();
 const {
   createProduct,
   updateProductStock,
-  AllProductStock,
+  SingleProductStock,
   AllProductStockinStore,
+  ProductStocklogs,
+  DeleteProductStocklogs,
+  updateProduct,
+  deleteProduct,
 } = require("../controllers/productController");
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
 const upload = require("../utils/multer");
 
 router.post(
-  "/admin/create/product",
+  "/admin/create/product/:id",
   isAuthenticatedUser,
   authorizeRoles("admin"),
   createProduct
@@ -26,11 +30,30 @@ router.put(
 );
 
 router
-  .route("/admin/all/product/")
-  .get(isAuthenticatedUser, authorizeRoles("admin"), AllProductStock);
+  .route("/admin/all/product/:id")
+  .get(isAuthenticatedUser, authorizeRoles("admin"), SingleProductStock);
 
 router
   .route("/admin/all/product/store/:id")
   .get(isAuthenticatedUser, authorizeRoles("admin"), AllProductStockinStore);
+
+router
+  .route("/admin/product/stocklogs/:id")
+  .get(isAuthenticatedUser, authorizeRoles("admin"), ProductStocklogs);
+
+router
+  .route("/admin/product/:productId/stocklogs/delete/:id")
+  .delete(isAuthenticatedUser, authorizeRoles("admin"), DeleteProductStocklogs);
+
+router.put(
+  "/admin/update/product/price/:id",
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
+  updateProduct
+);
+
+router
+  .route("/admin/product/delete/:id")
+  .delete(isAuthenticatedUser, authorizeRoles("admin"), deleteProduct);
 
 module.exports = router;

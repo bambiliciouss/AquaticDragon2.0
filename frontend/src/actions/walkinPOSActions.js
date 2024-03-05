@@ -149,3 +149,5 @@ export const updateWalkinpos = (id, walkinposData) => async (dispatch) => {
     });
   }
 };
+
+

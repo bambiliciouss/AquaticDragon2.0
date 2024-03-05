@@ -79,6 +79,15 @@ import {
   walkinPosReducer,
 } from "reducers/walkinPOSReducer";
 
+import {
+  newProductReducer,
+  allProductsReducer,
+  allProductsStockLogsReducer,
+  ProductsStockLogsReducer,
+  singleProductsReducer,
+  ProductDetailsReducer,
+} from "reducers/productReducers";
+
 const reducers = combineReducers({
   auth: authReducer,
   user: userReducer,
@@ -129,6 +138,13 @@ const reducers = combineReducers({
   allWalkinPos: allWalkinPosReducer,
   singleWalkinPos: singleWalkinPosReducer,
   walkinPos: walkinPosReducer,
+
+  newProduct: newProductReducer,
+  allProducts: allProductsReducer,
+  allProductsStockLogs: allProductsStockLogsReducer,
+  productsStockLogs: ProductsStockLogsReducer,
+  singleProduct: singleProductsReducer,
+  productDetails: ProductDetailsReducer,
 });
 
 let initialState = {

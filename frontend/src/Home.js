@@ -93,12 +93,35 @@ import { useLocation } from "react-router-dom";
 import AuthNavbar from "components/Navbars/AuthNavbar.js";
 import AuthFooter from "components/Footers/AuthFooter.js";
 
+import "./styles.css";
+import "leaflet/dist/leaflet.css";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import MarkerClusterGroup from "react-leaflet-cluster";
+import { Icon, divIcon, point } from "leaflet";
+
 const Home = () => {
   const location = useLocation();
   React.useEffect(() => {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
   }, [location]);
+
+  const markers = [
+    {
+      geocode: [14.493885828552058, 121.0515581995835],
+      popUp: "Aquatic Dragon (Branch No.1)",
+    },
+    {
+      geocode: [14.493595, 121.052208],
+      popUp: "Aquatic Dragon (Main Branch)",
+    },
+  ];
+
+  const customIcon = new Icon({
+    iconUrl: "https://cdn-icons-png.flaticon.com/512/447/447031.png",
+    // iconUrl: require("./icons/placeholder.png"),
+    iconSize: [38, 38], // size of the icon
+  });
 
   return (
     <>
@@ -128,6 +151,24 @@ const Home = () => {
                 </div>
               </Col>
             </Row>
+          </Container>
+        </section>
+
+        <section className="section section-lg mt-8">
+          <Container>
+            <MapContainer
+              center={[14.494066571438568, 121.0510134107358]}
+              zoom={18}>
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              {markers.map((marker) => (
+                <Marker position={marker.geocode} icon={customIcon}>
+                  <Popup>{marker.popUp}</Popup>
+                </Marker>
+              ))}
+            </MapContainer>
           </Container>
         </section>
       </main>

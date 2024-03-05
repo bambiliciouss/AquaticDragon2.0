@@ -205,6 +205,11 @@ const Sidebar = (props) => {
                 <i className="ni ni-collection text-pink" /> Barangay Sanitation
               </NavLink>
 
+              <NavLink href="/admin/product">
+                <i className="ni ni-bag-17 text-orange" /> Brandnew Gallon Item 
+      
+              </NavLink>
+
               {/* <Nav vertical>
                 <NavItem>
                   <NavLink href="/subpage1" onClick={closeCollapse}>
