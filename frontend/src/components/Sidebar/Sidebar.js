@@ -206,8 +206,7 @@ const Sidebar = (props) => {
               </NavLink>
 
               <NavLink href="/admin/product">
-                <i className="ni ni-bag-17 text-orange" /> Brandnew Gallon Item 
-      
+                <i className="ni ni-bag-17 text-orange" /> Brandnew Gallon Item
               </NavLink>
 
               {/* <Nav vertical>
@@ -227,7 +226,7 @@ const Sidebar = (props) => {
 
             <NavItem>
               <NavLink href="/admin/POS/" onClick={closeCollapse}>
-                <i className="ni ni-active-40 text-yellow" /> Walk In POS
+                <i className="ni ni-active-40 text-yellow" /> Walk In Refill
               </NavLink>
             </NavItem>
 

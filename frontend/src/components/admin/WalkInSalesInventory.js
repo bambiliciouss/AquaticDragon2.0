@@ -44,6 +44,8 @@ import {
 
 import { getStoreDetails } from "actions/storebranchActions";
 
+import { allTypesGallon } from "actions/typesgallonAction";
+
 const WalkInSalesInventory = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -70,6 +72,8 @@ const WalkInSalesInventory = () => {
     setQuantity(Math.max(1, quantity + amount));
   };
 
+  const { typeofGallon } = useSelector((state) => state.allTypesGallon);
+
   const handleGallonTypeClick = (type) => {
     setSelectedGallonType(type);
 
@@ -78,13 +82,21 @@ const WalkInSalesInventory = () => {
         setPrice(5);
         break;
       case "7Liters":
-        setPrice(10);
+        setPrice(15);
         break;
       case "Others":
         setPrice(0);
         break;
       default:
-        setPrice(0);
+        const dynamicType = typeofGallon.find(
+          (gallon) => gallon.typeofGallon === type
+        );
+        if (dynamicType) {
+          setPrice(dynamicType.price);
+        } else {
+          setPrice(0);
+        }
+        break;
     }
   };
 
@@ -118,6 +130,9 @@ const WalkInSalesInventory = () => {
     dispatch(getStoreDetails(id));
     dispatch(allWalkinpos(id));
     setTotal(price * quantity);
+    dispatch(allTypesGallon());
+
+    console.log("TYPE OF GALON", typeofGallon);
 
     if (walkinposcreated) {
       console.log("success registration");
@@ -224,9 +239,9 @@ const WalkInSalesInventory = () => {
               <Row className="align-items-center">
                 <Col xs="8">
                   <h3 className="mb-0">
-                    Other Type of Gallon Sales Inventory ( {storeBranch.branch}{" "}
-                    )
+                    Walk In Refill Inventory ( {storeBranch.branch} )
                   </h3>
+                  <h5 className="mb-0">(No Customer Account)</h5>
                 </Col>
                 <Col md="4">
                   <Button
@@ -239,7 +254,7 @@ const WalkInSalesInventory = () => {
                   </Button>
                   <Modal isOpen={isModalOpen} toggle={toggleModal}>
                     <ModalHeader toggle={toggleModal}>
-                      Add Walk In Sales for other type of gallons
+                      Add Walk In Refill
                     </ModalHeader>
                     <Form role="form" onSubmit={submitHandler}>
                       <ModalBody>
@@ -249,6 +264,32 @@ const WalkInSalesInventory = () => {
                               <label className="form-control-label">
                                 Select Type
                               </label>
+
+                              {typeofGallon.map((typeofGallons) => (
+                                <>
+                                  <div>
+                                    <Button
+                                      block
+                                      color={
+                                        selectedGallonType ===
+                                        typeofGallons.typeofGallon
+                                          ? "primary"
+                                          : "secondary"
+                                      }
+                                      size="lg"
+                                      onClick={() =>
+                                        handleGallonTypeClick(
+                                          typeofGallons.typeofGallon
+                                        )
+                                      }
+                                      className="mr-2 mb-2">
+                                      {typeofGallons.typeofGallon}
+                                    </Button>
+                                  </div>
+                                  <div style={{ marginBottom: "20px" }}></div>
+                                </>
+                              ))}
+
                               <div>
                                 <Button
                                   block

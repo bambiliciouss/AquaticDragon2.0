@@ -98,24 +98,31 @@ import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import { Icon, divIcon, point } from "leaflet";
-
+import { useDispatch, useSelector } from "react-redux";
+import { allStoreBranch } from "actions/storebranchActions";
 const Home = () => {
   const location = useLocation();
+  const dispatch = useDispatch();
+  const { storeBranch } = useSelector((state) => state.allStoreBranch);
+
   React.useEffect(() => {
+    dispatch(allStoreBranch());
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
-  }, [location]);
 
-  const markers = [
-    {
-      geocode: [14.493885828552058, 121.0515581995835],
-      popUp: "Aquatic Dragon (Branch No.1)",
-    },
-    {
-      geocode: [14.493595, 121.052208],
-      popUp: "Aquatic Dragon (Main Branch)",
-    },
-  ];
+    console.log(storeBranch);
+  }, [location, dispatch]);
+
+  // const markers = [
+  //   {
+  //     geocode: [14.493885828552058, 121.0515581995835],
+  //     popUp: "Aquatic Dragon (Branch No.1)",
+  //   },
+  //   {
+  //     geocode: [14.493595, 121.052208],
+  //     popUp: "Aquatic Dragon (Main Branch)",
+  //   },
+  // ];
 
   const customIcon = new Icon({
     iconUrl: "https://cdn-icons-png.flaticon.com/512/447/447031.png",
@@ -163,9 +170,14 @@ const Home = () => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              {markers.map((marker) => (
-                <Marker position={marker.geocode} icon={customIcon}>
-                  <Popup>{marker.popUp}</Popup>
+              {storeBranch.map((storeBranches) => (
+                <Marker
+                  position={{
+                    lat: storeBranches.address.latitude,
+                    lng: storeBranches.address.longitude,
+                  }}
+                  icon={customIcon}>
+                  <Popup>{storeBranches.branch}</Popup>
                 </Marker>
               ))}
             </MapContainer>

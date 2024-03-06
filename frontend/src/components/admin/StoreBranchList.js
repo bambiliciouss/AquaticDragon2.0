@@ -55,6 +55,26 @@ import {
   DELETE_STORESTAFF_RESET,
 } from "../../constants/storestaffConstants";
 
+import L from "leaflet";
+import { MapContainer, TileLayer, FeatureGroup } from "react-leaflet";
+import { EditControl } from "react-leaflet-draw";
+import osm from "./osm-providers";
+import { useRef } from "react";
+
+import "leaflet/dist/leaflet.css";
+import "leaflet-draw/dist/leaflet.draw.css";
+
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon.png",
+  iconUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
+});
+
 const StoreBranchList = (args) => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
@@ -108,6 +128,8 @@ const StoreBranchList = (args) => {
     useState(false);
   const [storeRiderModalVisible, setStoreRiderModalVisible] = useState(false);
   const [storeIdModal, setStoreIdModal] = useState(null);
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
   const { storeStaff } = useSelector((state) => state.allStoreStaff);
 
   const toggleStoreEmployeeModal = () =>
@@ -167,6 +189,8 @@ const StoreBranchList = (args) => {
     formData.set("address[purokNum]", e.purokNum);
     formData.set("address[barangay]", e.barangay);
     formData.set("address[city]", e.city);
+    formData.set("address[latitude]", latitude);
+    formData.set("address[longitude]", longitude);
     formData.set("deliverFee", e.deliverFee);
     formData.set("branch", e.branch);
     formData.set("storeImage", storeImage);
@@ -368,6 +392,9 @@ const StoreBranchList = (args) => {
     //DISPLAY OF STORE BRANCH
     dispatch(allStoreBranch());
 
+    console.log("Lat:", latitude);
+    console.log("Long:", longitude);
+
     //LIST OF EMPLOYEES
     if (storeIdModal !== null) {
       dispatch(allStoreStaff(storeIdModal));
@@ -410,6 +437,8 @@ const StoreBranchList = (args) => {
     isDeletedStoreStaff,
     storeBranchCreated,
     reset,
+    longitude,
+    latitude,
   ]);
 
   const setStoreStaffRider = () => {
@@ -455,6 +484,30 @@ const StoreBranchList = (args) => {
     });
 
     return data;
+  };
+
+  const [center, setCenter] = useState({
+    lat: 14.493945331650867,
+    lng: 121.0518236625988,
+  });
+
+  const ZOOM_LEVEL = 18;
+  const mapRef = useRef();
+  const [marker, setMarker] = useState(null);
+
+  const handleMarkerCreated = (e) => {
+    const newMarker = e.layer;
+
+    if (marker) {
+      marker.remove();
+    }
+
+    setMarker(newMarker);
+
+    const { lat, lng } = newMarker.getLatLng();
+    console.log(lat, lng);
+    setLatitude(lat);
+    setLongitude(lng);
   };
 
   return (
@@ -744,6 +797,32 @@ const StoreBranchList = (args) => {
                               )}
                             </div>
                           </Col>
+                        </Row>
+
+                        <Row>
+                          <MapContainer
+                            center={center}
+                            zoom={ZOOM_LEVEL}
+                            ref={mapRef}>
+                            <FeatureGroup>
+                              <EditControl
+                                position="topright"
+                                onCreated={handleMarkerCreated}
+                                draw={{
+                                  polygon: false,
+                                  rectangle: false,
+                                  circle: false,
+                                  circlemarker: false,
+                                  marker: true,
+                                  polyline: false,
+                                }}
+                              />
+                            </FeatureGroup>
+                            <TileLayer
+                              url={osm.maptiler.url}
+                              attribution={osm.maptiler.attribution}
+                            />
+                          </MapContainer>
                         </Row>
                       </ModalBody>
                       <ModalFooter>

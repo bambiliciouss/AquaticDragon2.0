@@ -44,7 +44,7 @@ import { createWalkinpos } from "../../actions/walkinPOSActions";
 import { CREATE_WALKINPOS_RESET } from "../../constants/walkinPOSConstants";
 
 import { useForm } from "react-hook-form";
-
+import { allTypesGallon } from "actions/typesgallonAction";
 const WalkInPOS = (args) => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
@@ -78,6 +78,8 @@ const WalkInPOS = (args) => {
     setQuantity(Math.max(1, quantity + amount));
   };
 
+  const { typeofGallon } = useSelector((state) => state.allTypesGallon);
+
   const handleGallonTypeClick = (type) => {
     setSelectedGallonType(type);
 
@@ -86,13 +88,21 @@ const WalkInPOS = (args) => {
         setPrice(5);
         break;
       case "7Liters":
-        setPrice(10);
+        setPrice(15);
         break;
       case "Others":
         setPrice(0);
         break;
       default:
-        setPrice(0);
+        const dynamicType = typeofGallon.find(
+          (gallon) => gallon.typeofGallon === type
+        );
+        if (dynamicType) {
+          setPrice(dynamicType.price);
+        } else {
+          setPrice(0);
+        }
+        break;
     }
   };
 
@@ -162,7 +172,6 @@ const WalkInPOS = (args) => {
 
         inventory: (
           <Fragment>
-            
             <button
               className="btn btn-primary py-1 px-2 ml-2"
               onClick={() =>
@@ -182,6 +191,7 @@ const WalkInPOS = (args) => {
     //DISPLAY OF STORE BRANCH
     dispatch(allStoreBranch());
     setTotal(price * quantity);
+    dispatch(allTypesGallon());
 
     if (walkinposcreated) {
       console.log("success registration");
@@ -216,9 +226,8 @@ const WalkInPOS = (args) => {
             <CardHeader className="bg-white border-0">
               <Row className="align-items-center">
                 <Col xs="8">
-                  <h3 className="mb-0">
-                    Other Type of Gallon Sales Inventory (Walk In Only)
-                  </h3>
+                  <h3 className="mb-0">Walk In Refill Inventory</h3>
+                  <h5 className="mb-0">(No Customer Account)</h5>
                 </Col>
                 <Col md="4"></Col>
               </Row>
@@ -241,15 +250,36 @@ const WalkInPOS = (args) => {
       </div>
 
       <Modal isOpen={isModalOpen} toggle={toggleModal}>
-        <ModalHeader toggle={toggleModal}>
-          Add Walk In Sales for other type of gallons
-        </ModalHeader>
+        <ModalHeader toggle={toggleModal}>Add Walk In Refill</ModalHeader>
         <Form role="form" onSubmit={handleSubmit(submitHandler)}>
           <ModalBody>
             <Row>
               <Col sm="6">
                 <FormGroup>
                   <label className="form-control-label">Select Type</label>
+
+                  {typeofGallon.map((typeofGallons) => (
+                    <>
+                      <div>
+                        <Button
+                          block
+                          color={
+                            selectedGallonType === typeofGallons.typeofGallon
+                              ? "primary"
+                              : "secondary"
+                          }
+                          size="lg"
+                          onClick={() =>
+                            handleGallonTypeClick(typeofGallons.typeofGallon)
+                          }
+                          className="mr-2 mb-2">
+                          {typeofGallons.typeofGallon}
+                        </Button>
+                      </div>
+                      <div style={{ marginBottom: "20px" }}></div>
+                    </>
+                  ))}
+
                   <div>
                     <Button
                       block

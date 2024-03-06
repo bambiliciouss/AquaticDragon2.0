@@ -36,6 +36,18 @@ const storeSchema = new mongoose.Schema({
       type: String,
       required: true,
     },
+
+    latitude: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+
+    longitude: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
   },
 
   deliverFee: {
