@@ -11,6 +11,7 @@ const machineCleaning = require("./routes/machinecleaning");
 const product = require("./routes/product");
 const barangayhealth = require("./routes/barangayhealth");
 const othergalloninventory = require("./routes/othergalloninventory");
+const phyChemTest = require("./routes/phychemtest");
 const errorMiddleware = require("./middlewares/errors");
 
 app.use(cookieParser());
@@ -27,6 +28,7 @@ app.use("/api/v1", machineCleaning);
 app.use("/api/v1", product);
 app.use("/api/v1", barangayhealth);
 app.use("/api/v1", othergalloninventory);
+app.use("/api/v1", phyChemTest);
 app.use(errorMiddleware);
 
 module.exports = app;
