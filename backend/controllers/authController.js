@@ -223,6 +223,7 @@ exports.logout = async (req, res, next) => {
 };
 
 exports.updateProfile = async (req, res, next) => {
+  console.log(req.body);
   const newUserData = {
     fname: req.body.fname,
     lname: req.body.lname,
@@ -271,7 +272,7 @@ exports.updateProfile = async (req, res, next) => {
     }
 
     // Handle other errors
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 
@@ -579,7 +580,7 @@ exports.registerRider = async (req, res, next) => {
     const token = await new Token({
       userId: user._id,
       token: crypto.randomBytes(32).toString("hex"),
-      expiresAt:new Date(Date.now() + 5 * 60 * 1000)
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
     }).save();
 
     const url = `${process.env.BASE_URL}/${user._id}/verify/${token.token}`;

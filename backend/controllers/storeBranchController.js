@@ -111,6 +111,7 @@ exports.updateStoreBranch = async (req, res, next) => {
   const newStoreData = {
     address: req.body.address,
     deliverFee: req.body.deliverFee,
+    branch: req.body.branch,
   };
 
   try {

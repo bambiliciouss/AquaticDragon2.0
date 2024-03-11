@@ -54,7 +54,7 @@ export const clearErrors = () => async (dispatch) => {
   });
 };
 
-export const allTypesGallon = (id) => async (dispatch) => {
+export const allTypesGallon = () => async (dispatch) => {
   try {
     dispatch({ type: ALL_TYPESGALLON_REQUEST });
     const { data } = await axios.get(`/api/v1/admin/typeofgallon`);

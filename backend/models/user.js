@@ -59,6 +59,19 @@ const userSchema = new mongoose.Schema({
         maxLength: [100, "Your address cannot exceed 30 characters"],
         default: "",
       },
+
+      latitude: {
+        type: Number,
+        // required: true,
+        default: 0,
+      },
+
+      longitude: {
+        type: Number,
+        // required: true,
+        default: 0,
+      },
+
       isDefault: {
         type: Boolean,
         //default: false,

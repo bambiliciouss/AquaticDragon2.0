@@ -83,334 +83,77 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} exact="true" />
         <Route path="/register" element={<Register />} exact="true" />
-        <Route
-          path=":id/verify/:token"
-          element={<EmailVerification />}
-          exact="true"
-        />
-        <Route
-          path="/password/forgot"
-          element={<ForgotPassword />}
-          exact="true"
-        />
-        <Route
-          path="/password/reset/:token"
-          element={<NewPassword />}
-          exact="true"
-        />
-        <Route path="/my-profile" element={<Profile />} exact="true" />
-        <Route path="/admin-profile" element={<AdminProfile />} exact="true" />
-        <Route
-          path="/me/update"
-          element={
-            <ProtectedRoute>
-              {" "}
-              <UpdateProfile />{" "}
-            </ProtectedRoute>
-          }
-          exact="true"
-        />
-        <Route
-          path="/admin/update"
-          element={
-            <ProtectedRoute>
-              <AdminUpdateProfile />
-            </ProtectedRoute>
-          }
-          exact="true"
-        />
-        <Route
-          path="/password/update"
-          element={
-            <ProtectedRoute>
-              <UpdatePassword />
-            </ProtectedRoute>
-          }
-          exact="true"
-        />
-        <Route
-          path="/admin/password/update"
-          element={
-            <ProtectedRoute>
-              <AdminUpdatePassword />
-            </ProtectedRoute>
-          }
-          exact="true"
-        />
-        <Route
-          path="/register-gallon"
-          element={
-            <ProtectedRoute>
-              <RegisterGallon />
-            </ProtectedRoute>
-          }
-          exact="true"
-        />
-        <Route
-          path="/my-gallon"
-          element={
-            <ProtectedRoute>
-              <MyGallon />
-            </ProtectedRoute>
-          }
-          exact="true"
-        />
-        <Route
-          path="/my-qr"
-          element={
-            <ProtectedRoute>
-              <MyQRCode />
-            </ProtectedRoute>
-          }
-          exact="true"
-        />
+        <Route path=":id/verify/:token" element={<EmailVerification />} exact="true"/>
+        <Route path="/password/forgot" element={<ForgotPassword />}exact="true"/>
+        <Route path="/password/reset/:token" element={<NewPassword />}exact="true"/>
+
+        <Route path="/my-profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} exact="true" />
+        <Route path="/admin-profile" element={<ProtectedRoute><AdminProfile /></ProtectedRoute>} exact="true" />
+
+        <Route path="/me/update" element={ <ProtectedRoute><UpdateProfile /> </ProtectedRoute>}exact="true"/>
+        <Route path="/admin/update" element={ <ProtectedRoute><AdminUpdateProfile /></ProtectedRoute>} exact="true"/>
+
+        <Route path="/password/update" element={<ProtectedRoute><UpdatePassword /></ProtectedRoute>}exact="true"/>
+        <Route path="/admin/password/update" element={<ProtectedRoute><AdminUpdatePassword /></ProtectedRoute>}exact="true" />
+
+        <Route path="/register-gallon" element={<ProtectedRoute><RegisterGallon /></ProtectedRoute>}exact="true"/>
+        <Route path="/my-gallon" element={<ProtectedRoute><MyGallon /></ProtectedRoute>}exact="true"/>
+
+        <Route path="/my-qr" element={<ProtectedRoute><MyQRCode /></ProtectedRoute>}exact="true"/>
         <Route path="/details/:id" element={<QRCodeDetails />} exact="true" />
-        {/* <Route path="/admin" element={<AdminRegistration />} exact="true" />
-         */}
+
+
+        {/* <Route path="/admin" element={<AdminRegistration />} exact="true" /> */}
+        
         {/* ADMIN */}
-        <Route path="/dashboard" element={<Dashboard />} exact="true" />
-        <Route path="/userlist" element={<UserList />} exact="true" />
-        <Route path="/riderlist" element={<RiderList />} exact="true" />
-        <Route path="/employeelist" element={<EmployeeList />} exact="true" />
-        <Route path="/gallonlist" element={<GallonList />} exact="true" />
-        <Route
-          path="/storebranchlist"
-          element={<StoreBranchList />}
-          exact="true"
-        />
-        <Route
-          path="/machinecleaning"
-          element={<MachineCleaning />}
-          exact="true"
-        />
-        <Route
-          path="/barangayhealth"
-          element={<BarangayHealth />}
-          exact="true"
-        />
-        <Route
-          path="/typesgallonlist"
-          element={<TypesGallonList />}
-          exact="true"
-        />
-        <Route
-          path="/gallon/order"
-          element={
-            <ProtectedRoute>
-              <GallonOrder />
-            </ProtectedRoute>
-          }
-          exact="true"
-        />
+        <Route path="/dashboard" element={ <ProtectedRoute><Dashboard /></ProtectedRoute>} exact="true" />
+        <Route path="/userlist" element={<ProtectedRoute><UserList /></ProtectedRoute>} exact="true" />
+        <Route path="/riderlist" element={<ProtectedRoute><RiderList /></ProtectedRoute>} exact="true" />
+        <Route path="/employeelist" element={<ProtectedRoute><EmployeeList /></ProtectedRoute>} exact="true" />
+        <Route path="/gallonlist" element={<ProtectedRoute><GallonList /></ProtectedRoute>} exact="true" />
+        <Route path="/storebranchlist" element={<ProtectedRoute><StoreBranchList /></ProtectedRoute>}exact="true"/>
+        <Route path="/machinecleaning" element={<ProtectedRoute><MachineCleaning /></ProtectedRoute>} exact="true"/>
+        <Route path="/barangayhealth" element={<ProtectedRoute><BarangayHealth /></ProtectedRoute>} exact="true"/>
+        <Route path="/typesgallonlist" element={<ProtectedRoute><TypesGallonList /></ProtectedRoute>} exact="true" />
+       
+        <Route path="/gallon/order" element={<ProtectedRoute> <GallonOrder /> </ProtectedRoute>} exact="true"/>
+        
+
         <Route path="/cart" element={<Cart />} exact="true" />
-        <Route
-          path="/containerstatus"
-          element={
-            <ProtectedRoute>
-              <ContainerStatus />
-            </ProtectedRoute>
-          }
-          exact="true"
-        />
-        <Route
-          path="/orderclaimingmethod"
-          element={
-            <ProtectedRoute>
-              <OrderReceivedMethod />
-            </ProtectedRoute>
-          }
-          exact="true"
-        />
-        <Route
-          path="/storeselection"
-          element={
-            <ProtectedRoute>
-              <SelectStore />
-            </ProtectedRoute>
-          }
-          exact="true"
-        />
-        <Route
-          path="/pickupaddress"
-          element={
-            <ProtectedRoute>
-              <PickupAddress />{" "}
-            </ProtectedRoute>
-          }
-          exact="true"
-        />
-        <Route
-          path="/deliveryaddress"
-          element={
-            <ProtectedRoute>
-              <DeliveryAddress />{" "}
-            </ProtectedRoute>
-          }
-          exact="true"
-        />
-        <Route
-          path="/payment"
-          element={
-            <ProtectedRoute>
-              <Payment />{" "}
-            </ProtectedRoute>
-          }
-          exact="true"
-        />
-        <Route
-          path="/ordersummary"
-          element={
-            <ProtectedRoute>
-              <OrderSummary />{" "}
-            </ProtectedRoute>
-          }
-          exact="true"
-        />
-        <Route
-          path="/orders/me"
-          element={
-            <ProtectedRoute>
-              <MyOrdersList />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/orderlist" element={<OrderList />} exact="true" />
-        <Route
-          path="/order/:id"
-          element={
-            <ProtectedRoute>
-              <OrderDetails />
-            </ProtectedRoute>
-          }
-        />{" "}
-        <Route
-          path="/order/:id"
-          element={
-            <ProtectedRoute>
-              <OrderDetails />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/rider/details/:id"
-          element={
-            <ProtectedRoute>
-              <UpdateRider />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/employee/details/:id"
-          element={
-            <ProtectedRoute>
-              <UpdateEmployee />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/user/details/:id"
-          element={
-            <ProtectedRoute>
-              <UpdateUser />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/store/details/:id"
-          element={
-            <ProtectedRoute>
-              <UpdateStoreBranch />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/create/store/machincecleaning/:id"
-          element={
-            <ProtectedRoute>
-              <MachineCleaningList />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/update/store/machincecleaning/:id"
-          element={
-            <ProtectedRoute>
-              <UpdateMachineCleaning />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/store/barangaycleaning/:id"
-          element={
-            <ProtectedRoute>
-              <BarangayHealthList />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/update/store/barangayhealth/:id"
-          element={
-            <ProtectedRoute>
-              <UpdateBarangayHealth />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/update/typegallon/details/:id"
-          element={
-            <ProtectedRoute>
-              <UpdateTypeGallon />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/POS/"
-          element={
-            <ProtectedRoute>
-              <WalkInPOS />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/POS/inventory/:id"
-          element={
-            <ProtectedRoute>
-              <WalkInSalesInventory />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/POS/inventory/update/:id"
-          element={
-            <ProtectedRoute>
-              <UpdateWalkInSalesInventory />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/product"
-          element={
-            <ProtectedRoute>
-              <Product />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/product/store/:id"
-          element={
-            <ProtectedRoute>
-              <ProductList />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/product/update/:id"
-          element={
-            <ProtectedRoute>
-              <UpdateProduct />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/containerstatus" element={<ProtectedRoute><ContainerStatus /></ProtectedRoute>}exact="true"/>
+        <Route path="/orderclaimingmethod" element={ <ProtectedRoute> <OrderReceivedMethod /></ProtectedRoute>}exact="true"/>
+        <Route path="/storeselection"element={<ProtectedRoute><SelectStore /></ProtectedRoute>}exact="true"/>
+        <Route path="/pickupaddress" element={<ProtectedRoute><PickupAddress /></ProtectedRoute>}exact="true"/>
+        <Route path="/deliveryaddress" element={<ProtectedRoute><DeliveryAddress /></ProtectedRoute>}exact="true"/>
+        <Route path="/payment" element={ <ProtectedRoute> <Payment /></ProtectedRoute>}exact="true"/>
+        <Route path="/ordersummary" element={ <ProtectedRoute> <OrderSummary /></ProtectedRoute>}exact="true"/>
+        <Route path="/orders/me" element={ <ProtectedRoute><MyOrdersList /></ProtectedRoute>}/>
+
+        <Route path="/orderlist" element={<ProtectedRoute> <OrderList /></ProtectedRoute>} exact="true" />
+        <Route path="/order/:id" element={<ProtectedRoute><OrderDetails /></ProtectedRoute>}exact="true"/>
+        <Route path="/order/:id" element={<ProtectedRoute><OrderDetails /></ProtectedRoute>}exact="true"/>
+        <Route path="/rider/details/:id" element={ <ProtectedRoute><UpdateRider /></ProtectedRoute>}exact="true"/>
+        
+        <Route path="/employee/details/:id" element={<ProtectedRoute><UpdateEmployee /></ProtectedRoute>}exact="true"/>
+        <Route path="/user/details/:id" element={<ProtectedRoute> <UpdateUser /></ProtectedRoute>}exact="true"/>
+        <Route path="/store/details/:id" element={<ProtectedRoute><UpdateStoreBranch /></ProtectedRoute>}exact="true"/>
+        
+        <Route path="/create/store/machincecleaning/:id" element={<ProtectedRoute><MachineCleaningList /></ProtectedRoute>}exact="true"/>
+        <Route path="/update/store/machincecleaning/:id" element={ <ProtectedRoute><UpdateMachineCleaning /></ProtectedRoute> }exact="true"/>
+
+        <Route path="/store/barangaycleaning/:id" element={<ProtectedRoute><BarangayHealthList /></ProtectedRoute>}exact="true"/>
+        <Route path="/update/store/barangayhealth/:id" element={<ProtectedRoute><UpdateBarangayHealth /></ProtectedRoute>}exact="true"/>
+
+
+        <Route path="/update/typegallon/details/:id" element={<ProtectedRoute><UpdateTypeGallon /></ProtectedRoute>}exact="true"/>
+
+        <Route path="/admin/POS/" element={ <ProtectedRoute><WalkInPOS /></ProtectedRoute>}exact="true"/>
+        <Route path="/admin/POS/inventory/:id" element={ <ProtectedRoute><WalkInSalesInventory /></ProtectedRoute>}exact="true"/>   
+        <Route path="/admin/POS/inventory/update/:id" element={<ProtectedRoute><UpdateWalkInSalesInventory /></ProtectedRoute>}exact="true"/>
+
+        <Route path="/admin/product" element={<ProtectedRoute> <Product /></ProtectedRoute>}exact="true"/>
+        <Route path="/admin/product/store/:id" element={ <ProtectedRoute><ProductList /></ProtectedRoute>}exact="true"/>
+        <Route path="/admin/product/update/:id" element={ <ProtectedRoute><UpdateProduct /></ProtectedRoute>}exact="true"/>
       </Routes>
     </>
   );

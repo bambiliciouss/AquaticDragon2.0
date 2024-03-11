@@ -19,7 +19,7 @@ router.post(
   registerStoreBranch
 );
 
-router.route("/admin/storebranch").get(isAuthenticatedUser, AllStoreBranch);
+router.route("/admin/storebranch").get(AllStoreBranch);
 
 router
   .route("/delete/storebranch/:id")

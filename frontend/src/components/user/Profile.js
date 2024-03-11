@@ -43,6 +43,27 @@ import {
   DELETE_ADDRESS_RESET,
   SET_ADDRESS_RESET,
 } from "constants/addressConstants";
+
+import L from "leaflet";
+import { MapContainer, TileLayer, FeatureGroup } from "react-leaflet";
+import { EditControl } from "react-leaflet-draw";
+import osm from "./../admin/osm-providers";
+import { useRef } from "react";
+
+import "leaflet/dist/leaflet.css";
+import "leaflet-draw/dist/leaflet.draw.css";
+
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon.png",
+  iconUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
+});
+
 const Profile = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate(); // Use useNavigate hook from react-router-dom
@@ -69,6 +90,8 @@ const Profile = () => {
   const [barangay, setBarangay] = useState("");
   const [city, setCity] = useState("");
   const [modalID, setModalID] = useState("");
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
 
   useEffect(() => {
     dispatch(allAddress());
@@ -248,6 +271,34 @@ const Profile = () => {
     });
 
     return data;
+  };
+
+  const [center, setCenter] = useState({
+    lat: 14.493945331650867,
+    lng: 121.0518236625988,
+  });
+
+  const ZOOM_LEVEL = 18;
+  const mapRef = useRef();
+  const [marker, setMarker] = useState(null);
+
+  const handleMarkerCreated = (e) => {
+    const newMarker = e.layer;
+    console.log(newMarker);
+    
+
+    setMarker((prevMarker) => {
+      if (prevMarker) {
+        prevMarker.remove();
+      }
+
+      return newMarker;
+    });
+
+    const { lat, lng } = newMarker.getLatLng();
+    console.log(lat, lng);
+    setLatitude(lat);
+    setLongitude(lng);
   };
 
   return (
@@ -550,6 +601,32 @@ const Profile = () => {
                             {errors.city.message}
                           </h2>
                         )}
+                      </FormGroup>
+
+                      <FormGroup>
+                        <MapContainer
+                          center={center}
+                          zoom={ZOOM_LEVEL}
+                          ref={mapRef}>
+                          <FeatureGroup>
+                            <EditControl
+                              position="topright"
+                              onCreated={handleMarkerCreated}
+                              draw={{
+                                polygon: false,
+                                rectangle: false,
+                                circle: false,
+                                circlemarker: false,
+                                marker: true,
+                                polyline: false,
+                              }}
+                            />
+                          </FeatureGroup>
+                          <TileLayer
+                            url={osm.maptiler.url}
+                            attribution={osm.maptiler.attribution}
+                          />
+                        </MapContainer>
                       </FormGroup>
                     </ModalBody>
                     <ModalFooter>

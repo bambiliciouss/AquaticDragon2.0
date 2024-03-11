@@ -312,6 +312,7 @@ const AdminProfile = () => {
                             Change Password
                           </button>
                         </div>
+                        {user && user.role === "user" && (
                         <div className="btn-container d-block">
                           <Button
                             color="info"
@@ -321,6 +322,7 @@ const AdminProfile = () => {
                             Add Address
                           </Button>
                         </div>
+                        )}
                       </div>
                     </div>
                   </Col>

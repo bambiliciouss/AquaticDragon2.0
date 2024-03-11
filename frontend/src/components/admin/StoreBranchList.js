@@ -78,7 +78,7 @@ L.Icon.Default.mergeOptions({
 const StoreBranchList = (args) => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
-  const { loading, error, storeBranch } = useSelector(
+  const { loading, storeBranch } = useSelector(
     (state) => state.allStoreBranch
   );
   const [modal, setModal] = useState(false);
@@ -86,7 +86,7 @@ const StoreBranchList = (args) => {
 
   const { isDeleted } = useSelector((state) => state.storeBranch);
 
-  const { storeBranchCreated } = useSelector((state) => state.newStoreBranch);
+  const { storeBranchCreated,error } = useSelector((state) => state.newStoreBranch);
 
   const { isDeletedStoreStaff } = useSelector((state) => state.storeStaff);
 
@@ -183,19 +183,23 @@ const StoreBranchList = (args) => {
   };
 
   const submitHandler = (e) => {
-    const formData = new FormData();
-    formData.set("address[houseNo]", e.houseNo);
-    formData.set("address[streetName]", e.streetName);
-    formData.set("address[purokNum]", e.purokNum);
-    formData.set("address[barangay]", e.barangay);
-    formData.set("address[city]", e.city);
-    formData.set("address[latitude]", latitude);
-    formData.set("address[longitude]", longitude);
-    formData.set("deliverFee", e.deliverFee);
-    formData.set("branch", e.branch);
-    formData.set("storeImage", storeImage);
+    if (latitude && longitude !== null) {
+      const formData = new FormData();
+      formData.set("address[houseNo]", e.houseNo);
+      formData.set("address[streetName]", e.streetName);
+      formData.set("address[purokNum]", e.purokNum);
+      formData.set("address[barangay]", e.barangay);
+      formData.set("address[city]", e.city);
+      formData.set("address[latitude]", latitude);
+      formData.set("address[longitude]", longitude);
+      formData.set("deliverFee", e.deliverFee);
+      formData.set("branch", e.branch);
+      formData.set("storeImage", storeImage);
 
-    dispatch(createStoreBranch(formData));
+      dispatch(createStoreBranch(formData));
+    } else {
+      swal("Please Pin Store Location", "", "error");
+    }
 
     //window.location.reload();
   };
@@ -248,15 +252,15 @@ const StoreBranchList = (args) => {
           label: "List of assigned Staff",
           field: "list",
         },
-        {
-          label: "Machine Cleaning Records",
-          field: "machine",
-        },
+        // {
+        //   label: "Machine Cleaning Records",
+        //   field: "machine",
+        // },
 
-        {
-          label: "Barangay Health Records",
-          field: "barangay",
-        },
+        // {
+        //   label: "Barangay Health Records",
+        //   field: "barangay",
+        // },
       ],
 
       rows: [],
@@ -498,11 +502,13 @@ const StoreBranchList = (args) => {
   const handleMarkerCreated = (e) => {
     const newMarker = e.layer;
 
-    if (marker) {
-      marker.remove();
-    }
+    setMarker((prevMarker) => {
+      if (prevMarker) {
+        prevMarker.remove();
+      }
 
-    setMarker(newMarker);
+      return newMarker;
+    });
 
     const { lat, lng } = newMarker.getLatLng();
     console.log(lat, lng);
@@ -557,7 +563,7 @@ const StoreBranchList = (args) => {
                               </InputGroupText>
                             </InputGroupAddon>
                             <input
-                              placeholder="Branch..."
+                              placeholder="Store Name..."
                               className="form-control"
                               type="text"
                               name="branch"

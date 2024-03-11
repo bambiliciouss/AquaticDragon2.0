@@ -46,6 +46,26 @@ import {
   Form,
 } from "reactstrap";
 
+import L from "leaflet";
+import { MapContainer, TileLayer, FeatureGroup } from "react-leaflet";
+import { EditControl } from "react-leaflet-draw";
+import osm from "./osm-providers";
+import { useRef } from "react";
+
+import "leaflet/dist/leaflet.css";
+import "leaflet-draw/dist/leaflet.draw.css";
+
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon.png",
+  iconUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
+});
+
 const UpdateStoreBranch = () => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
@@ -53,10 +73,13 @@ const UpdateStoreBranch = () => {
   const { storeBranch } = useSelector((state) => state.storeDetails);
   const { id } = useParams();
 
+  const [branch, setBranch] = useState("");
   const [houseNo, setHouseNo] = useState("");
   const [streetName, setStreetName] = useState("");
   const [purokNum, setPurokNum] = useState("");
   const [barangay, setBarangay] = useState("");
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
   const [city, setCity] = useState("");
   const [storeImage, setStoreImage] = useState("");
   const [deliveryFee, setDeliveryFee] = useState("");
@@ -64,27 +87,33 @@ const UpdateStoreBranch = () => {
     "/images/default_avatar.jpg"
   );
 
-  const notifyError = (message = "") =>
-    toast.error(message, {
-      position: "bottom-left",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
+  const [center, setCenter] = useState({
+    lat: 14.493945331650867,
+    lng: 121.0518236625988,
+  });
+
+
+  const ZOOM_LEVEL = 18;
+  const mapRef = useRef();
+  const [marker, setMarker] = useState(null);
+
+
+  const handleMarkerCreated = (e) => {
+    const newMarker = e.layer;
+
+    setMarker((prevMarker) => {
+      if (prevMarker) {
+        prevMarker.remove();
+      }
+
+      return newMarker;
     });
 
-  const notifySuccess = (message = "") =>
-    toast.success(message, {
-      position: "bottom-left",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
+    const { lat, lng } = newMarker.getLatLng();
+    console.log(lat, lng);
+    setLatitude(lat);
+    setLongitude(lng);
+  };
 
   useEffect(() => {
     if (storeBranch && storeBranch._id !== id) {
@@ -94,9 +123,16 @@ const UpdateStoreBranch = () => {
       setStreetName(storeBranch.address.streetName);
       setPurokNum(storeBranch.address.purokNum);
       setBarangay(storeBranch.address.barangay);
+      setLatitude(storeBranch.address.latitude);
+      setLongitude(storeBranch.address.longitude);
       setCity(storeBranch.address.city);
       setAvatarPreview(storeBranch.storeImage.url);
       setDeliveryFee(storeBranch.deliverFee);
+      setBranch(storeBranch.branch);
+      setCenter({
+        lat: parseFloat(storeBranch.address.latitude),
+        lng: parseFloat(storeBranch.address.longitude),
+      });
     }
 
     if (error) {
@@ -112,6 +148,8 @@ const UpdateStoreBranch = () => {
         type: UPDATE_STOREBRANCH_RESET,
       });
     }
+
+    
   }, [dispatch, navigate, storeBranch, error, isUpdated]);
 
   const submitHandler = (e) => {
@@ -124,8 +162,11 @@ const UpdateStoreBranch = () => {
     formData.append("address[purokNum]", purokNum);
     formData.append("address[barangay]", barangay);
     formData.append("address[city]", city);
+    formData.append("address[latitude]", latitude);
+    formData.append("address[longitude]", longitude);
     formData.append("deliverFee", deliveryFee);
     formData.append("storeImage", storeImage);
+    formData.append("branch", branch);
 
     dispatch(updateStoreBranch(id, formData));
   };
@@ -210,6 +251,24 @@ const UpdateStoreBranch = () => {
                               </div>
                             </Col>
                             <Col lg="9">
+                              <Row>
+                                <Col lg="12">
+                                  <FormGroup>
+                                    <label className="form-control-label">
+                                      Store Name
+                                    </label>
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                      placeholder="Store Name"
+                                      value={branch}
+                                      onChange={(e) =>
+                                        setBranch(e.target.value)
+                                      }
+                                    />
+                                  </FormGroup>
+                                </Col>
+                              </Row>
                               <Row>
                                 <Col lg="3">
                                   <FormGroup>
@@ -313,6 +372,32 @@ const UpdateStoreBranch = () => {
                                 </Col>
                               </Row>
                             </Col>
+                          </Row>
+
+                          <Row>
+                            <MapContainer
+                              center={center}
+                              zoom={ZOOM_LEVEL}
+                              ref={mapRef}>
+                              <FeatureGroup>
+                                <EditControl
+                                  position="topright"
+                                  onCreated={handleMarkerCreated}
+                                  draw={{
+                                    polygon: false,
+                                    rectangle: false,
+                                    circle: false,
+                                    circlemarker: false,
+                                    marker: true,
+                                    polyline: false,
+                                  }}
+                                />
+                              </FeatureGroup>
+                              <TileLayer
+                                url={osm.maptiler.url}
+                                attribution={osm.maptiler.attribution}
+                              />
+                            </MapContainer>
                           </Row>
 
                           <div className="text-right">

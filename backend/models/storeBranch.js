@@ -13,7 +13,7 @@ const storeSchema = new mongoose.Schema({
 
   branch: {
     type: String,
-    unique: true,
+    unique: [true, "Store Name is already taken"],
   },
   address: {
     houseNo: {
@@ -39,13 +39,13 @@ const storeSchema = new mongoose.Schema({
 
     latitude: {
       type: Number,
-      required: true,
+      // required: true,
       default: 0,
     },
 
     longitude: {
       type: Number,
-      required: true,
+      // required: true,
       default: 0,
     },
   },

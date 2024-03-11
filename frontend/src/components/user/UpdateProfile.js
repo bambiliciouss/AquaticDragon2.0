@@ -214,7 +214,6 @@ const UpdateProfile = () => {
                               />
                             </FormGroup>
                           </Col>
-                         
                         </Row>
                         <label className="form-control-label">Avatar</label>
 
@@ -257,7 +256,7 @@ const UpdateProfile = () => {
                           <Button
                             className="my-4 mr-4"
                             color="secondary"
-                            onClick={() => navigate("/userlist")}>
+                            onClick={() => navigate("/my-profile")}>
                             Back
                           </Button>
                         </div>
