@@ -30,6 +30,7 @@ import {
   updateOrder,
 } from "../../actions/orderActions";
 import { UPDATE_ORDER_RESET } from "../../constants/orderConstants";
+
 const OrderDetails = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -46,7 +47,7 @@ const OrderDetails = () => {
     orderItems,
     containerStatus,
     orderclaimingOption,
-    storeBranch,
+    selectedStore,
     deliveryAddress,
     paymentInfo,
     orderStatus,
@@ -184,14 +185,14 @@ const OrderDetails = () => {
                         <i className="ni ni-square-pin" /> Delivery Address
                         {/* <b>Name:</b> {user && user.fname} */}
                       </CardTitle>
-                      {deliveryAddress &&
-                        deliveryAddress.map((item, index) => (
-                          <CardText key={index}>
-                            {" "}
-                            {item.houseNo}, {item.purokNum}, {item.streetName},{" "}
-                            {item.barangay}, {item.city}
-                          </CardText>
-                        ))}
+
+                      <CardText>
+                        {deliveryAddress && deliveryAddress.houseNo}{" "}
+                        {deliveryAddress && deliveryAddress.purokNum}
+                        {deliveryAddress && deliveryAddress.streetName}{" "}
+                        {deliveryAddress && deliveryAddress.barangay}
+                        {deliveryAddress && deliveryAddress.city}
+                      </CardText>
                     </Col>
                     <Col lg="2"></Col>
                     <Col lg="7">
@@ -206,8 +207,11 @@ const OrderDetails = () => {
                           )
                           .map((item, index) => (
                             <CardText key={index}>
-                              {" "}
-                              {item.datedAt} {item.orderLevel}
+                              {new Date(item.datedAt).toLocaleString()}{" "}
+                              {item.orderLevel} by{" "}
+                              {item.staff
+                                ? `${item.staff.fname} ${item.staff.lname}`
+                                : "User"}
                             </CardText>
                           ))}
                     </Col>
@@ -229,19 +233,7 @@ const OrderDetails = () => {
                     {orderItems &&
                       orderItems.map((item, index) => (
                         <Row key={index}>
-                          <Col sm="5">
-                            <div style={{ textAlign: "center" }}>
-                              <img
-                                src={item.image}
-                                alt={item.image}
-                                style={{
-                                  width: 100,
-                                  height: 100,
-                                  display: "inline-block",
-                                }}
-                              />
-                            </div>
-                          </Col>
+                          <Col sm="5">{item.type}</Col>
                           <Col sm="3" style={{ textAlign: "center" }}>
                             {item.quantity} pc(s)
                           </Col>
@@ -262,17 +254,23 @@ const OrderDetails = () => {
                   <CardTitle tag="h2">
                     <i className="ni ni-shop" /> Store Branch
                   </CardTitle>
-                  {storeBranch &&
-                    storeBranch.map((item, index) => (
-                      <Row key={index}>
-                        <CardText>
-                          <Col sm="6">{item.address}</Col>
-                          <Col sm="6" style={{ textAlign: "right" }}>
-                            Shipping Fee: ₱ {item.deliveryFee}.00
-                          </Col>{" "}
-                        </CardText>
-                      </Row>
-                    ))}
+
+                  <Row>
+                    <Col sm="6">
+                      <CardText>
+                        {selectedStore && selectedStore.branchNo}
+                      </CardText>
+                      <CardText>
+                        {selectedStore && selectedStore.address}
+                      </CardText>
+                    </Col>
+                    <Col sm="6" style={{ textAlign: "right" }}>
+                      <CardText>
+                        Shipping Fee: ₱{" "}
+                        {selectedStore && selectedStore.deliveryFee}.00
+                      </CardText>
+                    </Col>
+                  </Row>
                 </Card>
               </Col>
             </Row>

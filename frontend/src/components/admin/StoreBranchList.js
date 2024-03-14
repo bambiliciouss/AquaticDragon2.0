@@ -78,15 +78,15 @@ L.Icon.Default.mergeOptions({
 const StoreBranchList = (args) => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
-  const { loading, storeBranch } = useSelector(
-    (state) => state.allStoreBranch
-  );
+  const { loading, storeBranch } = useSelector((state) => state.allStoreBranch);
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
 
   const { isDeleted } = useSelector((state) => state.storeBranch);
 
-  const { storeBranchCreated,error } = useSelector((state) => state.newStoreBranch);
+  const { storeBranchCreated, error } = useSelector(
+    (state) => state.newStoreBranch
+  );
 
   const { isDeletedStoreStaff } = useSelector((state) => state.storeStaff);
 
@@ -204,20 +204,43 @@ const StoreBranchList = (args) => {
     //window.location.reload();
   };
 
+  // const onChange = (e) => {
+  //   if (e.target.name === "storeImage") {
+  //     const reader = new FileReader();
+
+  //     reader.onload = () => {
+  //       if (reader.readyState === 2) {
+  //         setAvatarPreview(reader.result);
+  //         setstoreImage(reader.result);
+  //       }
+  //     };
+
+  //     reader.readAsDataURL(e.target.files[0]);
+  //   } else {
+  //     setstoreBranch({ ...storeBranches, [e.target.name]: e.target.value });
+  //   }
+  // };
+
   const onChange = (e) => {
+    const file = e.target.files[0];
+    const allowedImageTypes = ["image/png", "image/jpeg", "image/jpg"]; // Allowed image file types
+
     if (e.target.name === "storeImage") {
-      const reader = new FileReader();
+      if (file && allowedImageTypes.includes(file.type)) {
+        const reader = new FileReader();
 
-      reader.onload = () => {
-        if (reader.readyState === 2) {
-          setAvatarPreview(reader.result);
-          setstoreImage(reader.result);
-        }
-      };
+        reader.onload = () => {
+          if (reader.readyState === 2) {
+            setAvatarPreview(reader.result);
+            setstoreImage(reader.result);
+          }
+        };
 
-      reader.readAsDataURL(e.target.files[0]);
-    } else {
-      setstoreBranch({ ...storeBranches, [e.target.name]: e.target.value });
+        reader.readAsDataURL(e.target.files[0]);
+      } else {
+        swal("Please select a valid image file (PNG, JPEG, JPG).", "", "error");
+        e.target.value = null; // Clear the input value
+      }
     }
   };
 

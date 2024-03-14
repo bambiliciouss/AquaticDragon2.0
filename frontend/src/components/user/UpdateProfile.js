@@ -115,25 +115,26 @@ const UpdateProfile = () => {
   };
 
   const onChange = (e) => {
-    const reader = new FileReader();
+    const file = e.target.files[0];
+    if (file) {
+      if (/^image\/(png|jpg|jpeg)$/.test(file.type)) {
+        const reader = new FileReader();
 
-    reader.onload = () => {
-      if (reader.readyState === 2) {
-        setAvatarPreview(reader.result);
+        reader.onload = () => {
+          if (reader.readyState === 2) {
+            setAvatarPreview(reader.result);
+            setAvatar(reader.result);
+          }
+        };
 
-        setAvatar(reader.result);
+        reader.readAsDataURL(file);
+      } else {
+        swal("Please select .png, .jpg, or .jpeg image file.", "", "error");
+        e.target.value = null;
       }
-    };
-
-    reader.readAsDataURL(e.target.files[0]);
+    }
   };
 
-  // React.useEffect(() => {
-  //   document.body.classList.add("bg-default");
-  //   return () => {
-  //     document.body.classList.remove("bg-default");
-  //   };
-  // }, []);
   const location = useLocation();
   React.useEffect(() => {
     document.documentElement.scrollTop = 0;

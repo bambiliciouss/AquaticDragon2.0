@@ -4,12 +4,12 @@ const cloudinary = require("cloudinary");
 const mongoose = require("mongoose");
 
 exports.newOrder = async (req, res, next) => {
-  //console.log("user",req);
+  // console.log("order",req.body);
   const {
     orderItems,
     containerStatus,
     orderclaimingOption,
-    storeBranch,
+    selectedStore,
     deliveryAddress,
     paymentInfo,
     totalPrice,
@@ -21,7 +21,7 @@ exports.newOrder = async (req, res, next) => {
     orderItems,
     containerStatus,
     orderclaimingOption,
-    storeBranch,
+    selectedStore,
     deliveryAddress,
     paymentInfo,
     totalPrice,
@@ -34,6 +34,8 @@ exports.newOrder = async (req, res, next) => {
     order,
     message: "Order Success",
   });
+
+  console.log(order);
 };
 
 exports.myOrders = async (req, res, next) => {
@@ -51,6 +53,7 @@ exports.addOrderStatus = async (req, res, next) => {
     const newOrderStatus = {
       orderLevel,
       datedAt: Date.now(),
+      staff: req.user._id,
     };
 
     const order = await Order.findById(req.params.id);
@@ -72,10 +75,7 @@ exports.addOrderStatus = async (req, res, next) => {
 
 exports.allOrders = async (req, res, next) => {
   try {
-    const orders = await Order.find().populate(
-      "customer",
-      "fname lname"
-    );;
+    const orders = await Order.find().populate("customer", "fname lname");
     res.status(200).json({
       success: true,
       orders,
@@ -89,10 +89,14 @@ exports.allOrders = async (req, res, next) => {
 
 exports.getSingleOrder = async (req, res, next) => {
   try {
-    const order = await Order.findById(req.params.id).populate(
-      "customer",
-      "fname lname email"
-    );
+    const order = await Order.findById(req.params.id)
+      .populate("customer", "fname lname email")
+      .populate({
+        path: "orderStatus.staff",
+        model: "User",
+        select: "fname lname",
+      })
+      .exec();
     if (!order) {
       return next(new ErrorHandler("No Order found with this ID", 401));
     }

@@ -16,7 +16,7 @@ import {
 import AuthNavbar from "components/Navbars/AuthNavbar.js";
 import MetaData from "../layout/MetaData";
 import { useNavigate } from "react-router-dom";
-
+import swal from "sweetalert";
 const ContainerStatus = () => {
   const navigate = useNavigate();
   const [selectedContainerStatus, setSelectedContainerStatus] = useState("");
@@ -29,7 +29,24 @@ const ContainerStatus = () => {
     }
   }, []);
 
+  // const processToContainerStatus = () => {
+  //   const data = {
+  //     containerStatus: selectedContainerStatus,
+  //   };
+
+  //   sessionStorage.setItem("processToContainerStatus", JSON.stringify(data));
+
+  //   navigate("/orderclaimingmethod");
+  // };
+
   const processToContainerStatus = () => {
+    if (!selectedContainerStatus) {
+      // Show SweetAlert message if no radio button is clicked
+
+      swal("Please select a container status before proceeding!", "", "error");
+      return; // Stop further execution
+    }
+
     const data = {
       containerStatus: selectedContainerStatus,
     };
@@ -62,35 +79,6 @@ const ContainerStatus = () => {
           </CardHeader>
           <CardBody>
             <Form>
-              {/* <FormGroup>
-                <div>
-                  <FormGroup check>
-                    <label className="form-check-label">
-                      <Input
-                        type="radio"
-                        name="containerStatus"
-                        value="Pickup"
-                        onChange={() => setSelectedContainerStatus("Pickup")}
-                        checked={selectedContainerStatus === "Pickup"}
-                      />
-                      Pickup
-                    </label>
-                  </FormGroup>
-                  <FormGroup check>
-                    <label className="form-check-label">
-                      <Input
-                        type="radio"
-                        name="containerStatus"
-                        value="WalkIn"
-                        onChange={() => setSelectedContainerStatus("WalkIn")}
-                        checked={selectedContainerStatus === "WalkIn"}
-                      />
-                      Walkin
-                    </label>
-                  </FormGroup>
-                </div>
-              </FormGroup> */}
-
               <Row>
                 <Col sm="12">
                   <Card body>
@@ -99,9 +87,9 @@ const ContainerStatus = () => {
                         <Input
                           type="radio"
                           name="containerStatus"
-                          value="Pickup"
-                          onChange={() => setSelectedContainerStatus("Pickup")}
-                          checked={selectedContainerStatus === "Pickup"}
+                          value="Pick Up"
+                          onChange={() => setSelectedContainerStatus("Pick Up")}
+                          checked={selectedContainerStatus === "Pick Up"}
                         />
 
                         <CardText>For Pick up</CardText>
@@ -124,9 +112,9 @@ const ContainerStatus = () => {
                         <Input
                           type="radio"
                           name="containerStatus"
-                          value="WalkIn"
-                          onChange={() => setSelectedContainerStatus("WalkIn")}
-                          checked={selectedContainerStatus === "WalkIn"}
+                          value="Walk In"
+                          onChange={() => setSelectedContainerStatus("Walk In")}
+                          checked={selectedContainerStatus === "Walk In"}
                         />
                         <CardText>Walk In</CardText>
                         <CardText

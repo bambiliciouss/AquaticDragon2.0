@@ -26,6 +26,7 @@ const {
   getAddressDetails,
   setDefaultAddress,
   admingetAllAddresses,
+  updateAdminProfile
 } = require("../controllers/authController");
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
@@ -59,6 +60,14 @@ router.put(
   isAuthenticatedUser,
   updateProfile
 );
+
+router.put(
+  "/me/admin/update",
+  upload.single("avatar"),
+  isAuthenticatedUser,
+  updateAdminProfile
+);
+
 
 router.post("/me/address", isAuthenticatedUser, addAddress);
 router.put("/me/update/address/:id", isAuthenticatedUser, editAddress);

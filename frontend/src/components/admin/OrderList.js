@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -31,26 +31,34 @@ import {
   Row,
   Col,
 } from "reactstrap";
-
+import { allStoreBranch, deleteStoreBranch } from "actions/storebranchActions";
 const OrderList = () => {
   const dispatch = useDispatch();
 
   let navigate = useNavigate();
 
   const { loading, error, orders } = useSelector((state) => state.allOrders);
+  const { storeBranch } = useSelector((state) => state.allStoreBranch);
+  const [activeStoreBranch, setActiveStoreBranch] = useState(null);
 
   useEffect(() => {
     dispatch(allOrders());
+    dispatch(allStoreBranch());
 
     if (error) {
       dispatch(clearErrors());
     }
-  }, [dispatch, error]);
+  }, [dispatch, error, activeStoreBranch]);
 
   const setOrders = () => {
-    const sortedOrders = orders.sort((a, b) => {
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    });
+    const sortedOrders = orders
+      .filter(
+        (order) =>
+          !activeStoreBranch || order.selectedStore.store === activeStoreBranch._id
+      )
+      .sort((a, b) => {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
     const data = {
       columns: [
         // {
@@ -87,7 +95,7 @@ const OrderList = () => {
       rows: [],
     };
 
-    orders.forEach((order) => {
+    sortedOrders.forEach((order) => {
       // Find the latest order status
       const latestOrderStatus = order.orderStatus.reduce((latest, status) => {
         if (!latest.datedAt || status.datedAt > latest.datedAt) {
@@ -103,7 +111,7 @@ const OrderList = () => {
         status: latestOrderStatus.orderLevel || "N/A",
         customer: `${order.customer.fname} ${order.customer.lname}`,
         actions: (
-          <Link to={`/order/${order._id}`} className="btn btn-info">
+          <Link to={`/update/order/${order._id}`} className="btn btn-info">
             <i className="fa fa-eye"></i>
           </Link>
         ),
@@ -111,6 +119,11 @@ const OrderList = () => {
     });
 
     return data;
+  };
+
+  const handleButtonClick = (storeId) => {
+    // Handle button click logic, e.g., setting the active store branch
+    setActiveStoreBranch(storeBranch.find((branch) => branch._id === storeId));
   };
 
   return (
@@ -133,6 +146,18 @@ const OrderList = () => {
                 <Col xs="8">
                   <h3 className="mb-0">List of Order(s)</h3>
                 </Col>
+              </Row>
+
+              <Row className="align-items-center">
+                {storeBranch.map((storeBranches) => (
+                  <Button
+                    key={storeBranches._id} // Assuming storeBranches has a unique identifier like _id
+                    id={`button-${storeBranches._id}`} // Unique id for each button
+                    onClick={() => handleButtonClick(storeBranches._id)} // Replace with your click handler
+                  >
+                    <h3 className="mb-0">{storeBranches.branch}</h3>
+                  </Button>
+                ))}
               </Row>
             </CardHeader>
             <CardBody style={{ overflowX: "auto" }}>

@@ -50,6 +50,9 @@ import { EditControl } from "react-leaflet-draw";
 import osm from "./../admin/osm-providers";
 import { useRef } from "react";
 
+import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
+import "leaflet-geosearch/dist/geosearch.css";
+
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 
@@ -93,6 +96,9 @@ const Profile = () => {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
 
+  const handleSearch = (result) => {
+    setCenter({ lat: result.y, lng: result.x });
+  };
   useEffect(() => {
     dispatch(allAddress());
     // console.group(modalID);
@@ -148,6 +154,38 @@ const Profile = () => {
       navigate("/my-profile");
       dispatch({ type: SET_ADDRESS_RESET });
     }
+
+    const initializeMap = () => {
+      if (mapRef.current) {
+        const searchControl = new GeoSearchControl({
+          provider: new OpenStreetMapProvider(),
+          style: "bar",
+          showMarker: false,
+          onResultClick: handleSearch,
+        });
+        mapRef.current.addControl(searchControl);
+      } else {
+        setTimeout(initializeMap, 100);
+      }
+    };
+
+    initializeMap();
+
+    const EditinitializeMap = () => {
+      if (editmapRef.current) {
+        const editsearchControl = new GeoSearchControl({
+          provider: new OpenStreetMapProvider(),
+          style: "bar",
+          showMarker: false,
+          onResultClick: handleSearch,
+        });
+        editmapRef.current.addControl(editsearchControl);
+      } else {
+        setTimeout(initializeMap, 100);
+      }
+    };
+
+    EditinitializeMap();
   }, [
     dispatch,
     addresscreated,
@@ -157,6 +195,7 @@ const Profile = () => {
     error,
     isDeleted,
     isDefault,
+
   ]);
 
   const submitHandler = (e) => {
@@ -167,6 +206,8 @@ const Profile = () => {
     formData.set("streetName", e.streetName);
     formData.set("purokNum", e.purokNum);
     formData.set("barangay", e.barangay);
+    formData.set("latitude", latitude);
+    formData.set("longitude", longitude);
     formData.set("city", e.city);
     dispatch(createAddress(formData));
   };
@@ -180,6 +221,8 @@ const Profile = () => {
     formData.append("purokNum", purokNum);
     formData.append("barangay", barangay);
     formData.append("city", city);
+    formData.append("latitude", latitude);
+    formData.append("longitude", longitude);
 
     dispatch(updateAddress(modalID, formData));
 
@@ -278,6 +321,13 @@ const Profile = () => {
     lng: 121.0518236625988,
   });
 
+  const [editcenter, setEditCenter] = useState({
+    lat: 14.493945331650867,
+    lng: 121.0518236625988,
+  });
+
+  const editmapRef = useRef();
+
   const ZOOM_LEVEL = 18;
   const mapRef = useRef();
   const [marker, setMarker] = useState(null);
@@ -285,7 +335,6 @@ const Profile = () => {
   const handleMarkerCreated = (e) => {
     const newMarker = e.layer;
     console.log(newMarker);
-    
 
     setMarker((prevMarker) => {
       if (prevMarker) {
@@ -653,6 +702,7 @@ const Profile = () => {
           </div>
         </div>
       </div>
+
       <Modal isOpen={isEditModalOpen} toggle={toggleEditModal}>
         <ModalHeader toggle={toggleEditModal}>Edit Address</ModalHeader>
         <Form onSubmit={updateHandler} encType="multipart/form-data">
@@ -718,6 +768,32 @@ const Profile = () => {
                 </option>
                 <option value="Taguig City">Taguig City</option>
               </select>
+            </FormGroup>
+
+            <FormGroup>
+              <MapContainer
+                center={editcenter}
+                zoom={ZOOM_LEVEL}
+                ref={editmapRef}>
+                <FeatureGroup>
+                  <EditControl
+                    position="topright"
+                    onCreated={handleMarkerCreated}
+                    draw={{
+                      polygon: false,
+                      rectangle: false,
+                      circle: false,
+                      circlemarker: false,
+                      marker: true,
+                      polyline: false,
+                    }}
+                  />
+                </FeatureGroup>
+                <TileLayer
+                  url={osm.maptiler.url}
+                  attribution={osm.maptiler.attribution}
+                />
+              </MapContainer>
             </FormGroup>
           </ModalBody>
           <ModalFooter>

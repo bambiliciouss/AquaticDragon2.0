@@ -113,21 +113,43 @@ const MachineCleaningList = () => {
     dispatch(createMachineCleaning(formData, id));
   };
 
+  // const onChange = (e) => {
+  //   if (e.target.name === "cleaningImage") {
+  //     const reader = new FileReader();
+
+  //     reader.onload = () => {
+  //       if (reader.readyState === 2) {
+  //         setcleaningImagePreview(reader.result);
+  //         setcleaningImage(reader.result);
+  //       }
+  //     };
+
+  //     reader.readAsDataURL(e.target.files[0]);
+  //   }
+  // };
+
   const onChange = (e) => {
+    const file = e.target.files[0];
+    const allowedImageTypes = ["image/png", "image/jpeg", "image/jpg"]; // Allowed image file types
+
     if (e.target.name === "cleaningImage") {
-      const reader = new FileReader();
+      if (file && allowedImageTypes.includes(file.type)) {
+        const reader = new FileReader();
 
-      reader.onload = () => {
-        if (reader.readyState === 2) {
-          setcleaningImagePreview(reader.result);
-          setcleaningImage(reader.result);
-        }
-      };
+        reader.onload = () => {
+          if (reader.readyState === 2) {
+            setcleaningImagePreview(reader.result);
+            setcleaningImage(reader.result);
+          }
+        };
 
-      reader.readAsDataURL(e.target.files[0]);
+        reader.readAsDataURL(e.target.files[0]);
+      } else {
+        swal("Please select a valid image file (PNG, JPEG, JPG).", "", "error");
+        e.target.value = null;
+      }
     }
   };
-
   const deleterecord = (id) => {
     swal({
       title: "Are you sure you want to delete this record?",

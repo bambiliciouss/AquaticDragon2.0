@@ -37,7 +37,7 @@ import { useNavigate } from "react-router-dom";
 import {
   createAddress,
   allAddress,
-  singleAddress,
+  // singleAddress,
   updateAddress,
   deleteAddress,
   clearErrors,
@@ -77,6 +77,9 @@ const AdminProfile = () => {
   const [city, setCity] = useState("");
   const [modalID, setModalID] = useState("");
 
+  const defaultAddress =
+    user?.addresses?.find((address) => address.isDefault) || {};
+
   useEffect(() => {
     dispatch(allAddress());
     // console.group(modalID);
@@ -91,9 +94,9 @@ const AdminProfile = () => {
       resetForm();
     }
 
-    if (addressdetails && addressdetails._id !== modalID) {
-      dispatch(singleAddress(modalID));
-    } else {
+    // if (addressdetails && addressdetails._id !== modalID) {
+    //   dispatch(singleAddress(modalID));
+    // } else {
       if (addressdetails) {
         setHouseNo(addressdetails.houseNo);
         setStreetName(addressdetails.streetName);
@@ -101,7 +104,7 @@ const AdminProfile = () => {
         setBarangay(addressdetails.barangay);
         setCity(addressdetails.city);
       }
-    }
+    // }
 
     if (isUpdated) {
       swal("Updated Successfully!", "", "success");
@@ -313,15 +316,15 @@ const AdminProfile = () => {
                           </button>
                         </div>
                         {user && user.role === "user" && (
-                        <div className="btn-container d-block">
-                          <Button
-                            color="info"
-                            size="sm"
-                            className="mb-3"
-                            onClick={toggleModal}>
-                            Add Address
-                          </Button>
-                        </div>
+                          <div className="btn-container d-block">
+                            <Button
+                              color="info"
+                              size="sm"
+                              className="mb-3"
+                              onClick={toggleModal}>
+                              Add Address
+                            </Button>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -403,7 +406,93 @@ const AdminProfile = () => {
               </div>
               <hr className="my-4" />
               {/* Address */}
-              <h6 className="heading-small text-muted mb-4">Addresses</h6>
+              <h6 className="heading-small text-muted mb-4">Address</h6>
+
+              <Row>
+                <Col lg="4">
+                  <FormGroup>
+                    <label
+                      className="form-control-label"
+                      htmlFor="input-address">
+                      House No.
+                    </label>
+                    <Input
+                      className="form-control-alternative"
+                      id="input-phone"
+                      type="text"
+                      value={defaultAddress ? defaultAddress.houseNo : ""}
+                      readOnly
+                    />
+                  </FormGroup>
+                </Col>
+                <Col lg="4">
+                  <FormGroup>
+                    <label
+                      className="form-control-label"
+                      htmlFor="input-address">
+                      Purok No.
+                    </label>
+                    <Input
+                      className="form-control-alternative"
+                      id="input-phone"
+                      type="text"
+                      value={defaultAddress ? defaultAddress.purokNum : ""}
+                      readOnly
+                    />
+                  </FormGroup>
+                </Col>
+                <Col lg="4">
+                  <FormGroup>
+                    <label
+                      className="form-control-label"
+                      htmlFor="input-address">
+                      Street Name
+                    </label>
+                    <Input
+                      className="form-control-alternative"
+                      id="input-phone"
+                      type="text"
+                      value={defaultAddress ? defaultAddress.streetName : ""}
+                      readOnly
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+
+              <Row>
+                <Col lg="6">
+                  <FormGroup>
+                    <label
+                      className="form-control-label"
+                      htmlFor="input-address">
+                      Barangay
+                    </label>
+                    <Input
+                      className="form-control-alternative"
+                      id="input-phone"
+                      type="text"
+                      value={defaultAddress ? defaultAddress.barangay : ""}
+                      readOnly
+                    />
+                  </FormGroup>
+                </Col>
+                <Col lg="6">
+                  <FormGroup>
+                    <label
+                      className="form-control-label"
+                      htmlFor="input-address">
+                      City
+                    </label>
+                    <Input
+                      className="form-control-alternative"
+                      id="input-phone"
+                      type="text"
+                      value={defaultAddress ? defaultAddress.city : ""}
+                      readOnly
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
 
               <Modal isOpen={isModalOpen} toggle={toggleModal}>
                 <ModalHeader toggle={toggleModal}>Add Address</ModalHeader>
@@ -562,7 +651,7 @@ const AdminProfile = () => {
                   </ModalFooter>
                 </Form>
               </Modal>
-              {useraddress.length === 0 ? (
+              {/* {useraddress.length === 0 ? (
                 <p>No address registered</p>
               ) : (
                 <MDBDataTable
@@ -573,7 +662,7 @@ const AdminProfile = () => {
                   noBottomColumns
                   responsive
                 />
-              )}
+              )} */}
             </CardBody>
           </Card>
         </Container>

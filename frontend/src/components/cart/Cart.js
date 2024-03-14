@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import MetaData from "../layout/MetaData";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,15 +16,20 @@ import {
   Container,
   Row,
   Col,
+  InputGroup,
+  InputGroupAddon,
 } from "reactstrap";
 const Cart = () => {
   const dispatch = useDispatch();
   const { cartItems } = useSelector((state) => state.cart);
+  const increaseQty = (id, quantity, stock) => {
+    const newQty = quantity + 1;
+    dispatch(addItemToCart(id, newQty));
+  };
 
-  const cartGallon = (id, quantity, price) => {
-    quantity = 1;
-    price = 30;
-    dispatch(addItemToCart(id, quantity, price));
+  const decreaseQty = (id, quantity) => {
+    const newQty = Math.max(1, quantity - 1);
+    dispatch(addItemToCart(id, newQty));
   };
 
   const removeCartItemHandler = (id) => {
@@ -47,8 +52,8 @@ const Cart = () => {
         style={{
           minHeight: "700px",
           marginTop: "100px",
-          marginLeft: "20%",
-          marginRight: "20%",
+          marginLeft: "10%",
+          marginRight: "10%",
         }}>
         <div className="col-md-12">
           <div className="content">
@@ -73,30 +78,94 @@ const Cart = () => {
                             {cartItems.map((item) => (
                               <Fragment>
                                 <hr />
-                                <div className="cart-item" key={item.gallon_id}>
+                                {/* <div className="cart-item" key={item.gallon_id}>
                                   <div className="row">
-                                    {/* <div className="col-4 col-lg-3">
-                                      <img
-                                        src={item.image}
-                                        alt="......."
-                                        height="90"
-                                        width="115"
-                                      />
-                                    </div> */}
-                                    <div className="col-6 col-lg-3 mt-3 mt-lg-0">
+                                    <div className="col-3">
                                       <p id="card_item_price">{item.type}</p>
                                     </div>
 
-                                    <div className="col-6 col-lg-3 mt-3 mt-lg-0">
+                                    <div className="col-2">
                                       <p id="card_item_price">
-                                        {item.quantity}
+                                      ₱{item.price}.00
                                       </p>
                                     </div>
+
+                                    <button
+                                      className="btn btn-danger"
+                                      onClick={() =>
+                                        decreaseQty(item.gallon, item.quantity)
+                                      }>
+                                      -
+                                    </button>
+                                    <div className="col-2">
+                                      <p id="card_item_price">
+                                        {item.quantity} pc(s)
+                                      </p>
+                                    </div>
+                                    <button
+                                      className="btn btn-primary mr-2"
+                                      onClick={() =>
+                                        increaseQty(item.gallon, item.quantity)
+                                      }>
+                                      +
+                                    </button>
 
                                     <div className="col-4 col-lg-1 mt-4 mt-lg-0">
                                       <i
                                         id="delete_cart_item"
                                         className="fa fa-trash btn btn-danger"
+                                        onClick={() =>
+                                          removeCartItemHandler(item.gallon)
+                                        }>
+                                        Remove
+                                      </i>
+                                    </div>
+                                  </div>
+                                </div> */}
+                                <div className="cart-item" key={item.gallon_id}>
+                                  <div className="row">
+                                    <div className="col-3">
+                                      <span className="item-type">
+                                        {item.type}
+                                      </span>
+                                    </div>
+
+                                    <div className="col-2">
+                                      <span className="item-price">
+                                        ₱{item.price}.00
+                                      </span>
+                                    </div>
+                                    <div className="col-4">
+                                      <button
+                                        className="btn btn-danger"
+                                        onClick={() =>
+                                          decreaseQty(
+                                            item.gallon,
+                                            item.quantity
+                                          )
+                                        }>
+                                        -
+                                      </button>
+
+                                      <span className="item-quantity">
+                                        {item.quantity} pc(s)
+                                      </span>
+
+                                      <button
+                                        className="btn btn-primary mr-2"
+                                        onClick={() =>
+                                          increaseQty(
+                                            item.gallon,
+                                            item.quantity
+                                          )
+                                        }>
+                                        +
+                                      </button>
+                                    </div>
+
+                                    <div className="col-2">
+                                      <i
+                                        className="fa fa-trash btn btn-danger delete-cart-item"
                                         onClick={() =>
                                           removeCartItemHandler(item.gallon)
                                         }>

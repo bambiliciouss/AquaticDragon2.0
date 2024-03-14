@@ -572,14 +572,29 @@ import "leaflet-geosearch/dist/geosearch.css";
 import { useRef } from "react";
 
 import useGeolocation from "react-hook-geolocation";
+import L from "leaflet";
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon.png",
+  iconUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
+});
 
 const Home = () => {
   const location = useGeolocation();
   const dispatch = useDispatch();
   const { storeBranch } = useSelector((state) => state.allStoreBranch);
 
-  const [center, setCenter] = useState({ lat: 13.084622, lng: 80.248357 });
-  const ZOOM_LEVEL = 9;
+  const [center, setCenter] = useState({
+    lat: 14.494056184062693,
+    lng: 121.0509490377972,
+  });
+  //14.494056184062693, 121.0509490377972
+  const ZOOM_LEVEL = 14;
   const mapRef = useRef();
 
   const handleSearch = (result) => {
@@ -591,8 +606,13 @@ const Home = () => {
     // iconUrl: require("./icons/placeholder.png"),
     iconSize: [38, 38], // size of the icon
   });
+  const [marker, setMarker] = useState({
+    lat: 14.494056184062693,
+    lng: 121.0509490377972,
+  });
 
   useEffect(() => {
+    console.log(marker)
     const initializeMap = () => {
       if (mapRef.current) {
         const searchControl = new GeoSearchControl({
@@ -608,11 +628,13 @@ const Home = () => {
     };
 
     dispatch(allStoreBranch());
-
     initializeMap();
-  }, [dispatch]);
 
-  const [marker, setMarker] = useState(null);
+    setMarker({
+      lat: center.lat,
+      lng: center.lng,
+    });
+  }, [dispatch, center]);
 
   const handleMarkerCreated = (e) => {
     const newMarker = e.layer;
@@ -630,34 +652,6 @@ const Home = () => {
     console.log(lat, lng);
     // setLatitude(lat);
     // setLongitude(lng);
-  };
-
-  const showMyLocation = () => {
-    console.log(location);
-    console.log("RESULT", location.latitude, location.longitude);
-    if (!location.error) {
-      if (location.latitude !== null && location.longitude !== null) {
-        if (mapRef.current) {
-          const lat = location.latitude;
-          const lng = location.longitude;
-
-          // setLatitude(location.latitude);
-          // setLongitude(location.longitude);
-          const ZOOM_LEVEL = 18;
-
-          mapRef.current.setView([lat, lng], ZOOM_LEVEL, { animate: true });
-          // setMarker([lat, lng]);
-
-          console.log("RESULT", lat, lng);
-        } else {
-          console.error("mapRef is not properly set.");
-        }
-      } else {
-        console.warn("Location coordinates are not available yet.");
-      }
-    } else if (location.error) {
-      alert(location.error.message || "An unknown error occurred.");
-    }
   };
 
   return (
@@ -716,13 +710,6 @@ const Home = () => {
               {/* {marker && <Marker position={marker} icon={customIcon}></Marker>} */}
             </MapContainer>
           </Container>
-          <div className="row my-4">
-            <div className="col d-flex justify-content-center">
-              <button className="btn btn-primary" onClick={showMyLocation}>
-                Locate Me
-              </button>
-            </div>
-          </div>
         </section>
       </main>
       {/* <AuthFooter /> */}

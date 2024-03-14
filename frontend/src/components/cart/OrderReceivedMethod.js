@@ -16,7 +16,7 @@ import {
 import AuthNavbar from "components/Navbars/AuthNavbar.js";
 import MetaData from "../layout/MetaData";
 import { useNavigate } from "react-router-dom";
-
+import swal from "sweetalert";
 const OrderReceivedMethod = () => {
   const navigate = useNavigate();
   const [selectedOrderClaimingMethod, setSelectedOrderClaimingMethod] =
@@ -31,6 +31,15 @@ const OrderReceivedMethod = () => {
   }, []);
 
   const processToOrderClaimingMethod = () => {
+
+    if (!selectedOrderClaimingMethod) {
+      // Show SweetAlert message if no radio button is clicked
+
+      swal("Please select how will you claim your order before proceeding!", "", "error");
+      return; // Stop further execution
+    }
+
+
     const data = {
       orderClaimingMethod: selectedOrderClaimingMethod,
     };
@@ -101,11 +110,11 @@ const OrderReceivedMethod = () => {
                       <Input
                         type="radio"
                         name="orderClaimingMethod"
-                        value="Walkin"
+                        value="Walk In"
                         onChange={() =>
-                          setSelectedOrderClaimingMethod("Walkin")
+                          setSelectedOrderClaimingMethod("Walk In")
                         }
-                        checked={selectedOrderClaimingMethod === "Walkin"}
+                        checked={selectedOrderClaimingMethod === "Walk In"}
                       />
                        
                         <CardText>Walk In</CardText>

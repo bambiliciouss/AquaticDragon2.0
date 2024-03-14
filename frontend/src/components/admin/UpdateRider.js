@@ -164,61 +164,138 @@ const UpdateRider = () => {
     dispatch(updateRider(id, formData));
   };
 
+  // const onChange = (e) => {
+  //   if (e.target.name === "avatar") {
+  //     const reader = new FileReader();
+  //     reader.onload = () => {
+  //       if (reader.readyState === 2) {
+  //         setAvatarPreview(reader.result);
+  //         setAvatar(reader.result);
+  //       }
+  //     };
+
+  //     reader.readAsDataURL(e.target.files[0]);
+  //   } else if (e.target.name === "medcert") {
+  //     // Handle medcert file upload
+  //     const medcertfile = e.target.files[0] ? e.target.files[0].name : "";
+  //     setSelectedFileName(medcertfile);
+  //     const reader = new FileReader();
+
+  //     reader.onload = () => {
+  //       if (reader.readyState === 2) {
+  //         setMedcert(reader.result);
+  //       }
+  //     };
+
+  //     reader.readAsDataURL(e.target.files[0]);
+  //   } else if (e.target.name === "barangayclearance") {
+  //     // Handle barangayclearance file upload
+  //     const barangayclearancefile = e.target.files[0]
+  //       ? e.target.files[0].name
+  //       : "";
+  //     setSelectedFileNameBC(barangayclearancefile);
+
+  //     const reader = new FileReader();
+
+  //     reader.onload = () => {
+  //       if (reader.readyState === 2) {
+  //         setBarangayclearance(reader.result);
+  //       }
+  //     };
+
+  //     reader.readAsDataURL(e.target.files[0]);
+  //   } else if (e.target.name === "driverslicense") {
+  //     // Handle driverslicense file upload
+  //     const driverslicensefile = e.target.files[0]
+  //       ? e.target.files[0].name
+  //       : "";
+  //     setSelectedFileNameDL(driverslicensefile);
+
+  //     const reader = new FileReader();
+
+  //     reader.onload = () => {
+  //       if (reader.readyState === 2) {
+  //         setDriversLicense(reader.result);
+  //       }
+  //     };
+  //     reader.readAsDataURL(e.target.files[0]);
+  //   }
+  // };
+
   const onChange = (e) => {
+    const file = e.target.files[0];
+    const allowedImageTypes = ["image/png", "image/jpeg", "image/jpg"]; // Allowed image file types
+
     if (e.target.name === "avatar") {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (reader.readyState === 2) {
-          setAvatarPreview(reader.result);
-          setAvatar(reader.result);
-        }
-      };
-
-      reader.readAsDataURL(e.target.files[0]);
+      if (file && allowedImageTypes.includes(file.type)) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (reader.readyState === 2) {
+            setAvatarPreview(reader.result);
+            setAvatar(reader.result);
+          }
+        };
+        reader.readAsDataURL(file);
+      } else {
+        swal("Please select a valid image file (PNG, JPEG, JPG).", "", "error");
+        e.target.value = null; // Clear the input value
+      }
     } else if (e.target.name === "medcert") {
-      // Handle medcert file upload
-      const medcertfile = e.target.files[0] ? e.target.files[0].name : "";
-      setSelectedFileName(medcertfile);
-      const reader = new FileReader();
+      if (file && allowedImageTypes.includes(file.type)) {
+        const medcertfile = e.target.files[0] ? e.target.files[0].name : "";
+        setSelectedFileName(medcertfile);
+        const reader = new FileReader();
 
-      reader.onload = () => {
-        if (reader.readyState === 2) {
-          setMedcert(reader.result);
-        }
-      };
+        reader.onload = () => {
+          if (reader.readyState === 2) {
+            setMedcert(reader.result);
+          }
+        };
 
-      reader.readAsDataURL(e.target.files[0]);
+        reader.readAsDataURL(e.target.files[0]);
+      } else {
+        swal("Please select a valid image file (PNG, JPEG, JPG).", "", "error");
+        e.target.value = null; // Clear the input value
+      }
     } else if (e.target.name === "barangayclearance") {
-      // Handle barangayclearance file upload
-      const barangayclearancefile = e.target.files[0]
-        ? e.target.files[0].name
-        : "";
-      setSelectedFileNameBC(barangayclearancefile);
+      if (file && allowedImageTypes.includes(file.type)) {
+        const barangayclearancefile = e.target.files[0]
+          ? e.target.files[0].name
+          : "";
+        setSelectedFileNameBC(barangayclearancefile);
 
-      const reader = new FileReader();
+        const reader = new FileReader();
 
-      reader.onload = () => {
-        if (reader.readyState === 2) {
-          setBarangayclearance(reader.result);
-        }
-      };
+        reader.onload = () => {
+          if (reader.readyState === 2) {
+            setBarangayclearance(reader.result);
+          }
+        };
 
-      reader.readAsDataURL(e.target.files[0]);
+        reader.readAsDataURL(e.target.files[0]);
+      } else {
+        swal("Please select a valid image file (PNG, JPEG, JPG).", "", "error");
+        e.target.value = null; // Clear the input value
+      }
     } else if (e.target.name === "driverslicense") {
-      // Handle driverslicense file upload
-      const driverslicensefile = e.target.files[0]
-        ? e.target.files[0].name
-        : "";
-      setSelectedFileNameDL(driverslicensefile);
+      if (file && allowedImageTypes.includes(file.type)) {
+        const driverslicensefile = e.target.files[0]
+          ? e.target.files[0].name
+          : "";
+        setSelectedFileNameDL(driverslicensefile);
 
-      const reader = new FileReader();
+        const reader = new FileReader();
 
-      reader.onload = () => {
-        if (reader.readyState === 2) {
-          setDriversLicense(reader.result);
-        }
-      };
-      reader.readAsDataURL(e.target.files[0]);
+        reader.onload = () => {
+          if (reader.readyState === 2) {
+            setDriversLicense(reader.result);
+          }
+        };
+        reader.readAsDataURL(e.target.files[0]);
+      } else {
+        swal("Please select a valid image file (PNG, JPEG, JPG).", "", "error");
+        e.target.value = null; // Clear the input value
+      }
     }
   };
 

@@ -12,7 +12,7 @@ import AdminNavbar from "components/Navbars/AdminNavbar";
 import Header2 from "components/Headers/Header2";
 import AdminFooter from "components/Footers/AdminFooter.js";
 import {
-  updateProfile,
+  updateAdminProfile,
   loadUser,
   clearErrors,
 } from "../../actions/userActions";
@@ -71,16 +71,19 @@ const AdminUpdateProfile = () => {
       progress: undefined,
     });
 
+  const defaultAddress =
+    user?.addresses?.find((address) => address.isDefault) || {};
+
   useEffect(() => {
     if (user) {
       setFname(user.fname);
       setLname(user.lname);
       setPhone(user.phone);
-      setHouseNo(user.houseNo);
-      setStreetName(user.streetName);
-      setPurokNum(user.purokNum);
-      setBarangay(user.barangay);
-      setCity(user.city);
+      setHouseNo(defaultAddress.houseNo);
+      setStreetName(defaultAddress.streetName);
+      setPurokNum(defaultAddress.purokNum);
+      setBarangay(defaultAddress.barangay);
+      setCity(defaultAddress.city);
       setAvatarPreview(user.avatar.url);
     }
 
@@ -104,32 +107,58 @@ const AdminUpdateProfile = () => {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.set("fname", fname);
-    formData.set("lname", lname);
-    formData.set("phone", phone);
-    formData.set("houseNo", houseNo);
-    formData.set("streetName", streetName);
-    formData.set("purokNum", purokNum);
-    formData.set("barangay", barangay);
-    formData.set("city", city);
+    formData.append("fname", fname);
+    formData.append("lname", lname);
+    formData.append("phone", phone);
+    formData.append("houseNo", houseNo);
+    formData.append("streetName", streetName);
+    formData.append("purokNum", purokNum);
+    formData.append("barangay", barangay);
+    formData.append("city", city);
+    formData.append("avatar", avatar);
 
-    formData.set("avatar", avatar);
-
-    dispatch(updateProfile(formData));
+    dispatch(updateAdminProfile(formData));
   };
 
+  // const onChange = (e) => {
+  //   const reader = new FileReader();
+
+  //   reader.onload = () => {
+  //     if (reader.readyState === 2) {
+  //       setAvatarPreview(reader.result);
+
+  //       setAvatar(reader.result);
+  //     }
+  //   };
+
+  //   reader.readAsDataURL(e.target.files[0]);
+  // };
+
   const onChange = (e) => {
-    const reader = new FileReader();
+    const file = e.target.files[0];
 
-    reader.onload = () => {
-      if (reader.readyState === 2) {
-        setAvatarPreview(reader.result);
+    // Check if a file was selected
+    if (file) {
+      // Check if the file type is an image with the desired extensions
+      if (/^image\/(png|jpg|jpeg)$/.test(file.type)) {
+        const reader = new FileReader();
 
-        setAvatar(reader.result);
+        reader.onload = () => {
+          if (reader.readyState === 2) {
+            setAvatarPreview(reader.result);
+            setAvatar(reader.result);
+          }
+        };
+
+        reader.readAsDataURL(file);
+      } else {
+        // Notify the user that only specific image file types are accepted
+        // alert("Please select a .png, .jpg, or .jpeg file.");
+        swal("Please select .png, .jpg, or .jpeg image file.", "", "error");
+        // Optionally, you can clear the input value
+        e.target.value = null;
       }
-    };
-
-    reader.readAsDataURL(e.target.files[0]);
+    }
   };
 
   const location = useLocation();

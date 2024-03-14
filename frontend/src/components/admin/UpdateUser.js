@@ -170,19 +170,25 @@ const UpdateUser = () => {
   };
 
   const onChange = (e) => {
-    if (e.target.name === "avatar") {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (reader.readyState === 2) {
-          setAvatarPreview(reader.result);
-          setAvatar(reader.result);
-        }
-      };
+    const file = e.target.files[0];
+    if (file) {
+      if (/^image\/(png|jpg|jpeg)$/.test(file.type)) {
+        const reader = new FileReader();
 
-      reader.readAsDataURL(e.target.files[0]);
+        reader.onload = () => {
+          if (reader.readyState === 2) {
+            setAvatarPreview(reader.result);
+            setAvatar(reader.result);
+          }
+        };
+
+        reader.readAsDataURL(file);
+      } else {
+        swal("Please select .png, .jpg, or .jpeg image file.", "", "error");
+        e.target.value = null;
+      }
     }
   };
-
   const setAddresses = () => {
     const data = {
       columns: [

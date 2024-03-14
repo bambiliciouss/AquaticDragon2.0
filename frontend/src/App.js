@@ -67,6 +67,7 @@ import OrderSummary from "components/cart/OrderSummary";
 import MyOrdersList from "components/order/MyOrders";
 
 import OrderList from "components/admin/OrderList";
+import UpdateOrderDetails from "components/admin/UpdateOrder";
 import OrderDetails from "components/order/OrderDetails";
 
 import store from "./store";
@@ -130,7 +131,7 @@ function App() {
         <Route path="/orders/me" element={ <ProtectedRoute><MyOrdersList /></ProtectedRoute>}/>
 
         <Route path="/orderlist" element={<ProtectedRoute> <OrderList /></ProtectedRoute>} exact="true" />
-        <Route path="/order/:id" element={<ProtectedRoute><OrderDetails /></ProtectedRoute>}exact="true"/>
+        <Route path="/update/order/:id" element={<ProtectedRoute><UpdateOrderDetails /></ProtectedRoute>}exact="true"/>
         <Route path="/order/:id" element={<ProtectedRoute><OrderDetails /></ProtectedRoute>}exact="true"/>
         <Route path="/rider/details/:id" element={ <ProtectedRoute><UpdateRider /></ProtectedRoute>}exact="true"/>
         

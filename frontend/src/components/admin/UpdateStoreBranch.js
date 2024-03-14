@@ -92,11 +92,9 @@ const UpdateStoreBranch = () => {
     lng: 121.0518236625988,
   });
 
-
   const ZOOM_LEVEL = 18;
   const mapRef = useRef();
   const [marker, setMarker] = useState(null);
-
 
   const handleMarkerCreated = (e) => {
     const newMarker = e.layer;
@@ -148,8 +146,6 @@ const UpdateStoreBranch = () => {
         type: UPDATE_STOREBRANCH_RESET,
       });
     }
-
-    
   }, [dispatch, navigate, storeBranch, error, isUpdated]);
 
   const submitHandler = (e) => {
@@ -171,20 +167,41 @@ const UpdateStoreBranch = () => {
     dispatch(updateStoreBranch(id, formData));
   };
 
-  const onChange = (e) => {
-    if (e.target.name === "storeImage") {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (reader.readyState === 2) {
-          setAvatarPreview(reader.result);
-          setStoreImage(reader.result);
-        }
-      };
+  // const onChange = (e) => {
+  //   if (e.target.name === "storeImage") {
+  //     const reader = new FileReader();
+  //     reader.onload = () => {
+  //       if (reader.readyState === 2) {
+  //         setAvatarPreview(reader.result);
+  //         setStoreImage(reader.result);
+  //       }
+  //     };
 
-      reader.readAsDataURL(e.target.files[0]);
+  //     reader.readAsDataURL(e.target.files[0]);
+  //   }
+  // };
+  const onChange = (e) => {
+    const file = e.target.files[0];
+    const allowedImageTypes = ["image/png", "image/jpeg", "image/jpg"]; // Allowed image file types
+
+    if (e.target.name === "storeImage") {
+      if (file && allowedImageTypes.includes(file.type)) {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+          if (reader.readyState === 2) {
+            setAvatarPreview(reader.result);
+            setStoreImage(reader.result);
+          }
+        };
+
+        reader.readAsDataURL(e.target.files[0]);
+      } else {
+        swal("Please select a valid image file (PNG, JPEG, JPG).", "", "error");
+        e.target.value = null; // Clear the input value
+      }
     }
   };
-
   return (
     <>
       <MetaData title={"Update Store"} />

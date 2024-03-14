@@ -38,83 +38,46 @@ const orderSchema = mongoose.Schema({
     required: true,
   },
 
-  storeBranch: 
-    {
-      store: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "StoreBranch",
-      },
-      branchNo: {
-        type: String,
-      },
-
-      address: {
-        type: String,
-      },
-      deliveryFee: {
-        type: Number,
-       // required: true,
-       default:0
-      },
+  selectedStore: {
+    store: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "StoreBranch",
     },
- 
-
-  // deliveryAddress: [
-  //   {
-  //     latitude: {
-  //       type: String,
-  //       required: true,
-  //     },
-  //     longitude: {
-  //       type: String,
-  //       required: true,
-  //     },
-
-  //     address: {
-  //       type: String,
-  //       required: true,
-  //     },
-
-  //     street: {
-  //       type: String,
-  //       required: true,
-  //     },
-
-  //     barangay: {
-  //       type: String,
-  //       required: true,
-  //     },
-
-  //     city: {
-  //       type: String,
-  //       required: true,
-  //     },
-  //   },
-  // ],
-
-  deliveryAddress: 
-    {
-      houseNo: {
-        type: String,
-      },
-
-      streetName: {
-        type: String,
-      },
-
-      purokNum: {
-        type: String,
-      },
-
-      barangay: {
-        type: String,
-      },
-
-      city: {
-        type: String,
-      },
+    branchNo: {
+      type: String,
     },
 
+    address: {
+      type: String,
+    },
+    deliveryFee: {
+      type: Number,
+      // required: true,
+      default: 0,
+    },
+  },
+
+  deliveryAddress: {
+    houseNo: {
+      type: String,
+    },
+
+    streetName: {
+      type: String,
+    },
+
+    purokNum: {
+      type: String,
+    },
+
+    barangay: {
+      type: String,
+    },
+
+    city: {
+      type: String,
+    },
+  },
 
   paymentInfo: {
     type: String,
@@ -128,6 +91,10 @@ const orderSchema = mongoose.Schema({
       },
       datedAt: {
         type: Date,
+      },
+      staff: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
       },
     },
   ],

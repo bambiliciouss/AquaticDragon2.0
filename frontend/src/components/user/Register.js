@@ -32,6 +32,7 @@ import { newregister, clearErrors } from "../../actions/userActions";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useForm } from "react-hook-form";
+import swal from "sweetalert";
 const Register = () => {
   const [user, setUser] = useState({
     fname: "",
@@ -109,12 +110,12 @@ const Register = () => {
     setRole("user");
 
     if (isAuthenticated) {
-      notifySuccess("An email sent to your Email account, please verify");
+      swal("An email sent to your Email account, please verify","","success");
       navigate("/");
     }
 
     if (error) {
-      notifyError(error);
+      swal(error,"", "error");
       console.log(error);
       dispatch(clearErrors());
     }

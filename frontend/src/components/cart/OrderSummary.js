@@ -56,14 +56,14 @@ const OrderSummary = () => {
 
   const storeBranchinfo = JSON.parse(sessionStorage.getItem("selectedStore"));
   if (storeBranchinfo) {
-    order.storeBranch = [
+    order.selectedStore = 
       {
         store: storeBranchinfo._id,
         branchNo: storeBranchinfo.branch,
         address: `${storeBranchinfo.address.houseNo}, ${storeBranchinfo.address.purokNum}, ${storeBranchinfo.address.streetName}, ${storeBranchinfo.address.barangay}, ${storeBranchinfo.address.city}  `,
         deliveryFee: storeBranchinfo.deliverFee,
-      },
-    ];
+      }
+   
   }
 
   const paymentinfo = JSON.parse(sessionStorage.getItem("processToPayment"));
@@ -74,15 +74,15 @@ const OrderSummary = () => {
   const defaultAddress =
     user?.addresses?.find((address) => address.isDefault) || {};
 
-  order.deliveryAddress = [
+  order.deliveryAddress = 
     {
       houseNo: defaultAddress.houseNo,
       streetName: defaultAddress.streetName,
       purokNum: defaultAddress.purokNum,
       barangay: defaultAddress.barangay,
       city: defaultAddress.city,
-    },
-  ];
+    }
+  
 
   const itemsPrice = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
@@ -178,7 +178,7 @@ const OrderSummary = () => {
                             {item.type}
                           </Col>
                           <Col sm="3" style={{ textAlign: "center" }}>
-                            {item.quantity} pc
+                            {item.quantity} pc(s)
                           </Col>
 
                           <Col sm="4" style={{ textAlign: "right" }}>

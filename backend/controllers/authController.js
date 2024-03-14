@@ -276,6 +276,70 @@ exports.updateProfile = async (req, res, next) => {
   }
 };
 
+exports.updateAdminProfile = async (req, res, next) => {
+  const newUserData = {
+    fname: req.body.fname,
+    lname: req.body.lname,
+    phone: req.body.phone,
+  };
+  const newAddressData = {
+    houseNo: req.body.houseNo,
+    streetName: req.body.streetName,
+    purokNum: req.body.purokNum,
+    barangay: req.body.barangay,
+    city: req.body.city,
+    isDefault: true,
+  };
+
+  try {
+    const user = await User.findById(req.user.id);
+    if (req.body.avatar !== "") {
+      const user = await User.findById(req.user.id);
+      const image_id = user.avatar.public_id;
+      const destroyRes = await cloudinary.uploader.destroy(image_id);
+      const uploadRes = await cloudinary.v2.uploader.upload(req.body.avatar, {
+        folder: "avatars",
+        width: 150,
+        crop: "scale",
+      });
+      newUserData.avatar = {
+        public_id: uploadRes.public_id,
+        url: uploadRes.secure_url,
+      };
+
+      // user.avatar = newUserData.avatar;
+    }
+
+    // Update user data (fname, lname, and phone)
+    user.fname = newUserData.fname;
+    user.lname = newUserData.lname;
+    user.phone = newUserData.phone;
+    if (req.body.avatar !== "") {
+      user.avatar = newUserData.avatar;
+    }
+
+    // Update address if the user has addresses
+    if (user.addresses && user.addresses.length > 0) {
+      user.addresses[0] = { ...user.addresses[0], ...newAddressData };
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    if (error.code === 11000 && error.keyPattern && error.keyPattern.phone) {
+      const errorMessage = `Phone number '${newUserData.phone}' is already taken.`;
+      return res.status(400).json({ success: false, message: errorMessage });
+    }
+
+    // Handle other errors
+    res.status(500).json({ success: false, error });
+  }
+};
+
 exports.updatePassword = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id).select("+password");
@@ -636,7 +700,8 @@ exports.updateProfileRider = async (req, res, next) => {
         public_id: result.public_id,
         url: result.secure_url,
       };
-    } else if (req.body.medcert && req.body.medcert !== "") {
+    }
+    if (req.body.medcert && req.body.medcert !== "") {
       const user = await User.findById(req.params.id);
       const medcert_id = user.medcert.public_id;
       const res = await cloudinary.uploader.destroy(medcert_id);
@@ -655,7 +720,9 @@ exports.updateProfileRider = async (req, res, next) => {
         public_id: result.public_id,
         url: result.secure_url,
       };
-    } else if (
+    }
+    
+    if (
       req.body.barangayclearance &&
       req.body.barangayclearance !== ""
     ) {
@@ -677,7 +744,8 @@ exports.updateProfileRider = async (req, res, next) => {
         public_id: result.public_id,
         url: result.secure_url,
       };
-    } else if (req.body.driverslicense && req.body.driverslicense !== "") {
+    }
+     if (req.body.driverslicense && req.body.driverslicense !== "") {
       const user = await User.findById(req.params.id);
       const driverslicense_id = user.driverslicense.public_id;
       const res = await cloudinary.uploader.destroy(driverslicense_id);
@@ -699,6 +767,22 @@ exports.updateProfileRider = async (req, res, next) => {
     }
 
     const user = await User.findById(req.params.id);
+
+    user.fname = newUserData.fname;
+    user.lname = newUserData.lname;
+    user.phone = newUserData.phone;
+    if (req.body.avatar !== "") {
+      user.avatar = newUserData.avatar;
+    }
+    if (req.body.medcert && req.body.medcert !== "")
+      user.medcert = newUserData.medcert;
+   if (req.body.barangayclearance && req.body.barangayclearance !== "") {
+      user.barangayclearance = newUserData.barangayclearance;
+    } 
+    if (req.body.driverslicense && req.body.driverslicense !== "") {
+      user.driverslicense = newUserData.driverslicense;
+    }
+
     if (user.addresses && user.addresses.length > 0) {
       user.addresses[0] = { ...user.addresses[0], ...newAddressData };
       await user.save();
@@ -735,6 +819,7 @@ exports.updateProfileEmployee = async (req, res, next) => {
   };
 
   try {
+    const user = await User.findById(req.params.id);
     if (req.body.avatar && req.body.avatar !== "") {
       const user = await User.findById(req.params.id);
       const image_id = user.avatar.public_id;
@@ -754,7 +839,9 @@ exports.updateProfileEmployee = async (req, res, next) => {
         public_id: result.public_id,
         url: result.secure_url,
       };
-    } else if (req.body.medcert && req.body.medcert !== "") {
+    } 
+    
+    if (req.body.medcert && req.body.medcert !== "") {
       const user = await User.findById(req.params.id);
       const medcert_id = user.medcert.public_id;
       const res = await cloudinary.uploader.destroy(medcert_id);
@@ -773,7 +860,9 @@ exports.updateProfileEmployee = async (req, res, next) => {
         public_id: result.public_id,
         url: result.secure_url,
       };
-    } else if (
+    }
+    
+    if (
       req.body.barangayclearance &&
       req.body.barangayclearance !== ""
     ) {
@@ -797,7 +886,18 @@ exports.updateProfileEmployee = async (req, res, next) => {
       };
     }
 
-    const user = await User.findById(req.params.id);
+    user.fname = newUserData.fname;
+    user.lname = newUserData.lname;
+    user.phone = newUserData.phone;
+    if (req.body.avatar !== "") {
+      user.avatar = newUserData.avatar;
+    }
+    if (req.body.medcert && req.body.medcert !== "")
+      user.medcert = newUserData.medcert;
+    if (req.body.barangayclearance && req.body.barangayclearance !== "") {
+      user.barangayclearance = newUserData.barangayclearance;
+    }
+
     if (user.addresses && user.addresses.length > 0) {
       user.addresses[0] = { ...user.addresses[0], ...newAddressData };
       await user.save();
@@ -882,7 +982,15 @@ exports.addAddress = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
-    const { houseNo, streetName, purokNum, barangay, city } = req.body;
+    const {
+      houseNo,
+      streetName,
+      purokNum,
+      barangay,
+      city,
+      latitude,
+      longitude,
+    } = req.body;
 
     const newAddress = {
       houseNo,
@@ -890,6 +998,8 @@ exports.addAddress = async (req, res) => {
       purokNum,
       barangay,
       city,
+      latitude,
+      longitude,
       isDefault: true,
     };
 
@@ -928,8 +1038,16 @@ exports.editAddress = async (req, res) => {
         .json({ success: false, message: "Address not found" });
     }
 
-    const { houseNo, streetName, purokNum, barangay, city, isDefault } =
-      req.body;
+    const {
+      houseNo,
+      streetName,
+      purokNum,
+      barangay,
+      city,
+      isDefault,
+      latitude,
+      longitude,
+    } = req.body;
 
     const addressIndex = user.addresses.findIndex(
       (address) => address._id.toString() === addressId
@@ -947,6 +1065,8 @@ exports.editAddress = async (req, res) => {
       purokNum,
       barangay,
       city,
+      latitude,
+      longitude,
       isDefault: true,
     };
 

@@ -110,19 +110,27 @@ const UpdateTypeGallon = () => {
   };
 
   const onChange = (e) => {
+    const file = e.target.files[0];
+    const allowedImageTypes = ['image/png', 'image/jpeg', 'image/jpg']; // Allowed image file types
+  
     if (e.target.name === "gallonImage") {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (reader.readyState === 2) {
-          setgallonImagePreview(reader.result);
-          setgallonImage(reader.result);
-        }
-      };
-
-      reader.readAsDataURL(e.target.files[0]);
-    }
+      if (file && allowedImageTypes.includes(file.type)) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (reader.readyState === 2) {
+            setgallonImagePreview(reader.result);
+            setgallonImage(reader.result);
+          }
+        };
+  
+        reader.readAsDataURL(e.target.files[0]);
+      } else {
+        swal("Please select a valid image file (PNG, JPEG, JPG).", "", "error");
+        e.target.value = null; 
+      }
+    } 
+  
   };
-
   return (
     <>
       <MetaData title={"Update Record"} />

@@ -19,6 +19,7 @@ import {
 } from "../constants/orderConstants";
 
 export const createOrder = (order) => async (dispatch, getState) => {
+  console.log("actions order", order);
   try {
     dispatch({ type: CREATE_ORDER_REQUEST });
     const config = {
