@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const phychemTestSchema = new mongoose.Schema({
+const businessPermitSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -12,7 +12,7 @@ const phychemTestSchema = new mongoose.Schema({
     ref: "StoreBranch",
   },
 
-  certImage: {
+  permitImage: {
     public_id: {
       type: String,
       required: true,
@@ -23,7 +23,7 @@ const phychemTestSchema = new mongoose.Schema({
     },
   },
 
-  dateTested: {
+  dateIssued: {
     type: Date,
     default: Date.now,
   },
@@ -38,4 +38,4 @@ const phychemTestSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("PhyChemTest", phychemTestSchema);
+module.exports = mongoose.model("BusinessPermit", businessPermitSchema);

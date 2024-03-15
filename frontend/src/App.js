@@ -33,9 +33,14 @@ import StoreBranchList from "components/admin/StoreBranchList";
 import TypesGallonList from "components/admin/TypesGallonList";
 import MachineCleaningList from "components/admin/MachineCleaningList";
 import BarangayHealthList from "components/admin/BarangayHealthList";
+import PhysicalChemTestList from "components/admin/PhysicalChemTestList";
+import BusinessPermitList from "components/admin/BusinessPermitList";
 
 import MachineCleaning from "components/admin/MachineCleaning";
 import BarangayHealth from "components/admin/BarangayHealth";
+import PhysicalChemTest from "components/admin/PhysicalChemTest";
+import BusinessPermit from "components/admin/BusinessPermit";
+
 
 import UpdateRider from "components/admin/UpdateRider";
 import UpdateEmployee from "components/admin/UpdateEmployee";
@@ -155,6 +160,12 @@ function App() {
         <Route path="/admin/product" element={<ProtectedRoute> <Product /></ProtectedRoute>}exact="true"/>
         <Route path="/admin/product/store/:id" element={ <ProtectedRoute><ProductList /></ProtectedRoute>}exact="true"/>
         <Route path="/admin/product/update/:id" element={ <ProtectedRoute><UpdateProduct /></ProtectedRoute>}exact="true"/>
+
+        <Route path="/create/store/physicalchemtest/:id" element={ <ProtectedRoute><PhysicalChemTestList /></ProtectedRoute>} />
+        <Route path="/physicalchemtest" element={<ProtectedRoute><PhysicalChemTest/></ProtectedRoute>}exact="true" />
+
+        <Route path="/businesspermit" element={<ProtectedRoute><BusinessPermit/></ProtectedRoute>} exact="true" />
+        <Route path="/create/store/businesspermit/:id" element={<ProtectedRoute> <BusinessPermitList /> </ProtectedRoute>}  exact="true"  />
       </Routes>
     </>
   );

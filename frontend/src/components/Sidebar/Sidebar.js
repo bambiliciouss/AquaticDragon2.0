@@ -202,8 +202,18 @@ const Sidebar = (props) => {
               </NavLink>
 
               <NavLink href="/barangayhealth">
-                <i className="ni ni-collection text-pink" /> Barangay Sanitation
+                <i className="ni ni-collection text-pink" /> Potability Test
               </NavLink>
+
+              <NavLink href="/physicalchemtest">
+                <i className="ni ni-collection text-black" /> Physical & Chemical Test
+              </NavLink>
+
+               
+              <NavLink href="/businesspermit">
+                <i className="ni ni-collection text-info" /> Business Permit
+              </NavLink>
+
 
               <NavLink href="/admin/product">
                 <i className="ni ni-bag-17 text-orange" /> Brandnew Gallon Item

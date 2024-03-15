@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 
 exports.createPhyChemTest = async (req, res, next) => {
   try {
+    const { dateTested } = req.body;
     const result = await new Promise((resolve, reject) => {
       cloudinary.v2.uploader.upload(
         req.body.certImage,
@@ -31,6 +32,7 @@ exports.createPhyChemTest = async (req, res, next) => {
         public_id: result.public_id,
         url: result.secure_url,
       },
+      dateTested,
     });
 
     res.status(201).json({
@@ -68,7 +70,7 @@ exports.getAllPhyChemTests = async (req, res, next) => {
 };
 
 exports.updatePhyChemTest = async (req, res, next) => {
-  const newTestData = {};
+  const newStoreData = { dateTested: req.body.dateTested };
 
   try {
     if (req.body.certImage && req.body.certImage !== "") {

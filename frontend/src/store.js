@@ -88,6 +88,20 @@ import {
   ProductDetailsReducer,
 } from "reducers/productReducers";
 
+import {
+  newPhysicalChemTestReducer,
+  allPhysicalChemTestReducer,
+  singlePhysicalChemTestReducer,
+  physicalchemTestReducer,
+} from "reducers/physicalchemtestReducers";
+
+import {
+  newBusinessPermitReducer,
+  allBusinessPermitReducer,
+  singleBusinessPermitReducer,
+  businessPermitReducer,
+} from "reducers/businesspermitReducers";
+
 const reducers = combineReducers({
   auth: authReducer,
   user: userReducer,
@@ -145,6 +159,16 @@ const reducers = combineReducers({
   productsStockLogs: ProductsStockLogsReducer,
   singleProduct: singleProductsReducer,
   productDetails: ProductDetailsReducer,
+
+  newPhysicalChemTest: newPhysicalChemTestReducer,
+  allPhysicalChemTest: allPhysicalChemTestReducer,
+  singlePhysicalChemTest: singlePhysicalChemTestReducer,
+  physicalchemtestrecord: physicalchemTestReducer,
+
+  newBusinessPermit: newBusinessPermitReducer,
+  allBusinessPermit: allBusinessPermitReducer,
+  singleBusinessPermit: singleBusinessPermitReducer,
+  businesspermitrecord: businessPermitReducer,
 });
 
 let initialState = {
