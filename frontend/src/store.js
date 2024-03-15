@@ -102,6 +102,13 @@ import {
   businessPermitReducer,
 } from "reducers/businesspermitReducers";
 
+import {
+  newStorebarangayReducer,
+  allStorebarangayReducer,
+  singleStorebarangayReducer,
+  storebarangayReducer,
+} from "reducers/storebarangayReducers";
+
 const reducers = combineReducers({
   auth: authReducer,
   user: userReducer,
@@ -169,6 +176,11 @@ const reducers = combineReducers({
   allBusinessPermit: allBusinessPermitReducer,
   singleBusinessPermit: singleBusinessPermitReducer,
   businesspermitrecord: businessPermitReducer,
+
+  newStorebarangay: newStorebarangayReducer,
+  allStorebarangay: allStorebarangayReducer,
+  singleStorebarangay: singleStorebarangayReducer,
+  storebarangay: storebarangayReducer,
 });
 
 let initialState = {

@@ -13,7 +13,7 @@ const barangayhealth = require("./routes/barangayhealth");
 const othergalloninventory = require("./routes/othergalloninventory");
 const phyChemTest = require("./routes/phychemtest");
 const businesspermit = require("./routes/businesspermit");
-
+const storeaddress = require("./routes/storeaddress");
 const errorMiddleware = require("./middlewares/errors");
 
 app.use(cookieParser());
@@ -34,7 +34,7 @@ app.use("/api/v1", barangayhealth);
 app.use("/api/v1", othergalloninventory);
 app.use("/api/v1", phyChemTest);
 app.use("/api/v1", businesspermit);
-
+app.use("/api/v1", storeaddress);
 app.use(errorMiddleware);
 
 module.exports = app;

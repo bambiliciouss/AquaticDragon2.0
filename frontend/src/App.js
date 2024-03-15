@@ -74,6 +74,7 @@ import MyOrdersList from "components/order/MyOrders";
 import OrderList from "components/admin/OrderList";
 import UpdateOrderDetails from "components/admin/UpdateOrder";
 import OrderDetails from "components/order/OrderDetails";
+import StoreBarangayList from "components/admin/StoreBarangayList";
 
 import store from "./store";
 import { loadUser } from "./actions/userActions";
@@ -166,6 +167,8 @@ function App() {
 
         <Route path="/businesspermit" element={<ProtectedRoute><BusinessPermit/></ProtectedRoute>} exact="true" />
         <Route path="/create/store/businesspermit/:id" element={<ProtectedRoute> <BusinessPermitList /> </ProtectedRoute>}  exact="true"  />
+        <Route path="/create/store/barangay/:id" element={<ProtectedRoute> <StoreBarangayList /> </ProtectedRoute>}  exact="true"  />
+
       </Routes>
     </>
   );

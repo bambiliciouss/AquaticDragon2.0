@@ -275,10 +275,10 @@ const StoreBranchList = (args) => {
           label: "List of assigned Staff",
           field: "list",
         },
-        // {
-        //   label: "Machine Cleaning Records",
-        //   field: "machine",
-        // },
+        {
+          label: "Barangay Scope",
+          field: "barangay",
+        },
 
         // {
         //   label: "Barangay Health Records",
@@ -325,23 +325,13 @@ const StoreBranchList = (args) => {
             </button> */}
           </Fragment>
         ),
-        machine: (
-          <Fragment>
-            <button
-              className="btn btn-primary py-1 px-2 ml-2"
-              onClick={() =>
-                navigate(`/create/store/machincecleaning/${storeBranches._id}`)
-              }>
-              View Record
-            </button>
-          </Fragment>
-        ),
+   
         barangay: (
           <Fragment>
             <button
               className="btn btn-primary py-1 px-2 ml-2"
               onClick={() =>
-                navigate(`/store/barangaycleaning/${storeBranches._id}`)
+                navigate(`/create/store/barangay/${storeBranches._id}`)
               }>
               View Record
             </button>

@@ -191,35 +191,47 @@ const Sidebar = (props) => {
                 <i className="ni ni-shop text-red" /> Store Branch
               </NavLink>
             </NavItem> */}
+          </Nav>
+          <hr className="my-3" />
+          <h6 className="navbar-heading text-muted">Management</h6>
 
+          <Nav navbar>
+            <NavLink href="/storebranchlist">
+              <i className="ni ni-shop text-red" /> Stores
+            </NavLink>
+
+            <NavLink href="/machinecleaning">
+              <i className="ni ni-collection text-blue" /> Machine Cleaning
+            </NavLink>
+
+            <NavLink href="/barangayhealth">
+              <i className="ni ni-collection text-pink" /> Potability Test
+            </NavLink>
+
+            <NavLink href="/physicalchemtest">
+              <i className="ni ni-collection text-black" /> Physical & Chemical
+              Test
+            </NavLink>
+
+            <NavLink href="/businesspermit">
+              <i className="ni ni-collection text-info" /> Business Permit
+            </NavLink>
+          </Nav>
+
+          <hr className="my-3" />
+          <h6 className="navbar-heading text-muted">Store Container</h6>
+          <Nav navbar>
+            <NavLink href="/admin/product">
+              <i className="ni ni-bag-17 text-orange" /> Stocks
+            </NavLink>
             <NavItem>
-              <NavLink href="/storebranchlist">
-                <i className="ni ni-shop text-red" /> Stores
+              <NavLink href="/typesgallonlist" onClick={closeCollapse}>
+                <i className="ni ni-check-bold" />
+                Types & Pricing
               </NavLink>
-
-              <NavLink href="/machinecleaning">
-                <i className="ni ni-collection text-blue" /> Machine Cleaning
-              </NavLink>
-
-              <NavLink href="/barangayhealth">
-                <i className="ni ni-collection text-pink" /> Potability Test
-              </NavLink>
-
-              <NavLink href="/physicalchemtest">
-                <i className="ni ni-collection text-black" /> Physical & Chemical Test
-              </NavLink>
-
-               
-              <NavLink href="/businesspermit">
-                <i className="ni ni-collection text-info" /> Business Permit
-              </NavLink>
-
-
-              <NavLink href="/admin/product">
-                <i className="ni ni-bag-17 text-orange" /> Brandnew Gallon Item
-              </NavLink>
-
-              {/* <Nav vertical>
+            </NavItem>
+          </Nav>
+          {/* <Nav vertical>
                 <NavItem>
                   <NavLink href="/subpage1" onClick={closeCollapse}>
                     Sub Page 1
@@ -232,8 +244,9 @@ const Sidebar = (props) => {
                 </NavItem>
                
               </Nav> */}
-            </NavItem>
-
+          <hr className="my-3" />
+          <h6 className="navbar-heading text-muted">POS</h6>
+          <Nav navbar>
             <NavItem>
               <NavLink href="/admin/POS/" onClick={closeCollapse}>
                 <i className="ni ni-active-40 text-yellow" /> Walk In Refill
@@ -245,18 +258,12 @@ const Sidebar = (props) => {
                 <i className="ni ni-basket text-green" /> Orders
               </NavLink>
             </NavItem>
-
-            <NavItem>
-              <NavLink href="/typesgallonlist" onClick={closeCollapse}>
-                <i className="ni ni-check-bold" /> Types of Gallon
-              </NavLink>
-            </NavItem>
           </Nav>
 
           {/* <hr className="my-3" />
-        
+
           <h6 className="navbar-heading text-muted">Documentation</h6>
-       
+
           <Nav className="mb-md-3" navbar>
             <NavItem>
               <NavLink href="https://demos.creative-tim.com/argon-dashboard-react/#/documentation/overview?ref=adr-admin-sidebar">
@@ -274,14 +281,6 @@ const Sidebar = (props) => {
               <NavLink href="https://demos.creative-tim.com/argon-dashboard-react/#/documentation/alerts?ref=adr-admin-sidebar">
                 <i className="ni ni-ui-04" />
                 Components
-              </NavLink>
-            </NavItem>
-          </Nav>
-          <Nav className="mb-md-3" navbar>
-            <NavItem className="active-pro active">
-              <NavLink href="https://www.creative-tim.com/product/argon-dashboard-pro-react?ref=adr-admin-sidebar">
-                <i className="ni ni-spaceship" />
-                Upgrade to PRO
               </NavLink>
             </NavItem>
           </Nav> */}
