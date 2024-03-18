@@ -74,6 +74,91 @@ exports.registerUser = async (req, res, next) => {
   }
 };
 
+exports.registerAdmin = async (req, res, next) => {
+  try {
+    const validIDResult = await cloudinary.v2.uploader.upload(
+      req.body.validID,
+      {
+        folder: "validID",
+        width: 150,
+        crop: "scale",
+      }
+    );
+
+    const mayorsPermitResult = await cloudinary.v2.uploader.upload(
+      req.body.mayorsPermit,
+      {
+        folder: "mayorsPermit",
+        width: 150,
+        crop: "scale",
+      }
+    );
+
+    const {
+      fname,
+      lname,
+      phone,
+      houseNo,
+      streetName,
+      purokNum,
+      barangay,
+      city,
+      email,
+      password,
+    } = req.body;
+
+    const address = {
+      houseNo,
+      streetName,
+      purokNum,
+      barangay,
+      city,
+      isDefault: true,
+    };
+
+    const user = await User.create({
+      fname,
+      lname,
+      phone,
+      addresses: [address],
+      email,
+      password,
+      validID: {
+        public_id: validIDResult.public_id,
+        url: validIDResult.secure_url,
+      },
+      mayorsPermit: {
+        public_id: mayorsPermitResult.public_id,
+        url: mayorsPermitResult.secure_url,
+      },
+      role: "PendingAdmin",
+    });
+
+    const token = await new Token({
+      userId: user._id,
+      token: crypto.randomBytes(32).toString("hex"),
+      expiresAt: new Date(Date.now() + 60 * 1000),
+      // expiresAt: new Date(Date.now() + (24 * 60 * 60 * 1000)), // Set expiration to 24 hours from now
+    }).save();
+
+    // const url = `${process.env.BASE_URL}/users/${user._id}/verify/${token.token}`;
+    // await sendEmail(user.email, `Hello Mr.Broccoli, ${user.fname}`, url);
+    const url = `${process.env.BASE_URL}/${user._id}/verify/${token.token}`;
+    await sendEmail(user.email, "Aquatic Dragon", url, user);
+
+    res
+      .status(201)
+      .json({ message: "An Email sent to your account please verify" });
+    //sendToken(user, 200, res);
+  } catch (error) {
+    if (error.code === 11000 && error.keyPattern && error.keyPattern.phone) {
+      const errorMessage = `Phone number '${newUserData.phone}' is already taken.`;
+      return res.status(400).json({ success: false, message: errorMessage });
+    }
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 exports.verifyEmail = async (req, res, next) => {
   try {
     const user = await User.findOne({ _id: req.params.id });
@@ -721,11 +806,8 @@ exports.updateProfileRider = async (req, res, next) => {
         url: result.secure_url,
       };
     }
-    
-    if (
-      req.body.barangayclearance &&
-      req.body.barangayclearance !== ""
-    ) {
+
+    if (req.body.barangayclearance && req.body.barangayclearance !== "") {
       const user = await User.findById(req.params.id);
       const barangayclearance_id = user.barangayclearance.public_id;
       const res = await cloudinary.uploader.destroy(barangayclearance_id);
@@ -745,7 +827,7 @@ exports.updateProfileRider = async (req, res, next) => {
         url: result.secure_url,
       };
     }
-     if (req.body.driverslicense && req.body.driverslicense !== "") {
+    if (req.body.driverslicense && req.body.driverslicense !== "") {
       const user = await User.findById(req.params.id);
       const driverslicense_id = user.driverslicense.public_id;
       const res = await cloudinary.uploader.destroy(driverslicense_id);
@@ -776,9 +858,9 @@ exports.updateProfileRider = async (req, res, next) => {
     }
     if (req.body.medcert && req.body.medcert !== "")
       user.medcert = newUserData.medcert;
-   if (req.body.barangayclearance && req.body.barangayclearance !== "") {
+    if (req.body.barangayclearance && req.body.barangayclearance !== "") {
       user.barangayclearance = newUserData.barangayclearance;
-    } 
+    }
     if (req.body.driverslicense && req.body.driverslicense !== "") {
       user.driverslicense = newUserData.driverslicense;
     }
@@ -839,8 +921,8 @@ exports.updateProfileEmployee = async (req, res, next) => {
         public_id: result.public_id,
         url: result.secure_url,
       };
-    } 
-    
+    }
+
     if (req.body.medcert && req.body.medcert !== "") {
       const user = await User.findById(req.params.id);
       const medcert_id = user.medcert.public_id;
@@ -861,11 +943,8 @@ exports.updateProfileEmployee = async (req, res, next) => {
         url: result.secure_url,
       };
     }
-    
-    if (
-      req.body.barangayclearance &&
-      req.body.barangayclearance !== ""
-    ) {
+
+    if (req.body.barangayclearance && req.body.barangayclearance !== "") {
       const user = await User.findById(req.params.id);
       const barangayclearance_id = user.barangayclearance.public_id;
       const res = await cloudinary.uploader.destroy(barangayclearance_id);

@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
-import { login } from "../../actions/userActions";
+import { login, logout } from "../../actions/userActions";
 import MetaData from "components/layout/MetaData";
 
 import Loader from "../layout/Loader";
@@ -45,28 +45,6 @@ const Login = () => {
     handleSubmit,
   } = useForm();
 
-  const notifyError = (message = "") =>
-    toast.error(message, {
-      position: "bottom-left",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-
-  const notifySuccess = (message = "") =>
-    toast.success(message, {
-      position: "bottom-left",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-
   const submitHandler = (e) => {
     dispatch(login(e.email, e.password));
   };
@@ -80,6 +58,19 @@ const Login = () => {
 
       if (user && user.role === "admin") {
         navigate("/dashboard");
+      } else if (
+        user &&
+        user.verified &&
+        user &&
+        user.role === "PendingAdmin"
+      ) {
+        swal(
+          "Your Account is still on process for admin activation.",
+          "",
+          "info"
+        );
+        dispatch(logout());
+        navigate("/login");
       } else {
         navigate("/");
       }

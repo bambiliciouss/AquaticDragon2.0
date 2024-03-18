@@ -26,12 +26,22 @@ const {
   getAddressDetails,
   setDefaultAddress,
   admingetAllAddresses,
-  updateAdminProfile
+  updateAdminProfile,
+  registerAdmin,
 } = require("../controllers/authController");
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
 router.post("/register", upload.single("avatar"), registerUser);
-// router.post("/register/employee", upload.single("medcert"), registerEmployee);
+
+router.post(
+  "/register/admin",
+  upload.fields([
+    { name: "validID", maxCount: 1 },
+    { name: "mayorsPermit", maxCount: 1 },
+  ]),
+  registerAdmin
+);
+
 router.post(
   "/register/employee",
   upload.fields([
@@ -67,7 +77,6 @@ router.put(
   isAuthenticatedUser,
   updateAdminProfile
 );
-
 
 router.post("/me/address", isAuthenticatedUser, addAddress);
 router.put("/me/update/address/:id", isAuthenticatedUser, editAddress);

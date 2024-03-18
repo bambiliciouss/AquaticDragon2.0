@@ -6,6 +6,7 @@ import ProtectedRoute from "./components/route/ProtectedRoute";
 
 import Login from "components/user/Login";
 import Register from "components/user/Register";
+import AdminRegister from "components/admin/AdminRegistration";
 import EmailVerification from "components/user/VerifyEmail";
 import ForgotPassword from "components/user/ForgotPassword";
 import NewPassword from "components/user/NewPassword";
@@ -51,6 +52,8 @@ import UpdateBarangayHealth from "components/admin/UpdateBarangayHealth";
 import UpdateTypeGallon from "components/admin/UpdateTypeGallon";
 import UpdateWalkInSalesInventory from "components/admin/UpdateWalkInSalesInventory";
 import UpdateProduct from "components/admin/UpdateProduct";
+import UpdateBusinessPermit from "components/admin/UpdateBusinessPermit";
+import UpdatePhysicalChemTest from "components/admin/UpdatePhysicalChemTest";
 
 import WalkInPOS from "components/admin/WalkInPOS";
 import WalkInSalesInventory from "components/admin/WalkInSalesInventory";
@@ -76,6 +79,8 @@ import UpdateOrderDetails from "components/admin/UpdateOrder";
 import OrderDetails from "components/order/OrderDetails";
 import StoreBarangayList from "components/admin/StoreBarangayList";
 
+import AdminProcessing from "components/admin/AdminProcessing";
+
 import store from "./store";
 import { loadUser } from "./actions/userActions";
 import { useEffect } from "react";
@@ -90,6 +95,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} exact="true" />
         <Route path="/register" element={<Register />} exact="true" />
+        <Route path="/admin/processing" element={<AdminProcessing />} exact="true" />
+        <Route path="/admin/register" element={<AdminRegister />} exact="true" />
         <Route path=":id/verify/:token" element={<EmailVerification />} exact="true"/>
         <Route path="/password/forgot" element={<ForgotPassword />}exact="true"/>
         <Route path="/password/reset/:token" element={<NewPassword />}exact="true"/>
@@ -164,9 +171,14 @@ function App() {
 
         <Route path="/create/store/physicalchemtest/:id" element={ <ProtectedRoute><PhysicalChemTestList /></ProtectedRoute>} />
         <Route path="/physicalchemtest" element={<ProtectedRoute><PhysicalChemTest/></ProtectedRoute>}exact="true" />
+        <Route path="/physicalchemtest/update/:id" element={<ProtectedRoute><UpdatePhysicalChemTest/></ProtectedRoute>}exact="true" />
+
 
         <Route path="/businesspermit" element={<ProtectedRoute><BusinessPermit/></ProtectedRoute>} exact="true" />
         <Route path="/create/store/businesspermit/:id" element={<ProtectedRoute> <BusinessPermitList /> </ProtectedRoute>}  exact="true"  />
+        <Route path="/update/store/businesspermit/:id" element={<ProtectedRoute> <UpdateBusinessPermit /> </ProtectedRoute>}  exact="true"  />
+
+        
         <Route path="/create/store/barangay/:id" element={<ProtectedRoute> <StoreBarangayList /> </ProtectedRoute>}  exact="true"  />
 
       </Routes>

@@ -38,4 +38,6 @@ const businessPermitSchema = new mongoose.Schema({
   },
 });
 
+
+
 module.exports = mongoose.model("BusinessPermit", businessPermitSchema);

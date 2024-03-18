@@ -74,44 +74,37 @@ exports.updatePhyChemTest = async (req, res, next) => {
 
   try {
     if (req.body.certImage && req.body.certImage !== "") {
-      const test = await PhyChemTest.findById(req.params.id);
-      const image_id = test.certImage.public_id;
-
-      const deleteResult = await cloudinary.v2.uploader.destroy(image_id);
-
-      const uploadResult = await cloudinary.v2.uploader.upload(
+      const cert = await PhyChemTest.findById(req.params.id);
+      const image_id = cert.certImage.public_id;
+      const res = await cloudinary.uploader.destroy(image_id);
+      const result = await cloudinary.v2.uploader.upload(
         req.body.certImage,
         {
-          folder: "phychemtests",
-          width: 150,
-          crop: "scale",
+          folder: "certImage",
+          // width: 150,
+          // crop: "scale",
         },
-        (err) => {
-          if (err) {
-            console.log(err);
-          }
+        (err, res) => {
+          console.log(err, res);
         }
       );
-
-      newTestData.certImage = {
-        public_id: uploadResult.public_id,
-        url: uploadResult.secure_url,
+      newStoreData.certImage = {
+        public_id: result.public_id,
+        url: result.secure_url,
       };
     }
-
-    const updatedPhyChemTest = await PhyChemTest.findByIdAndUpdate(
+    const updatedPhyChem = await PhyChemTest.findByIdAndUpdate(
       req.params.id,
-      newTestData,
+      newStoreData,
       {
         new: true,
         runValidators: true,
       }
     );
-
     res.status(200).json({
       success: true,
-      phyChemTest: updatedPhyChemTest,
-      message: "Update successful",
+      updatedPhyChem,
+      message: "Business permit updated successfully",
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

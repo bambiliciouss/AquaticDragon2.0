@@ -201,9 +201,7 @@ const PhysicalChemTestList = () => {
             <button
               className="btn btn-primary py-1 px-2 ml-2"
               onClick={() =>
-                navigate(
-                  `/update/store/physicalchemtest/${physicalchemtests._id}`
-                )
+                navigate(`/physicalchemtest/update/${physicalchemtests._id}`)
               }>
               <i className="fa fa-info-circle"></i>
             </button>
@@ -322,7 +320,13 @@ const PhysicalChemTestList = () => {
                         <FormGroup>
                           <span>Date Tested</span>{" "}
                           <input
-                            //placeholder="Add Notes here ..."
+                            max={
+                              new Date(
+                                new Date().getTime() + 24 * 60 * 60 * 1000
+                              )
+                                .toISOString()
+                                .split("T")[0]
+                            }
                             className="form-control"
                             type="date"
                             name="dateTested"

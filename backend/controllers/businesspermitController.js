@@ -13,8 +13,8 @@ exports.createBusinessPermit = async (req, res, next) => {
         req.body.permitImage,
         {
           folder: "businesspermits",
-          width: 150,
-          crop: "scale",
+          // width: 150,
+          // crop: "scale",
         },
         (err, res) => {
           if (err) {
@@ -90,8 +90,8 @@ exports.updateBusinessPermit = async (req, res, next) => {
         req.body.permitImage,
         {
           folder: "businesspermits",
-          width: 150,
-          crop: "scale",
+          // width: 150,
+          // crop: "scale",
         },
         (err, res) => {
           console.log(err, res);

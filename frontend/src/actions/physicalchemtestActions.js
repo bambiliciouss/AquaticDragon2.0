@@ -23,7 +23,8 @@ import {
   DELETE_PHYSICALCHEMTEST_RESET,
 } from "../constants/physicalchemtestConstants";
 
-export const createPhysicalChemTest = (physicalchemtest, id) => async (dispatch) => {
+export const createPhysicalChemTest =
+  (physicalchemtest, id) => async (dispatch) => {
     console.log("FormData content:", [...physicalchemtest.entries()], id);
     try {
       dispatch({ type: CREATE_PHYSICALCHEMTEST_REQUEST });
@@ -53,9 +54,7 @@ export const createPhysicalChemTest = (physicalchemtest, id) => async (dispatch)
 export const allPhysicalChemTest = (id) => async (dispatch) => {
   try {
     dispatch({ type: ALL_PHYSICALCHEMTEST_REQUEST });
-    const { data } = await axios.get(
-      `/api/v1/store/PhyChemTest/record/${id}`
-    );
+    const { data } = await axios.get(`/api/v1/store/PhyChemTest/record/${id}`);
     dispatch({
       type: ALL_PHYSICALCHEMTEST_SUCCESS,
       payload: data.allPhyChemTests,
@@ -74,12 +73,12 @@ export const allPhysicalChemTest = (id) => async (dispatch) => {
 export const singlePhysicalChemTestRecord = (id) => async (dispatch) => {
   try {
     dispatch({ type: SINGLE_PHYSICALCHEMTEST_REQUEST });
-    const { data } = await axios.get(`/api/v1/physicalchemtest/record/${id}`);
+    const { data } = await axios.get(`/api/v1/PhyChemTest/record//${id}`);
     dispatch({
       type: SINGLE_PHYSICALCHEMTEST_SUCCESS,
-      payload: data.storePhysicalChemTest,
+      payload: data.phyChemTest,
     });
-    console.log("daya result", data.storeStorePhysicalChemTest);
+    console.log("daya result", data.phyChemTest);
   } catch (error) {
     dispatch({
       type: SINGLE_PHYSICALCHEMTEST_FAIL,
@@ -96,7 +95,6 @@ export const clearErrors = () => async (dispatch) => {
   });
 };
 
-
 export const updatePhysicalChemTest = (id, storeData) => async (dispatch) => {
   try {
     dispatch({ type: UPDATE_PHYSICALCHEMTEST_REQUEST });
@@ -107,7 +105,7 @@ export const updatePhysicalChemTest = (id, storeData) => async (dispatch) => {
     };
 
     const { data } = await axios.put(
-      `/api/v1/store/physicalchemtest/record/${id}`,
+      `/api/v1/store/PhyChemTest/record/${id}`,
       storeData,
       config
     );
@@ -126,12 +124,9 @@ export const updatePhysicalChemTest = (id, storeData) => async (dispatch) => {
 export const deletePhysicalChemTest = (id) => async (dispatch) => {
   try {
     dispatch({ type: DELETE_PHYSICALCHEMTEST_REQUEST });
-    const { data } = await axios.delete(
-      `/api/v1/PhyChemTest/record/${id}`,
-      {
-        withCredentials: true,
-      }
-    );
+    const { data } = await axios.delete(`/api/v1/PhyChemTest/record/${id}`, {
+      withCredentials: true,
+    });
     dispatch({
       type: DELETE_PHYSICALCHEMTEST_SUCCESS,
       payload: data.success,

@@ -315,6 +315,7 @@ const BusinessPermitList = () => {
                             className="form-control"
                             type="date"
                             name="dateTested"
+                            max={new Date(new Date().getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0]}// Setting min attribute to today's date
                             {...register("dateIssued", {
                               required: "Please enter date.",
                             })}

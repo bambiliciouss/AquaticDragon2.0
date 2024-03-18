@@ -185,6 +185,34 @@ const userSchema = new mongoose.Schema({
     },
   },
 
+  validID: {
+    public_id: {
+      type: String,
+      default: "avatars/yvsg7qgvfalme36gwxws_qlbbz4",
+    },
+
+    url: {
+      type: String,
+      //required: true,
+      default:
+        "https://res.cloudinary.com/dde5uztoz/image/upload/v1705125816/yvsg7qgvfalme36gwxws_zbi90z.jpg",
+    },
+  },
+
+  mayorsPermit: {
+    public_id: {
+      type: String,
+      default: "avatars/yvsg7qgvfalme36gwxws_qlbbz4",
+    },
+
+    url: {
+      type: String,
+      //required: true,
+      default:
+        "https://res.cloudinary.com/dde5uztoz/image/upload/v1705125816/yvsg7qgvfalme36gwxws_zbi90z.jpg",
+    },
+  },
+
   resetPasswordToken: String,
   resetPasswordExpire: Date,
 });

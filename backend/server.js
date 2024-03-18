@@ -3,6 +3,8 @@ const connectDatabase = require("./config/database");
 const autoAgeUp = require("./config/updateAgeAuto");
 const notifyCleaning = require("./config/machineCleaningNotif");
 const barangayhealth = require("./config/barangayHealthNotif");
+const phychem = require("./config/phychemtestNotif");
+const notifyBusinessP = require("./config/businessPermit");
 const dotenv = require("dotenv");
 const cloudinary = require("cloudinary");
 
@@ -11,6 +13,8 @@ connectDatabase();
 autoAgeUp();
 notifyCleaning();
 barangayhealth();
+phychem();
+notifyBusinessP();
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

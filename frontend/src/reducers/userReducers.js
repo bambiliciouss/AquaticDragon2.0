@@ -2,7 +2,6 @@ import {
   REGISTER_USER_REQUEST,
   REGISTER_USER_SUCCESS,
   REGISTER_USER_FAIL,
-  REGISTER_USER_RESET,
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
   LOGIN_FAIL,
@@ -39,14 +38,15 @@ import {
   USER_DETAILS_REQUEST,
   USER_DETAILS_SUCCESS,
   USER_DETAILS_FAIL,
+  REGISTER_ADMIN_REQUEST,
+  REGISTER_ADMIN_SUCCESS,
+  REGISTER_ADMIN_FAIL,
 } from "../constants/userConstants";
 
-export const authReducer = (
-  state = { user: {} },
-  action
-) => {
+export const authReducer = (state = { user: {} }, action) => {
   switch (action.type) {
     case REGISTER_USER_REQUEST:
+    case REGISTER_ADMIN_REQUEST:
     case LOGIN_REQUEST:
     case LOAD_USER_REQUEST:
       return {
@@ -62,7 +62,17 @@ export const authReducer = (
         isAuthenticated: true,
         user: action.payload,
       };
+
+    case REGISTER_ADMIN_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        isAuthenticated: false,
+        user: action.payload,
+      };
+
     case REGISTER_USER_FAIL:
+      case REGISTER_ADMIN_FAIL: 
     case LOGIN_FAIL:
     case LOAD_USER_FAIL:
       return {
@@ -83,8 +93,6 @@ export const authReducer = (
         ...state,
         error: action.payload,
       };
-
-   
 
     case CLEAR_ERRORS:
       return {
