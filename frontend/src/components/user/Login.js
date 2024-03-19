@@ -207,6 +207,14 @@ const Login = () => {
                   </a>
                 </Col>
               </Row>
+
+              <Row className="mt-3">
+                <Col className="text-center">
+                  <a className="text-primary" href="/admin/register">
+                    <small>Be our water station partner?</small>
+                  </a>
+                </Col>
+              </Row>
             </Col>
           </Row>
         </Container>

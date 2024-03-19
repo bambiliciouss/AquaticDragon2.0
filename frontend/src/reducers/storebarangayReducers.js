@@ -176,7 +176,7 @@ export const storebarangayReducer = (state = {}, action) => {
       return {
         ...state,
         loading: false,
-        error: action.payload,
+        errorbar: action.payload,
       };
 
     case DELETE_STOREBARANGAY_SUCCESS:
@@ -195,7 +195,7 @@ export const storebarangayReducer = (state = {}, action) => {
     case CLEAR_ERRORS:
       return {
         ...state,
-        error: null,
+        errorbar: null,
       };
 
     default:

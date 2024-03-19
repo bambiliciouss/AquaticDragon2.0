@@ -10,6 +10,17 @@ exports.createStoreBarangay = async (req, res, next) => {
       return res.status(400).json({ message: "Please provide barangay" });
     }
 
+    // Check if the combination already exists
+    const existingRecord = await StoreBarangay.findOne({
+      storebranch: req.params.id,
+      barangay,
+      deleted: false,
+    });
+
+    if (existingRecord) {
+      return res.status(400).json({ message: "Duplicate record" });
+    }
+
     const storebarangay = await StoreBarangay.create({
       user: req.user.id,
       storebranch: req.params.id,
@@ -58,12 +69,29 @@ exports.getAllStoreBarangay = async (req, res, next) => {
 };
 
 exports.updateStoreBarangay = async (req, res, next) => {
+  console.log(req.body);
   try {
     const newData = {
-      user: req.body.user,
+      user: req.user.id,
       storebranch: req.body.storebranch,
       barangay: req.body.barangay,
     };
+
+    const storeBranch = await StoreBarangay.findById(req.params.id).populate(
+      "storebranch",
+      "_id"
+    );
+    // console.log("STOREBRANCH", storeBranch.storebranch);
+
+    const existingRecord = await StoreBarangay.findOne({
+      storebranch: storeBranch.storebranch,
+      barangay: req.body.barangay,
+      deleted: false,
+    });
+
+    if (existingRecord) {
+      return res.status(400).json({ message: "Duplicate record" });
+    }
 
     const updatedStoreBarangay = await StoreBarangay.findByIdAndUpdate(
       req.params.id,
@@ -110,24 +138,26 @@ exports.getStoreBarangayDetails = async (req, res) => {
 };
 
 exports.deleteStoreBarangay = async (req, res, next) => {
-    try {
-      const deletedStoreBarangay = await StoreBarangay.findByIdAndUpdate(
-        req.params.id,
-        { $set: { deleted: true } },
-        { new: true }
-      );
-  
-      if (!deletedStoreBarangay) {
-        return res
-          .status(404)
-          .json({ success: false, message: "Record not found" });
-      }
-  
-      res
-        .status(200)
-        .json({ success: true, storeBarangay: deletedStoreBarangay, message: "Record soft deleted" });
-    } catch (error) {
-      console.error('Error deleting store barangay:', error);
-      res.status(500).json({ success: false, message: "Internal Server Error" });
+  try {
+    const deletedStoreBarangay = await StoreBarangay.findByIdAndUpdate(
+      req.params.id,
+      { $set: { deleted: true } },
+      { new: true }
+    );
+
+    if (!deletedStoreBarangay) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Record not found" });
     }
-  };
+
+    res.status(200).json({
+      success: true,
+      storeBarangay: deletedStoreBarangay,
+      message: "Record soft deleted",
+    });
+  } catch (error) {
+    console.error("Error deleting store barangay:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};

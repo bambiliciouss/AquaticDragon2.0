@@ -35,10 +35,14 @@ import {
   createStorebarangay,
   allStorebarangayList,
   deleteStorebarangay,
+  singleStorebarangay,
+  updateStorebarangay,
+  clearErrors,
 } from "actions/storebarangayActions";
 import {
   CREATE_STOREBARANGAY_RESET,
   DELETE_STOREBARANGAY_RESET,
+  UPDATE_STOREBARANGAY_RESET,
 } from "../../constants/storebarangayConstant";
 
 import { getStoreDetails } from "actions/storebranchActions";
@@ -49,23 +53,36 @@ const StoreBarangayList = () => {
   const { id } = useParams();
   const { storeBranch } = useSelector((state) => state.storeDetails);
 
-  const { storebarangayCreated } = useSelector(
+  const { storebarangayCreated, error } = useSelector(
     (state) => state.newStorebarangay
   );
-  const { allStorebarangay, error } = useSelector(
-    (state) => state.allStorebarangay
-  );
+  const { allStorebarangay } = useSelector((state) => state.allStorebarangay);
 
-  const { isDeleted } = useSelector((state) => state.storebarangay);
+  const { storebarangayDetails } = useSelector(
+    (state) => state.singleStorebarangay
+  );
+  const { isDeleted, isUpdated, errorbar } = useSelector(
+    (state) => state.storebarangay
+  );
 
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
 
+  const [openUpdateModal, setOpenUpdateModal] = useState(false);
+
+  const [UpdateBarangay, setUpdateBarangay] = useState(false);
+  const [updateID, setupdateID] = useState(false);
+  const toggleUpdateModal = (ID) => {
+    setOpenUpdateModal(!openUpdateModal);
+    setupdateID(ID);
+    dispatch(singleStorebarangay(ID));
+  };
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
     reset,
+    formState: { errors },
   } = useForm();
 
   useEffect(() => {
@@ -84,7 +101,7 @@ const StoreBarangayList = () => {
     }
 
     if (error) {
-      console.log(error);
+      swal(error, "", "error");
       dispatch(clearErrors());
     }
 
@@ -92,13 +109,54 @@ const StoreBarangayList = () => {
       navigate(`/create/store/barangay/${id}`);
       dispatch({ type: DELETE_STOREBARANGAY_RESET });
     }
-  }, [dispatch, navigate, storebarangayCreated, error, isDeleted]);
+
+    if (storebarangayDetails) {
+      setUpdateBarangay(storebarangayDetails.barangay);
+    }
+
+    if (isUpdated) {
+      swal("Updated Successfully!", "", "success");
+      navigate(`/create/store/barangay/${id}`, { replace: true });
+      dispatch({
+        type: UPDATE_STOREBARANGAY_RESET,
+      });
+      setOpenUpdateModal(!openUpdateModal);
+    }
+
+    if (errorbar) {
+      swal(errorbar, "", "error");
+      dispatch(clearErrors());
+    }
+
+    console.log("details result", storebarangayDetails);
+  }, [
+    dispatch,
+    navigate,
+    storebarangayCreated,
+    error,
+    isDeleted,
+    storebarangayDetails,
+    updateID,
+    errorbar,
+    isUpdated,
+  ]);
 
   const submitHandler = (e) => {
     const formData = new FormData();
     formData.set("barangay", e.barangay);
 
     dispatch(createStorebarangay(formData, id));
+  };
+
+  const submitUpdateHandler = (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("barangay", UpdateBarangay);
+
+    dispatch(updateStorebarangay(updateID, formData));
+
+    //console.log(formData)
   };
 
   const deleterecord = (id) => {
@@ -124,11 +182,6 @@ const StoreBarangayList = () => {
           label: "Barangay",
           field: "bname",
         },
-        {
-          label: "Date",
-          field: "date",
-          sort: "desc",
-        },
 
         {
           label: "Actions",
@@ -138,11 +191,7 @@ const StoreBarangayList = () => {
       rows: [],
     };
 
-    const sortedBarangay = allStorebarangay.sort((a, b) => {
-      return new Date(b.dateIssued) - new Date(a.dateIssued);
-    });
-
-    sortedBarangay.forEach((allStorebarangays) => {
+    allStorebarangay.forEach((allStorebarangays) => {
       data.rows.push({
         bname: allStorebarangays.barangay,
 
@@ -150,11 +199,7 @@ const StoreBarangayList = () => {
           <Fragment>
             <button
               className="btn btn-primary py-1 px-2 ml-2"
-              onClick={() =>
-                navigate(
-                  `/update/store/businesspermit/${allStorebarangays._id}`
-                )
-              }>
+              onClick={() => toggleUpdateModal(allStorebarangays._id)}>
               <i className="fa fa-info-circle"></i>
             </button>
             <button
@@ -202,30 +247,87 @@ const StoreBarangayList = () => {
                     Add New Record
                   </Button>
                   <Modal
-                    className="modal-dialog-centered"
+                    className="modal-dialog-top"
                     isOpen={modal}
                     toggle={toggle}>
                     <Form role="form" onSubmit={handleSubmit(submitHandler)}>
                       <ModalHeader toggle={toggle}>Add Barangay</ModalHeader>
                       <ModalBody>
                         <FormGroup>
-                          <span style={{ fontWeight: "bold" }}>Barangay</span>{" "}
-                          <input
-                            //placeholder="Add Notes here ..."
-                            className="form-control"
-                            // type="date"
-                            name="barangay"
-                            {...register("barangay", {
-                              required: "Please enter valid text.",
-                            })}
-                          />
+                          <InputGroup className="input-group-alternative mb-3">
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
+                                <i className="ni ni-pin-3" />
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <select
+                              className="form-control"
+                              name="barangay"
+                              {...register("barangay", {
+                                required: "Please select a barangay.",
+                              })}>
+                              <option value="" disabled selected>
+                                Select Barangay...
+                              </option>
+                              <option value="Bagumbayan">Bagumbayan</option>
+                              <option value="Bambang">Bambang</option>
+                              <option value="Calzada">Calzada</option>
+                              <option value="Central Bicutan">
+                                Central Bicutan
+                              </option>
+                              <option value="Central Signal Village">
+                                Central Signal Village
+                              </option>
+                              <option value="Fort Bonifacio">
+                                Fort Bonifacio
+                              </option>
+                              <option value="Hagonoy">Hagonoy</option>
+                              <option value="Ibayo-Tipas">Ibayo-Tipas</option>
+                              <option value="Katuparan">Katuparan</option>
+                              <option value="Ligid-Tipas">Ligid-Tipas</option>
+                              <option value="Lower Bicutan">
+                                Lower Bicutan
+                              </option>
+                              <option value="Maharlika Village">
+                                Maharlika Village
+                              </option>
+                              <option value="Napindan">Napindan</option>
+                              <option value="New Lower Bicutan">
+                                New Lower Bicutan
+                              </option>
+                              <option value="North Daang Hari">
+                                North Daang Hari
+                              </option>
+                              <option value="North Signal Village">
+                                North Signal Village
+                              </option>
+                              <option value="Palingon">Palingon</option>
+                              <option value="Pinagsama">Pinagsama</option>
+                              <option value="San Miguel">San Miguel</option>
+                              <option value="Santa Ana">Santa Ana</option>
+                              <option value="Sta. Cruz">Sta. Cruz</option>
+                              <option value="Tanyag">Tanyag</option>
+                              <option value="Tuktukan">Tuktukan</option>
+                              <option value="Upper Bicutan">
+                                Upper Bicutan
+                              </option>
+                              <option value="Ususan">Ususan</option>
+                              <option value="South Daang Hari">
+                                South Daang Hari
+                              </option>
+                              <option value="South Signal Village">
+                                South Signal Village
+                              </option>
+                              <option value="Wawa">Wawa</option>
+                              <option value="Western Bicutan">
+                                Western Bicutan
+                              </option>
+                            </select>
+                          </InputGroup>
                           {errors.barangay && (
                             <h2
                               className="h1-seo"
-                              style={{
-                                color: "red",
-                                fontSize: "small",
-                              }}>
+                              style={{ color: "red", fontSize: "small" }}>
                               {errors.barangay.message}
                             </h2>
                           )}
@@ -255,6 +357,78 @@ const StoreBarangayList = () => {
               />
             </CardBody>
           </Card>
+
+          <Modal isOpen={openUpdateModal} toggle={toggleUpdateModal}>
+            <Form onSubmit={submitUpdateHandler} encType="multipart/form-data">
+              <ModalHeader toggle={toggle}>Update Barangay</ModalHeader>
+              <ModalBody>
+                <FormGroup>
+                  <InputGroup className="input-group-alternative mb-3">
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText>
+                        <i className="ni ni-pin-3" />
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    <select
+                      className="form-control"
+                      value={UpdateBarangay}
+                      onChange={(e) => setUpdateBarangay(e.target.value)}>
+                      <option value="" disabled selected>
+                        Select Barangay...
+                      </option>
+                      <option value="Bagumbayan">Bagumbayan</option>
+                      <option value="Bambang">Bambang</option>
+                      <option value="Calzada">Calzada</option>
+                      <option value="Central Bicutan">Central Bicutan</option>
+                      <option value="Central Signal Village">
+                        Central Signal Village
+                      </option>
+                      <option value="Fort Bonifacio">Fort Bonifacio</option>
+                      <option value="Hagonoy">Hagonoy</option>
+                      <option value="Ibayo-Tipas">Ibayo-Tipas</option>
+                      <option value="Katuparan">Katuparan</option>
+                      <option value="Ligid-Tipas">Ligid-Tipas</option>
+                      <option value="Lower Bicutan">Lower Bicutan</option>
+                      <option value="Maharlika Village">
+                        Maharlika Village
+                      </option>
+                      <option value="Napindan">Napindan</option>
+                      <option value="New Lower Bicutan">
+                        New Lower Bicutan
+                      </option>
+                      <option value="North Daang Hari">North Daang Hari</option>
+                      <option value="North Signal Village">
+                        North Signal Village
+                      </option>
+                      <option value="Palingon">Palingon</option>
+                      <option value="Pinagsama">Pinagsama</option>
+                      <option value="San Miguel">San Miguel</option>
+                      <option value="Santa Ana">Santa Ana</option>
+                      <option value="Sta. Cruz">Sta. Cruz</option>
+                      <option value="Tanyag">Tanyag</option>
+                      <option value="Tuktukan">Tuktukan</option>
+                      <option value="Upper Bicutan">Upper Bicutan</option>
+                      <option value="Ususan">Ususan</option>
+                      <option value="South Daang Hari">South Daang Hari</option>
+                      <option value="South Signal Village">
+                        South Signal Village
+                      </option>
+                      <option value="Wawa">Wawa</option>
+                      <option value="Western Bicutan">Western Bicutan</option>
+                    </select>
+                  </InputGroup>
+                </FormGroup>
+              </ModalBody>{" "}
+              <ModalFooter>
+                <Button className="my-4" color="info" type="submit">
+                  Update
+                </Button>
+                <Button color="secondary" onClick={toggleUpdateModal}>
+                  Cancel
+                </Button>
+              </ModalFooter>
+            </Form>
+          </Modal>
         </Container>
         <Container fluid>
           <AdminFooter />

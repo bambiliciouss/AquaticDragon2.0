@@ -5,24 +5,7 @@ const ErrorHandler = require("../utils/errorHandler");
 const cloudinary = require("cloudinary");
 const mongoose = require("mongoose");
 
-// exports.assignStore = async (req, res, next) => {
-//   try {
-//     const { storebranch } = req.body;
-//     const userId = req.params.id;
-//     const staff = await StoreStaff.create({
-//       user: userId,
-//       storebranch,
-//     });
 
-//     res.status(201).json({
-//       success: true,
-//       staff,
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// };
 
 exports.assignStore = async (req, res, next) => {
   try {

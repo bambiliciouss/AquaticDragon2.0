@@ -98,7 +98,7 @@ export const updateStorebarangay = (id, storeData) => async (dispatch) => {
     };
 
     const { data } = await axios.put(
-      `/api/v1/store/barangay/${id}`,
+      `/api/v1/store/barangay//${id}`,
       storeData,
       config
     );
@@ -131,4 +131,10 @@ export const deleteStorebarangay = (id) => async (dispatch) => {
       payload: error.response.data.message,
     });
   }
+};
+
+export const clearErrors = () => async (dispatch) => {
+  dispatch({
+    type: CLEAR_ERRORS,
+  });
 };
