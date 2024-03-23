@@ -41,7 +41,7 @@ import {
   clearErrors,
 } from "actions/walkinPOSActions";
 import { UPDATE_WALKINPOS_RESET } from "../../constants/walkinPOSConstants";
-
+import { allTypesGallon } from "actions/typesgallonAction";
 const UpdateWalkInSalesInventory = () => {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -55,11 +55,13 @@ const UpdateWalkInSalesInventory = () => {
   const [selectedGallonType, setSelectedGallonType] = useState("");
   const [price, setPrice] = useState(0);
   const [total, setTotal] = useState(0);
+  const { typeofGallon } = useSelector((state) => state.allTypesGallon);
 
   useEffect(() => {
     // getWalkinposDetails(id);
     // console.log("data result", walkinposdetails);
     // setTotal(price * quantity);
+    dispatch(allTypesGallon(walkinposdetails.storebranch));
 
     if (walkinposdetails && walkinposdetails._id !== id) {
       dispatch(getWalkinposDetails(id));
@@ -98,13 +100,21 @@ const UpdateWalkInSalesInventory = () => {
         setPrice(5);
         break;
       case "7Liters":
-        setPrice(10);
+        setPrice(15);
         break;
       case "Others":
         setPrice(0);
         break;
       default:
-        setPrice(0);
+        const dynamicType = typeofGallon.find(
+          (gallon) => gallon.typeofGallon === type
+        );
+        if (dynamicType) {
+          setPrice(dynamicType.price);
+        } else {
+          setPrice(0);
+        }
+        break;
     }
   };
 
@@ -161,6 +171,32 @@ const UpdateWalkInSalesInventory = () => {
                                   Select Type
                                 </label>
                                 <div>
+                                  {typeofGallon.map((typeofGallons) => (
+                                    <>
+                                      <div>
+                                        <Button
+                                          block
+                                          color={
+                                            selectedGallonType ===
+                                            typeofGallons.typeofGallon
+                                              ? "primary"
+                                              : "secondary"
+                                          }
+                                          size="lg"
+                                          onClick={() =>
+                                            handleGallonTypeClick(
+                                              typeofGallons.typeofGallon
+                                            )
+                                          }
+                                          className="mr-2 mb-2">
+                                          {typeofGallons.typeofGallon}
+                                        </Button>
+                                      </div>
+                                      <div
+                                        style={{ marginBottom: "20px" }}></div>
+                                    </>
+                                  ))}
+
                                   <Button
                                     block
                                     color={isActiveButton("PETBottles")}

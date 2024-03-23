@@ -22,7 +22,7 @@ import {
 } from "../constants/typesgallonConstants";
 import { UPDATE_ADDRESS_FAIL } from "constants/addressConstants";
 
-export const createTypesGallon = (typeofgallon) => async (dispatch) => {
+export const createTypesGallon = (id, typeofgallon) => async (dispatch) => {
   try {
     dispatch({ type: CREATE_TYPESGALLON_REQUEST });
     const config = {
@@ -32,7 +32,7 @@ export const createTypesGallon = (typeofgallon) => async (dispatch) => {
     };
 
     const { data } = await axios.post(
-      "/api/v1/register/typeofgallon",
+      `/api/v1/register/typeofgallon/${id}`,
       typeofgallon,
       config
     );
@@ -54,10 +54,10 @@ export const clearErrors = () => async (dispatch) => {
   });
 };
 
-export const allTypesGallon = () => async (dispatch) => {
+export const allTypesGallon = (id) => async (dispatch) => {
   try {
     dispatch({ type: ALL_TYPESGALLON_REQUEST });
-    const { data } = await axios.get(`/api/v1/admin/typeofgallon`);
+    const { data } = await axios.get(`/api/v1/admin/all/typeofgallon/${id}`);
     dispatch({
       type: ALL_TYPESGALLON_SUCCESS,
       payload: data.typeGallon,

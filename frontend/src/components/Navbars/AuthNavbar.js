@@ -146,10 +146,15 @@ const AdminNavbar = () => {
                           Dashboard
                         </DropdownItem>
                       )}
-
+                      {/* 
                       <DropdownItem href="/gallon/order">
                         <i className="now-ui-icons business_chart-bar-32"></i>
                         Gallons
+                      </DropdownItem> */}
+
+                      <DropdownItem href="/storeselection">
+                        <i className="now-ui-icons business_chart-bar-32"></i>
+                        Order Now
                       </DropdownItem>
                       <DropdownItem href="/login" onClick={logoutHandler}>
                         <i className="now-ui-icons media-1_button-power"></i>

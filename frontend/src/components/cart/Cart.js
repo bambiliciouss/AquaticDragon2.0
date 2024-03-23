@@ -19,6 +19,8 @@ import {
   InputGroup,
   InputGroupAddon,
 } from "reactstrap";
+
+import CheckoutSteps from "./CheckoutSteps";
 const Cart = () => {
   const dispatch = useDispatch();
   const { cartItems } = useSelector((state) => state.cart);
@@ -26,6 +28,8 @@ const Cart = () => {
     const newQty = quantity + 1;
     dispatch(addItemToCart(id, newQty));
   };
+
+  const storeBranchinfo = JSON.parse(sessionStorage.getItem("selectedStore"));
 
   const decreaseQty = (id, quantity) => {
     const newQty = Math.max(1, quantity - 1);
@@ -55,6 +59,8 @@ const Cart = () => {
           marginLeft: "10%",
           marginRight: "10%",
         }}>
+
+<CheckoutSteps store gallon />
         <div className="col-md-12">
           <div className="content">
             <div className="row">
@@ -72,7 +78,23 @@ const Cart = () => {
                       <p>Your Cart is Empty</p>
                     ) : (
                       <>
-                        <p>No of order/s: {cartItems.length} </p>
+                        <p>
+                          <strong>
+                            Selected Store: {storeBranchinfo.storebranch.branch}{" "}
+                          </strong>
+                        </p>
+                        <p>
+                          <strong>
+                            {" "}
+                            Address:{" "}
+                            {storeBranchinfo.storebranch.address.houseNo}{" "}
+                            {storeBranchinfo.storebranch.address.streetName}{" "}
+                            {storeBranchinfo.storebranch.address.purokNum}{" "}
+                            {storeBranchinfo.storebranch.address.barangay}{" "}
+                            {storeBranchinfo.storebranch.address.city}
+                          </strong>
+                        </p>{" "}
+                        {/* <p>No of order/s: {cartItems.length} </p> */}
                         <div className="row d-flex justify-content-between">
                           <div className="col-12 col-lg-8">
                             {cartItems.map((item) => (

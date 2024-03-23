@@ -130,8 +130,7 @@ const WalkInSalesInventory = () => {
     dispatch(getStoreDetails(id));
     dispatch(allWalkinpos(id));
     setTotal(price * quantity);
-    dispatch(allTypesGallon());
-
+    dispatch(allTypesGallon(id));
     console.log("TYPE OF GALON", typeofGallon);
 
     if (walkinposcreated) {

@@ -6,11 +6,6 @@ const storeSchema = new mongoose.Schema({
     ref: "User",
   },
 
-  // branchNo: {
-  //   type: Number,
-  //   unique: true,
-  // },
-
   branch: {
     type: String,
     unique: [true, "Store Name is already taken"],

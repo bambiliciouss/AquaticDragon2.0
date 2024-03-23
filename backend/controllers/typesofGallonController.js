@@ -32,6 +32,8 @@ exports.registerTypeofGallon = async (req, res, next) => {
         public_id: result.public_id,
         url: result.secure_url,
       },
+      user: req.user.id,
+      storebranch: req.params.id,
     });
 
     res.status(201).json({
@@ -83,7 +85,10 @@ exports.updateTypeofGallon = async (req, res, next) => {
 
 exports.AllTypesGallons = async (req, res, next) => {
   try {
-    const typeGallon = await TypeOfGallon.find({ deleted: false });
+    const typeGallon = await TypeOfGallon.find({
+      deleted: false,
+      storebranch: req.params.id,
+    });
     res.status(200).json({
       success: true,
       typeGallon,

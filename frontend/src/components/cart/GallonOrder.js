@@ -24,18 +24,23 @@ import { allTypesGallon } from "actions/typesgallonAction";
 import MetaData from "components/layout/MetaData";
 
 import { addItemToCart } from "../../actions/cartActions";
+
+import CheckoutSteps from "./CheckoutSteps";
 const GallonOrder = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const { error, typeofGallon } = useSelector((state) => state.allTypesGallon);
   const [activeType, setActiveType] = useState(null);
+  const storeBranchinfo = JSON.parse(sessionStorage.getItem("selectedStore"));
   const handleButtonClick = (type) => {
     setActiveType(type);
   };
 
   useEffect(() => {
-    dispatch(allTypesGallon());
+    dispatch(allTypesGallon(storeBranchinfo.storebranch._id));
+
     console.log("ETO YUNG CLICKED", activeType);
+    console.log(storeBranchinfo.storebranch._id);
   }, [dispatch, activeType]);
   console.log("results", typeofGallon);
 
@@ -62,6 +67,8 @@ const GallonOrder = () => {
           marginLeft: "20%",
           marginRight: "20%",
         }}>
+   
+   <CheckoutSteps store gallon />
         <div className="row">
           <div className="col-md-12">
             <div className="user-profile">

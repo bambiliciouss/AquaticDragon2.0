@@ -14,7 +14,11 @@ import AuthNavbar from "components/Navbars/AuthNavbar.js";
 import MetaData from "../layout/MetaData";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { allStoreBranch, deleteStoreBranch } from "actions/storebranchActions";
+import {
+  allStoreBranchUser,
+  deleteStoreBranch,
+} from "actions/storebranchActions";
+import CheckoutSteps from "./CheckoutSteps";
 
 const SelectStore = () => {
   const dispatch = useDispatch();
@@ -24,13 +28,13 @@ const SelectStore = () => {
   const [selectedStore, setSelectedStore] = useState(null);
 
   useEffect(() => {
-    dispatch(allStoreBranch());
+    dispatch(allStoreBranchUser());
   }, [dispatch]);
 
   const handleSelectStore = (store) => {
     setSelectedStore(store);
     sessionStorage.setItem("selectedStore", JSON.stringify(store));
-    navigate("/payment");
+    navigate("/gallon/order");
   };
 
   return (
@@ -46,6 +50,7 @@ const SelectStore = () => {
           marginLeft: "20%",
           marginRight: "20%",
         }}>
+        <CheckoutSteps store />
         <Card className="bg-secondary shadow">
           <CardHeader className="bg-white border-0">
             <Row className="align-items-center">
@@ -56,31 +61,43 @@ const SelectStore = () => {
           </CardHeader>
           <Row>
             {storeBranch.map((storeBranches) => (
-              <Col key={storeBranches._id} md="6">
-                <CardBody className="d-flex justify-content-center align-items-center">
-                  <Card style={{ width: "20rem" }}>
-                    <CardImg alt="..." src={storeBranches.storeImage.url} top />
-                    <CardBody>
-                      <CardTitle>{storeBranches.branch}</CardTitle>
-                      <CardText>
-                        Address: {storeBranches.address.houseNo}
-                        {storeBranches.address.purokNum}{" "}
-                        {storeBranches.address.streetName}
-                        {storeBranches.address.barangay}{" "}
-                        {storeBranches.address.city}
-                      </CardText>
-                      <CardText>
-                        Delivery Fee: {storeBranches.deliverFee}
-                      </CardText>
-                      <Button
-                        block
-                        color="info"
-                        onClick={() => handleSelectStore(storeBranches)}>
-                        Select Store
-                      </Button>
-                    </CardBody>
-                  </Card>
-                </CardBody>
+              <Col sm="12">
+                <Card body>
+                  {/* </Card> <Card style={{ width: "20rem" }}> */}
+                  <Row>
+                    <Col sm="4">
+                      <CardImg
+                        alt="..."
+                        src={storeBranches.storebranch.storeImage.url}
+                        left
+                      />
+                    </Col>
+                    <Col sm="8">
+                      <CardBody>
+                        <CardTitle>
+                          {storeBranches.storebranch.branch}
+                        </CardTitle>
+                        <CardText>
+                          Address: {storeBranches.storebranch.address.houseNo}{" "}
+                          {storeBranches.storebranch.address.purokNum}{" "}
+                          {storeBranches.storebranch.address.streetName}{" "}
+                          {storeBranches.storebranch.address.barangay}{" "}
+                          {storeBranches.storebranch.address.city}
+                        </CardText>
+                        <CardText>
+                          Delivery Fee: {storeBranches.storebranch.deliverFee}
+                        </CardText>
+                        <Button
+                          block
+                          color="info"
+                          onClick={() => handleSelectStore(storeBranches)}>
+                          Select Store
+                        </Button>
+                      </CardBody>
+                    </Col>
+                  </Row>
+                </Card>
+                {/* </CardBody> */}
               </Col>
             ))}
           </Row>

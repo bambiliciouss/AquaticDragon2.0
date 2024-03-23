@@ -41,6 +41,7 @@ import MachineCleaning from "components/admin/MachineCleaning";
 import BarangayHealth from "components/admin/BarangayHealth";
 import PhysicalChemTest from "components/admin/PhysicalChemTest";
 import BusinessPermit from "components/admin/BusinessPermit";
+import TypesGallon from "components/admin/TypesGallon";
 
 
 import UpdateRider from "components/admin/UpdateRider";
@@ -128,7 +129,9 @@ function App() {
         <Route path="/storebranchlist" element={<ProtectedRoute><StoreBranchList /></ProtectedRoute>}exact="true"/>
         <Route path="/machinecleaning" element={<ProtectedRoute><MachineCleaning /></ProtectedRoute>} exact="true"/>
         <Route path="/barangayhealth" element={<ProtectedRoute><BarangayHealth /></ProtectedRoute>} exact="true"/>
-        <Route path="/typesgallonlist" element={<ProtectedRoute><TypesGallonList /></ProtectedRoute>} exact="true" />
+        <Route path="/typesgallonlist" element={<ProtectedRoute><TypesGallon /></ProtectedRoute>} exact="true" />
+
+        <Route path="/typesgallonlist/:id" element={<ProtectedRoute><TypesGallonList /></ProtectedRoute>} exact="true" />
        
         <Route path="/gallon/order" element={<ProtectedRoute> <GallonOrder /> </ProtectedRoute>} exact="true"/>
         

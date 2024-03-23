@@ -10,17 +10,22 @@ const {
 } = require("../controllers/typesofGallonController");
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
-const upload = require("../utils/multer")
+const upload = require("../utils/multer");
 
 router.post(
-  "/register/typeofgallon",
+  "/register/typeofgallon/:id",
   upload.single("gallonImage"),
   isAuthenticatedUser,
   registerTypeofGallon
 );
 
-router.put("/update/typeofgallon/:id",   upload.single("gallonImage"),isAuthenticatedUser, updateTypeofGallon);
-router.get("/admin/typeofgallon", isAuthenticatedUser, AllTypesGallons);
+router.put(
+  "/update/typeofgallon/:id",
+  upload.single("gallonImage"),
+  isAuthenticatedUser,
+  updateTypeofGallon
+);
+router.get("/admin/all/typeofgallon/:id", isAuthenticatedUser, AllTypesGallons);
 router.get("/admin/typeofgallon/:id", isAuthenticatedUser, getSingleGallonType);
 router
   .route("/admin/delete/typeofgallon/:id")

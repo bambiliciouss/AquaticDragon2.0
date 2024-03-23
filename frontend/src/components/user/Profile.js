@@ -99,6 +99,7 @@ const Profile = () => {
   const handleSearch = (result) => {
     setCenter({ lat: result.y, lng: result.x });
   };
+
   useEffect(() => {
     dispatch(allAddress());
     // console.group(modalID);
@@ -168,7 +169,6 @@ const Profile = () => {
         setTimeout(initializeMap, 100);
       }
     };
-
     initializeMap();
 
     const EditinitializeMap = () => {
@@ -195,7 +195,6 @@ const Profile = () => {
     error,
     isDeleted,
     isDefault,
-
   ]);
 
   const submitHandler = (e) => {
@@ -589,68 +588,112 @@ const Profile = () => {
                       </FormGroup>
 
                       <FormGroup>
-                        <InputGroup className="input-group-alternative mb-3">
-                          <InputGroupAddon addonType="prepend">
-                            <InputGroupText>
-                              <i className="ni ni ni-pin-3" />
-                            </InputGroupText>
-                          </InputGroupAddon>
-                          <select
-                            className="form-control"
-                            name="barangay"
-                            {...register("barangay", {
-                              required: "Please select a barangay",
-                            })}>
-                            <option value="" selected disabled>
-                              Select Barangay
-                            </option>
-                            <option value="Central Bicutan">
-                              Central Bicutan
-                            </option>
-                            <option value="Upper Bicutan">Upper Bicutan</option>
-                            <option value="New Lower Bicutan">
-                              New Lower Bicutan
-                            </option>
-                            {/* Add more options as needed */}
-                          </select>
-                        </InputGroup>
-                        {errors.barangay && (
-                          <h2
-                            className="h1-seo"
-                            style={{ color: "red", fontSize: "small" }}>
-                            {errors.barangay.message}
-                          </h2>
-                        )}
-                      </FormGroup>
+                          <InputGroup className="input-group-alternative mb-3">
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
+                                <i className="ni ni-pin-3" />
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <select
+                              className="form-control"
+                              name="barangay"
+                              {...register("barangay", {
+                                required: "Please select a barangay.",
+                              })}>
+                              <option value="" disabled selected>
+                                Select Barangay...
+                              </option>
+                              <option value="Bagumbayan">Bagumbayan</option>
+                              <option value="Bambang">Bambang</option>
+                              <option value="Calzada">Calzada</option>
+                              <option value="Central Bicutan">
+                                Central Bicutan
+                              </option>
+                              <option value="Central Signal Village">
+                                Central Signal Village
+                              </option>
+                              <option value="Fort Bonifacio">
+                                Fort Bonifacio
+                              </option>
+                              <option value="Hagonoy">Hagonoy</option>
+                              <option value="Ibayo-Tipas">Ibayo-Tipas</option>
+                              <option value="Katuparan">Katuparan</option>
+                              <option value="Ligid-Tipas">Ligid-Tipas</option>
+                              <option value="Lower Bicutan">
+                                Lower Bicutan
+                              </option>
+                              <option value="Maharlika Village">
+                                Maharlika Village
+                              </option>
+                              <option value="Napindan">Napindan</option>
+                              <option value="New Lower Bicutan">
+                                New Lower Bicutan
+                              </option>
+                              <option value="North Daang Hari">
+                                North Daang Hari
+                              </option>
+                              <option value="North Signal Village">
+                                North Signal Village
+                              </option>
+                              <option value="Palingon">Palingon</option>
+                              <option value="Pinagsama">Pinagsama</option>
+                              <option value="San Miguel">San Miguel</option>
+                              <option value="Santa Ana">Santa Ana</option>
+                              <option value="Sta. Cruz">Sta. Cruz</option>
+                              <option value="Tanyag">Tanyag</option>
+                              <option value="Tuktukan">Tuktukan</option>
+                              <option value="Upper Bicutan">
+                                Upper Bicutan
+                              </option>
+                              <option value="Ususan">Ususan</option>
+                              <option value="South Daang Hari">
+                                South Daang Hari
+                              </option>
+                              <option value="South Signal Village">
+                                South Signal Village
+                              </option>
+                              <option value="Wawa">Wawa</option>
+                              <option value="Western Bicutan">
+                                Western Bicutan
+                              </option>
+                            </select>
+                          </InputGroup>
+                          {errors.barangay && (
+                            <h2
+                              className="h1-seo"
+                              style={{ color: "red", fontSize: "small" }}>
+                              {errors.barangay.message}
+                            </h2>
+                          )}
+                        </FormGroup>
 
-                      <FormGroup>
-                        <InputGroup className="input-group-alternative mb-3">
-                          <InputGroupAddon addonType="prepend">
-                            <InputGroupText>
-                              <i className="ni ni-pin-3" />
-                            </InputGroupText>
-                          </InputGroupAddon>
-                          <select
-                            className="form-control"
-                            name="city"
-                            {...register("city", {
-                              required: "Please select a city",
-                            })}>
-                            <option value="" selected disabled>
-                              Select City
-                            </option>
-                            <option value="Taguig City">Taguig City</option>
-                            {/* Add more options as needed */}
-                          </select>
-                        </InputGroup>
-                        {errors.city && (
-                          <h2
-                            className="h1-seo"
-                            style={{ color: "red", fontSize: "small" }}>
-                            {errors.city.message}
-                          </h2>
-                        )}
-                      </FormGroup>
+                        <FormGroup>
+                          <InputGroup className="input-group-alternative mb-3">
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
+                                <i className="ni ni-pin-3" />
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <select
+                              className="form-control"
+                              name="city"
+                              {...register("city", {
+                                required: "Please select a city.",
+                              })}>
+                              <option value="" disabled selected>
+                                Select City...
+                              </option>
+                              <option value="Taguig City">Taguig City</option>
+                            </select>
+                          </InputGroup>
+                          {errors.city && (
+                            <h2
+                              className="h1-seo"
+                              style={{ color: "red", fontSize: "small" }}>
+                              {errors.city.message}
+                            </h2>
+                          )}
+                        </FormGroup>
 
                       <FormGroup>
                         <MapContainer

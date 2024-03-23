@@ -7,7 +7,8 @@ const sendEmail = require("../utils/sendEmail");
 const sendEmailReset = require("../utils/sendEmailReset");
 const crypto = require("crypto");
 const mongoose = require("mongoose");
-
+const Order = require("../models/order");
+const StoreBranch = require("../models/storeBranch");
 exports.registerUser = async (req, res, next) => {
   try {
     // const result = await cloudinary.v2.uploader.upload(
@@ -1355,5 +1356,67 @@ exports.admingetAllAddresses = async (req, res) => {
     return res
       .status(500)
       .json({ success: false, message: "Internal Server Error" });
+  }
+};
+// exports.AllStoreUsers = async (req, res, next) => {
+//   try {
+//     // Fetch all orders
+//     const orders = await Order.find().populate('customer', 'lname fname');
+
+//     // Extract unique user IDs from orders
+//     const usersWithTransactions = [
+//       ...new Set(orders.map((order) => order.customer)),
+//     ];
+
+//     res.status(200).json({
+//       success: true,
+//       usersWithTransactions,
+//     });
+//   } catch (error) {
+//     res
+//       .status(500)
+//       .json({ message: "Internal Server Error", error: error.message });
+//   }
+// };
+
+exports.AllStoreUsers = async (req, res, next) => {
+  try {
+    // Fetch all orders
+    const storeBranch = await StoreBranch.find({
+      deleted: false,
+      user: req.user.id,
+    });
+
+    if (!storeBranch) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Store branch not found" });
+    }
+
+    const storeBranchIDs = storeBranch.map((branch) => branch._id);
+
+    // // Get all the orders from the admin's branches only
+    const orders = await Order.find({
+      "selectedStore.store": storeBranchIDs,
+    })
+      .populate("customer", "fname lname avatar addresses")
+      .populate("selectedStore.store");
+
+    // Extract unique user IDs from orders
+    const usersWithTransactions = [
+      ...new Set(orders.map((order) => order.customer)),
+    ];
+
+    const counter = usersWithTransactions.length;
+
+    res.status(200).json({
+      success: true,
+      counter,
+      usersWithTransactions,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
   }
 };

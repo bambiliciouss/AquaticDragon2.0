@@ -15,7 +15,7 @@ import {
 import AuthNavbar from "components/Navbars/AuthNavbar.js";
 import MetaData from "../layout/MetaData";
 import { useNavigate } from "react-router-dom";
-
+import CheckoutSteps from "./CheckoutSteps";
 const Payment = () => {
   const navigate = useNavigate();
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
@@ -51,6 +51,7 @@ const Payment = () => {
           marginLeft: "20%",
           marginRight: "20%",
         }}>
+           <CheckoutSteps store gallon containerstatus payment />
         <Card className="bg-secondary shadow">
           <CardHeader className="bg-white border-0">
             <Row className="align-items-center">

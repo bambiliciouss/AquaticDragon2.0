@@ -14,7 +14,10 @@ import AdminFooter from "components/Footers/AdminFooter.js";
 
 import { DELETE_USER_RESET } from "../../constants/userConstants";
 import swal from "sweetalert";
-
+import {
+  allAdminStoreBranch,
+  deleteStoreBranch,
+} from "actions/storebranchActions";
 import {
   Button,
   Card,
@@ -67,6 +70,7 @@ const UserList = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedUserfname, setSelectedUserfname] = useState(null);
   const [selectedUserlname, setSelectedUserlname] = useState(null);
+  const { storeBranch } = useSelector((state) => state.allStoreBranch);
 
   const toggleModal = () => {
     setModal(!modal);
@@ -87,6 +91,8 @@ const UserList = () => {
   const userId = user?._id;
   const [qrdetails, setQrDetails] = useState();
 
+  const [activeStoreBranch, setActiveStoreBranch] = useState(null);
+
   const containerRef = useRef(null);
 
   const downloadImage = () => {
@@ -104,20 +110,27 @@ const UserList = () => {
 
   useEffect(() => {
     dispatch(allUsers());
+    dispatch(allAdminStoreBranch());
+
     if (isDeleted) {
       navigate("/userlist");
       dispatch({ type: DELETE_USER_RESET });
     }
 
     setQrDetails(`http://localhost:3000/details/${selectedUser}`);
-  }, [dispatch, isDeleted, navigate, selectedUser]);
-  console.log("result", qrdetails);
+  }, [dispatch, isDeleted, navigate, selectedUser, activeStoreBranch]);
+  // console.log("result", qrdetails);
 
   const setUsers = () => {
-    // const filter = user ? users.filter((x) => x._id !== user._id) : users;
-    const filter = user
-      ? users.filter((x) => x._id !== user._id && x.role === "user")
-      : users;
+    // const sortedOrders = users
+    // .filter(
+    //   (user) =>
+    //     !activeStoreBranch ||
+    //     user.selectedStore.store === activeStoreBranch._id
+    // )
+    // .sort((a, b) => {
+    //   return new Date(b.createdAt) - new Date(a.createdAt);
+    // });
 
     const data = {
       columns: [
@@ -137,11 +150,11 @@ const UserList = () => {
           field: "name",
           sort: "asc",
         },
-        {
-          label: "Phone",
-          field: "phone",
-          sort: "asc",
-        },
+        // {
+        //   label: "Phone",
+        //   field: "phone",
+        //   sort: "asc",
+        // },
         {
           label: "Address",
           field: "address",
@@ -162,7 +175,7 @@ const UserList = () => {
       rows: [],
     };
 
-    filter.forEach((user) => {
+    users.forEach((user) => {
       const defaultAddress =
         user.addresses.find((address) => address.isDefault) || {};
 
@@ -205,6 +218,17 @@ const UserList = () => {
     return data;
   };
 
+  const handleButtonClick = (storeId) => {
+    // Handle button click logic, e.g., setting the active store branch
+    setActiveStoreBranch(storeBranch.find((branch) => branch._id === storeId));
+  };
+
+  const allordersButton = () => {
+    setActiveStoreBranch(null);
+
+    // dispatch(allOrdersAdmin());
+  };
+
   return (
     <>
       <MetaData title={"Customer(s)"} />
@@ -225,6 +249,22 @@ const UserList = () => {
                 <Col xs="8">
                   <h3 className="mb-0">List of Customer(s)</h3>
                 </Col>
+              </Row>
+              <Row className="align-items-center">
+                <Button
+                //  onClick={() => allordersButton()}
+                >
+                  <h3 className="mb-0">All Customers</h3>
+                </Button>
+                {storeBranch.map((storeBranches) => (
+                  <Button
+                    key={storeBranches._id} // Assuming storeBranches has a unique identifier like _id
+                    id={`button-${storeBranches._id}`} // Unique id for each button
+                    // onClick={() => handleButtonClick(storeBranches._id)} // Replace with your click handler
+                  >
+                    <h3 className="mb-0">{storeBranches.branch}</h3>
+                  </Button>
+                ))}
               </Row>
             </CardHeader>
             <CardBody style={{ overflowX: "auto" }}>

@@ -122,7 +122,7 @@ const ProductList = () => {
   useEffect(() => {
     dispatch(getStoreDetails(id));
     dispatch(allProductList(id));
-    dispatch(allTypesGallon());
+    dispatch(allTypesGallon(id));
 
     if (IdModal !== null) {
       dispatch(allProductStockLogs(IdModal));

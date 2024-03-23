@@ -181,6 +181,10 @@ const Sidebar = (props) => {
                 <i className="ni ni-user-run text-orange" /> Riders
               </NavLink>
             </NavItem>
+            <NavLink href="/storebranchlist">
+              <i className="ni ni-shop text-red" /> Stores
+            </NavLink>
+
             {/* <NavItem>
               <NavLink href="/gallonlist" onClick={closeCollapse}>
                 <i className="ni ni-settings-gear-65 text-yellow" /> Gallons
@@ -193,13 +197,25 @@ const Sidebar = (props) => {
             </NavItem> */}
           </Nav>
           <hr className="my-3" />
-          <h6 className="navbar-heading text-muted">Management</h6>
+          <h6 className="navbar-heading text-muted">POS</h6>
+          <Nav navbar>
+            <NavItem>
+              <NavLink href="/admin/POS/" onClick={closeCollapse}>
+                <i className="ni ni-active-40 text-yellow" /> Walk In Refill
+              </NavLink>
+            </NavItem>
+
+            <NavItem>
+              <NavLink href="/orderlist" onClick={closeCollapse}>
+                <i className="ni ni-basket text-green" /> Orders
+              </NavLink>
+            </NavItem>
+          </Nav>
+
+          <hr className="my-3" />
+          <h6 className="navbar-heading text-muted">Store Records</h6>
 
           <Nav navbar>
-            <NavLink href="/storebranchlist">
-              <i className="ni ni-shop text-red" /> Stores
-            </NavLink>
-
             <NavLink href="/machinecleaning">
               <i className="ni ni-collection text-blue" /> Machine Cleaning
             </NavLink>
@@ -244,21 +260,6 @@ const Sidebar = (props) => {
                 </NavItem>
                
               </Nav> */}
-          <hr className="my-3" />
-          <h6 className="navbar-heading text-muted">POS</h6>
-          <Nav navbar>
-            <NavItem>
-              <NavLink href="/admin/POS/" onClick={closeCollapse}>
-                <i className="ni ni-active-40 text-yellow" /> Walk In Refill
-              </NavLink>
-            </NavItem>
-
-            <NavItem>
-              <NavLink href="/orderlist" onClick={closeCollapse}>
-                <i className="ni ni-basket text-green" /> Orders
-              </NavLink>
-            </NavItem>
-          </Nav>
 
           {/* <hr className="my-3" />
 

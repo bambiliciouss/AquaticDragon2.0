@@ -13,7 +13,7 @@ import AdminFooter from "components/Footers/AdminFooter.js";
 
 import { DELETE_STOREBRANCH_RESET } from "../../constants/storebranchConstants";
 import swal from "sweetalert";
-import { allStoreBranch, deleteStoreBranch } from "actions/storebranchActions";
+import { allAdminStoreBranch, deleteStoreBranch } from "actions/storebranchActions";
 import {
   Button,
   Card,
@@ -106,7 +106,7 @@ const PhysicalChemTest = (args) => {
 
   useEffect(() => {
     //DISPLAY OF STORE BRANCH
-    dispatch(allStoreBranch());
+    dispatch(allAdminStoreBranch());
   }, [dispatch]);
 
   return (

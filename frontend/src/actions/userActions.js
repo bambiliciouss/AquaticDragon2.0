@@ -371,10 +371,10 @@ export const verifyEmail = (id, token) => async (dispatch) => {
 export const allUsers = () => async (dispatch) => {
   try {
     dispatch({ type: ALL_USERS_REQUEST });
-    const { data } = await axios.get(`/api/v1/admin/users`);
+    const { data } = await axios.get(`/api/v1/admin/store/users`);
     dispatch({
       type: ALL_USERS_SUCCESS,
-      payload: data.users,
+      payload: data.usersWithTransactions,
     });
   } catch (error) {
     dispatch({

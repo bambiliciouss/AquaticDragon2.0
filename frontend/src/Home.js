@@ -70,128 +70,128 @@
 // export default Home;
 
 //DEFAULT HOME PAGE
-// import React from "react";
+import React from "react";
 // // nodejs library that concatenates classes
-// import classnames from "classnames";
+import classnames from "classnames";
 
-// // reactstrap components
-// import {
-//   Badge,
-//   Button,
-//   Card,
-//   CardBody,
-//   CardImg,
-//   FormGroup,
-//   Input,
-//   InputGroupAddon,
-//   InputGroupText,
-//   InputGroup,
-//   Container,
-//   Row,
-//   Col,
-// } from "reactstrap";
-// import { useLocation } from "react-router-dom";
-// import AuthNavbar from "components/Navbars/AuthNavbar.js";
-// import AuthFooter from "components/Footers/AuthFooter.js";
+// reactstrap components
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardImg,
+  FormGroup,
+  Input,
+  InputGroupAddon,
+  InputGroupText,
+  InputGroup,
+  Container,
+  Row,
+  Col,
+} from "reactstrap";
+import { useLocation } from "react-router-dom";
+import AuthNavbar from "components/Navbars/AuthNavbar.js";
+import AuthFooter from "components/Footers/AuthFooter.js";
 
-// import "./styles.css";
-// import "leaflet/dist/leaflet.css";
-// import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-// import MarkerClusterGroup from "react-leaflet-cluster";
-// import { Icon, divIcon, point } from "leaflet";
-// import { useDispatch, useSelector } from "react-redux";
-// import { allStoreBranch } from "actions/storebranchActions";
+import "./styles.css";
+import "leaflet/dist/leaflet.css";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import MarkerClusterGroup from "react-leaflet-cluster";
+import { Icon, divIcon, point } from "leaflet";
+import { useDispatch, useSelector } from "react-redux";
+import { allStoreBranch } from "actions/storebranchActions";
 
-// const Home = () => {
-//   const location = useLocation();
-//   const dispatch = useDispatch();
-//   const { storeBranch } = useSelector((state) => state.allStoreBranch);
+const Home = () => {
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const { storeBranch } = useSelector((state) => state.allStoreBranch);
 
-//   React.useEffect(() => {
-//     dispatch(allStoreBranch());
-//     document.documentElement.scrollTop = 0;
-//     document.scrollingElement.scrollTop = 0;
+  React.useEffect(() => {
+    dispatch(allStoreBranch());
+    document.documentElement.scrollTop = 0;
+    document.scrollingElement.scrollTop = 0;
 
-//     console.log(storeBranch);
-//   }, [location, dispatch]);
+    console.log(storeBranch);
+  }, [location, dispatch]);
 
-//   // const markers = [
-//   //   {
-//   //     geocode: [14.493885828552058, 121.0515581995835],
-//   //     popUp: "Aquatic Dragon (Branch No.1)",
-//   //   },
-//   //   {
-//   //     geocode: [14.493595, 121.052208],
-//   //     popUp: "Aquatic Dragon (Main Branch)",
-//   //   },
-//   // ];
+  // const markers = [
+  //   {
+  //     geocode: [14.493885828552058, 121.0515581995835],
+  //     popUp: "Aquatic Dragon (Branch No.1)",
+  //   },
+  //   {
+  //     geocode: [14.493595, 121.052208],
+  //     popUp: "Aquatic Dragon (Main Branch)",
+  //   },
+  // ];
 
-//   const customIcon = new Icon({
-//     iconUrl: "https://cdn-icons-png.flaticon.com/512/447/447031.png",
-//     // iconUrl: require("./icons/placeholder.png"),
-//     iconSize: [38, 38], // size of the icon
-//   });
+  const customIcon = new Icon({
+    iconUrl: "https://cdn-icons-png.flaticon.com/512/447/447031.png",
+    // iconUrl: require("./icons/placeholder.png"),
+    iconSize: [38, 38], // size of the icon
+  });
 
-//   return (
-//     <>
-//       <AuthNavbar />
-//       <main>
-//         <section className="section section-lg mt-8">
-//           <Container>
-//             <Row className="row-grid align-items-center">
-//               <Col className="order-md-2" md="6">
-//                 <img
-//                   alt="..."
-//                   className="img-fluid floating"
-//                   src={require("assets/img/landingpage-img2.jpg")}
-//                 />
-//               </Col>
-//               <Col className="order-md-1" md="6">
-//                 <div className="pr-md-5">
-//                   <h1 className="display-3 text-info">Aquatic Dragon</h1>
+  return (
+    <>
+      <AuthNavbar />
+      <main>
+        <section className="section section-lg mt-8">
+          <Container>
+            <Row className="row-grid align-items-center">
+              <Col className="order-md-2" md="6">
+                <img
+                  alt="..."
+                  className="img-fluid floating"
+                  src={require("assets/img/landingpage-img2.jpg")}
+                />
+              </Col>
+              <Col className="order-md-1" md="6">
+                <div className="pr-md-5">
+                  <h1 className="display-3 text-info">Aquatic Dragon</h1>
 
-//                   <p>
-//                     Aquatic Dragon Water Refilling Station is your go-to
-//                     location for clean, pure, and sustainable refreshment. At
-//                     Aquatic Dragon Water Refilling Station, it passes into
-//                     21-stages of water filtration purification and sterilization
-//                     that makes the water safe to drink.
-//                   </p>
-//                 </div>
-//               </Col>
-//             </Row>
-//           </Container>
-//         </section>
+                  <p>
+                    Aquatic Dragon Water Refilling Station is your go-to
+                    location for clean, pure, and sustainable refreshment. At
+                    Aquatic Dragon Water Refilling Station, it passes into
+                    21-stages of water filtration purification and sterilization
+                    that makes the water safe to drink.
+                  </p>
+                </div>
+              </Col>
+            </Row>
+          </Container>
+        </section>
 
-//         <section className="section section-lg mt-8">
-//           <Container>
-//             <MapContainer
-//               center={[14.494066571438568, 121.0510134107358]}
-//               zoom={18}>
-//               <TileLayer
-//                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-//                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-//               />
-//               {storeBranch.map((storeBranches) => (
-//                 <Marker
-//                   position={{
-//                     lat: storeBranches.address.latitude,
-//                     lng: storeBranches.address.longitude,
-//                   }}
-//                   icon={customIcon}>
-//                   <Popup>{storeBranches.branch}</Popup>
-//                 </Marker>
-//               ))}
-//             </MapContainer>
-//           </Container>
-//         </section>
-//       </main>
-//       {/* <AuthFooter /> */}
-//     </>
-//   );
-// };
+        <section className="section section-lg mt-8">
+          <Container>
+            <MapContainer
+              center={[14.494066571438568, 121.0510134107358]}
+              zoom={18}>
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              {storeBranch.map((storeBranches) => (
+                <Marker
+                  position={{
+                    lat: storeBranches.address.latitude,
+                    lng: storeBranches.address.longitude,
+                  }}
+                  icon={customIcon}>
+                  <Popup>{storeBranches.branch}</Popup>
+                </Marker>
+              ))}
+            </MapContainer>
+          </Container>
+        </section>
+      </main>
+      {/* <AuthFooter /> */}
+    </>
+  );
+};
 
-// export default Home;
+export default Home;
 
 //LOCATE ME
 // import React, { useState, useRef } from "react";
@@ -528,193 +528,193 @@
 
 // export default Home;
 
-import React, { useState, useEffect } from "react";
-// nodejs library that concatenates classes
-import classnames from "classnames";
+// import React, { useState, useEffect } from "react";
+// // nodejs library that concatenates classes
+// import classnames from "classnames";
 
-// reactstrap components
-import {
-  Badge,
-  Button,
-  Card,
-  CardBody,
-  CardImg,
-  FormGroup,
-  Input,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroup,
-  Container,
-  Row,
-  Col,
-} from "reactstrap";
-import { useLocation } from "react-router-dom";
-import AuthNavbar from "components/Navbars/AuthNavbar.js";
-import AuthFooter from "components/Footers/AuthFooter.js";
+// // reactstrap components
+// import {
+//   Badge,
+//   Button,
+//   Card,
+//   CardBody,
+//   CardImg,
+//   FormGroup,
+//   Input,
+//   InputGroupAddon,
+//   InputGroupText,
+//   InputGroup,
+//   Container,
+//   Row,
+//   Col,
+// } from "reactstrap";
+// import { useLocation } from "react-router-dom";
+// import AuthNavbar from "components/Navbars/AuthNavbar.js";
+// import AuthFooter from "components/Footers/AuthFooter.js";
 
-import "./styles.css";
-import "leaflet/dist/leaflet.css";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  FeatureGroup,
-} from "react-leaflet";
-import { EditControl } from "react-leaflet-draw";
-import MarkerClusterGroup from "react-leaflet-cluster";
-import { Icon, divIcon, point } from "leaflet";
-import { useDispatch, useSelector } from "react-redux";
-import { allStoreBranch } from "actions/storebranchActions";
+// import "./styles.css";
+// import "leaflet/dist/leaflet.css";
+// import {
+//   MapContainer,
+//   TileLayer,
+//   Marker,
+//   Popup,
+//   FeatureGroup,
+// } from "react-leaflet";
+// import { EditControl } from "react-leaflet-draw";
+// import MarkerClusterGroup from "react-leaflet-cluster";
+// import { Icon, divIcon, point } from "leaflet";
+// import { useDispatch, useSelector } from "react-redux";
+// import { allStoreBranch } from "actions/storebranchActions";
 
-import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
-import "leaflet-geosearch/dist/geosearch.css";
-import { useRef } from "react";
+// import { GeoSearchControl, OpenStreetMapProvider } from "leaflet-geosearch";
+// import "leaflet-geosearch/dist/geosearch.css";
+// import { useRef } from "react";
 
-import useGeolocation from "react-hook-geolocation";
-import L from "leaflet";
-delete L.Icon.Default.prototype._getIconUrl;
+// import useGeolocation from "react-hook-geolocation";
+// import L from "leaflet";
+// delete L.Icon.Default.prototype._getIconUrl;
 
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon.png",
-  iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
-});
+// L.Icon.Default.mergeOptions({
+//   iconRetinaUrl:
+//     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon.png",
+//   iconUrl:
+//     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon.png",
+//   shadowUrl:
+//     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
+// });
 
-const Home = () => {
-  const location = useGeolocation();
-  const dispatch = useDispatch();
-  const { storeBranch } = useSelector((state) => state.allStoreBranch);
+// const Home = () => {
+//   const location = useGeolocation();
+//   const dispatch = useDispatch();
+//   const { storeBranch } = useSelector((state) => state.allStoreBranch);
 
-  const [center, setCenter] = useState({
-    lat: 14.494056184062693,
-    lng: 121.0509490377972,
-  });
-  //14.494056184062693, 121.0509490377972
-  const ZOOM_LEVEL = 14;
-  const mapRef = useRef();
+//   const [center, setCenter] = useState({
+//     lat: 14.494056184062693,
+//     lng: 121.0509490377972,
+//   });
+//   //14.494056184062693, 121.0509490377972
+//   const ZOOM_LEVEL = 14;
+//   const mapRef = useRef();
 
-  const handleSearch = (result) => {
-    setCenter({ lat: result.y, lng: result.x });
-  };
+//   const handleSearch = (result) => {
+//     setCenter({ lat: result.y, lng: result.x });
+//   };
 
-  const customIcon = new Icon({
-    iconUrl: "https://cdn-icons-png.flaticon.com/512/447/447031.png",
-    // iconUrl: require("./icons/placeholder.png"),
-    iconSize: [38, 38], // size of the icon
-  });
-  const [marker, setMarker] = useState({
-    lat: 14.494056184062693,
-    lng: 121.0509490377972,
-  });
+//   const customIcon = new Icon({
+//     iconUrl: "https://cdn-icons-png.flaticon.com/512/447/447031.png",
+//     // iconUrl: require("./icons/placeholder.png"),
+//     iconSize: [38, 38], // size of the icon
+//   });
+//   const [marker, setMarker] = useState({
+//     lat: 14.494056184062693,
+//     lng: 121.0509490377972,
+//   });
 
-  useEffect(() => {
-    console.log(marker)
-    const initializeMap = () => {
-      if (mapRef.current) {
-        const searchControl = new GeoSearchControl({
-          provider: new OpenStreetMapProvider(),
-          style: "bar",
-          showMarker: false,
-          onResultClick: handleSearch,
-        });
-        mapRef.current.addControl(searchControl);
-      } else {
-        setTimeout(initializeMap, 100);
-      }
-    };
+//   useEffect(() => {
+//     console.log(marker)
+//     const initializeMap = () => {
+//       if (mapRef.current) {
+//         const searchControl = new GeoSearchControl({
+//           provider: new OpenStreetMapProvider(),
+//           style: "bar",
+//           showMarker: false,
+//           onResultClick: handleSearch,
+//         });
+//         mapRef.current.addControl(searchControl);
+//       } else {
+//         setTimeout(initializeMap, 100);
+//       }
+//     };
 
-    dispatch(allStoreBranch());
-    initializeMap();
+//     dispatch(allStoreBranch());
+//     initializeMap();
 
-    setMarker({
-      lat: center.lat,
-      lng: center.lng,
-    });
-  }, [dispatch, center]);
+//     setMarker({
+//       lat: center.lat,
+//       lng: center.lng,
+//     });
+//   }, [dispatch, center]);
 
-  const handleMarkerCreated = (e) => {
-    const newMarker = e.layer;
-    console.log(newMarker);
+//   const handleMarkerCreated = (e) => {
+//     const newMarker = e.layer;
+//     console.log(newMarker);
 
-    setMarker((prevMarker) => {
-      if (prevMarker) {
-        prevMarker.remove();
-      }
+//     setMarker((prevMarker) => {
+//       if (prevMarker) {
+//         prevMarker.remove();
+//       }
 
-      return newMarker;
-    });
+//       return newMarker;
+//     });
 
-    const { lat, lng } = newMarker.getLatLng();
-    console.log(lat, lng);
-    // setLatitude(lat);
-    // setLongitude(lng);
-  };
+//     const { lat, lng } = newMarker.getLatLng();
+//     console.log(lat, lng);
+//     // setLatitude(lat);
+//     // setLongitude(lng);
+//   };
 
-  return (
-    <>
-      <AuthNavbar />
-      <main>
-        <section className="section section-lg mt-8">
-          <Container>
-            <Row className="row-grid align-items-center">
-              <Col className="order-md-2" md="6">
-                <img
-                  alt="..."
-                  className="img-fluid floating"
-                  src={require("assets/img/landingpage-img2.jpg")}
-                />
-              </Col>
-              <Col className="order-md-1" md="6">
-                <div className="pr-md-5">
-                  <h1 className="display-3 text-info">Aquatic Dragon</h1>
+//   return (
+//     <>
+//       <AuthNavbar />
+//       <main>
+//         <section className="section section-lg mt-8">
+//           <Container>
+//             <Row className="row-grid align-items-center">
+//               <Col className="order-md-2" md="6">
+//                 <img
+//                   alt="..."
+//                   className="img-fluid floating"
+//                   src={require("assets/img/landingpage-img2.jpg")}
+//                 />
+//               </Col>
+//               <Col className="order-md-1" md="6">
+//                 <div className="pr-md-5">
+//                   <h1 className="display-3 text-info">Aquatic Dragon</h1>
 
-                  <p>
-                    Aquatic Dragon Water Refilling Station is your go-to
-                    location for clean, pure, and sustainable refreshment. At
-                    Aquatic Dragon Water Refilling Station, it passes into
-                    21-stages of water filtration purification and sterilization
-                    that makes the water safe to drink.
-                  </p>
-                </div>
-              </Col>
-            </Row>
-          </Container>
-        </section>
+//                   <p>
+//                     Aquatic Dragon Water Refilling Station is your go-to
+//                     location for clean, pure, and sustainable refreshment. At
+//                     Aquatic Dragon Water Refilling Station, it passes into
+//                     21-stages of water filtration purification and sterilization
+//                     that makes the water safe to drink.
+//                   </p>
+//                 </div>
+//               </Col>
+//             </Row>
+//           </Container>
+//         </section>
 
-        <section className="section section-lg mt-8">
-          <Container>
-            <MapContainer center={center} zoom={ZOOM_LEVEL} ref={mapRef}>
-              <FeatureGroup>
-                <EditControl
-                  position="topright"
-                  onCreated={handleMarkerCreated}
-                  draw={{
-                    polygon: false,
-                    rectangle: false,
-                    circle: false,
-                    circlemarker: false,
-                    marker: true,
-                    polyline: false,
-                  }}
-                />
-              </FeatureGroup>
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
+//         <section className="section section-lg mt-8">
+//           <Container>
+//             <MapContainer center={center} zoom={ZOOM_LEVEL} ref={mapRef}>
+//               <FeatureGroup>
+//                 <EditControl
+//                   position="topright"
+//                   onCreated={handleMarkerCreated}
+//                   draw={{
+//                     polygon: false,
+//                     rectangle: false,
+//                     circle: false,
+//                     circlemarker: false,
+//                     marker: true,
+//                     polyline: false,
+//                   }}
+//                 />
+//               </FeatureGroup>
+//               <TileLayer
+//                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+//                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+//               />
 
-              {/* {marker && <Marker position={marker} icon={customIcon}></Marker>} */}
-            </MapContainer>
-          </Container>
-        </section>
-      </main>
-      {/* <AuthFooter /> */}
-    </>
-  );
-};
+//               {/* {marker && <Marker position={marker} icon={customIcon}></Marker>} */}
+//             </MapContainer>
+//           </Container>
+//         </section>
+//       </main>
+//       {/* <AuthFooter /> */}
+//     </>
+//   );
+// };
 
-export default Home;
+// export default Home;

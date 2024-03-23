@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { clearCart } from "../../actions/cartActions";
 import { createOrder, clearErrors } from "../../actions/orderActions";
+import CheckoutSteps from "./CheckoutSteps";
 const OrderSummary = () => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
@@ -56,14 +57,12 @@ const OrderSummary = () => {
 
   const storeBranchinfo = JSON.parse(sessionStorage.getItem("selectedStore"));
   if (storeBranchinfo) {
-    order.selectedStore = 
-      {
-        store: storeBranchinfo._id,
-        branchNo: storeBranchinfo.branch,
-        address: `${storeBranchinfo.address.houseNo}, ${storeBranchinfo.address.purokNum}, ${storeBranchinfo.address.streetName}, ${storeBranchinfo.address.barangay}, ${storeBranchinfo.address.city}  `,
-        deliveryFee: storeBranchinfo.deliverFee,
-      }
-   
+    order.selectedStore = {
+      store: storeBranchinfo.storebranch._id,
+      branchNo: storeBranchinfo.storebranch.branch,
+      address: `${storeBranchinfo.storebranch.address.houseNo}, ${storeBranchinfo.storebranch.address.purokNum}, ${storeBranchinfo.storebranch.address.streetName}, ${storeBranchinfo.storebranch.address.barangay}, ${storeBranchinfo.storebranch.address.city}  `,
+      deliveryFee: storeBranchinfo.storebranch.deliverFee,
+    };
   }
 
   const paymentinfo = JSON.parse(sessionStorage.getItem("processToPayment"));
@@ -74,21 +73,19 @@ const OrderSummary = () => {
   const defaultAddress =
     user?.addresses?.find((address) => address.isDefault) || {};
 
-  order.deliveryAddress = 
-    {
-      houseNo: defaultAddress.houseNo,
-      streetName: defaultAddress.streetName,
-      purokNum: defaultAddress.purokNum,
-      barangay: defaultAddress.barangay,
-      city: defaultAddress.city,
-    }
-  
+  order.deliveryAddress = {
+    houseNo: defaultAddress.houseNo,
+    streetName: defaultAddress.streetName,
+    purokNum: defaultAddress.purokNum,
+    barangay: defaultAddress.barangay,
+    city: defaultAddress.city,
+  };
 
   const itemsPrice = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
-  const deliveryFee = parseFloat(storeBranchinfo.deliverFee);
+  const deliveryFee = parseFloat(storeBranchinfo.storebranch.deliverFee);
   const totalPrice = itemsPrice + deliveryFee;
 
   order.totalPrice = totalPrice;
@@ -125,6 +122,7 @@ const OrderSummary = () => {
           marginLeft: "20%",
           marginRight: "20%",
         }}>
+        <CheckoutSteps store gallon containerstatus payment ordersummary />
         <Card className="bg-secondary shadow">
           <CardHeader className="bg-white border-0">
             <Row className="align-items-center">
@@ -135,21 +133,25 @@ const OrderSummary = () => {
           </CardHeader>
           <CardBody>
             <Form onSubmit={submitHandler}>
-              <Row>
-                <Col sm="12">
-                  <Card body>
-                    <CardTitle tag="h2">
-                      {" "}
-                      <i className="ni ni-square-pin" /> Delivery Address
-                    </CardTitle>
-                    <CardText>
-                      {defaultAddress.houseNo} {defaultAddress.purokNum}{" "}
-                      {defaultAddress.streetName} {defaultAddress.barangay}{" "}
-                      {defaultAddress.city}
-                    </CardText>
-                  </Card>
-                </Col>
-              </Row>
+              {containerstatusinfo.containerStatus === "Walk In" &&
+              orderclaimingOptioninfo.orderClaimingMethod === "Walk In" ? (
+                <div></div>
+              ) : (
+                <Row>
+                  <Col sm="12">
+                    <Card body>
+                      <CardTitle tag="h2">
+                        <i className="ni ni-square-pin" /> Delivery Address
+                      </CardTitle>
+                      <CardText>
+                        {defaultAddress.houseNo} {defaultAddress.purokNum}{" "}
+                        {defaultAddress.streetName} {defaultAddress.barangay}{" "}
+                        {defaultAddress.city}
+                      </CardText>
+                    </Card>
+                  </Col>
+                </Row>
+              )}
               <div style={{ marginBottom: "20px" }}></div>
 
               <Row>
@@ -202,15 +204,18 @@ const OrderSummary = () => {
                     <CardText>
                       <Row>
                         <Col sm="8">
-                          {storeBranchinfo.address.houseNo}{" "}
-                          {storeBranchinfo.address.purokNum},
-                          {storeBranchinfo.address.streetName}
-                          {storeBranchinfo.address.barangay}{" "}
-                          {storeBranchinfo.address.city}{" "}
+                          Store Name: {storeBranchinfo.storebranch.branch}{" "}
+                          <br />
+                          {storeBranchinfo.storebranch.address.houseNo}{" "}
+                          {storeBranchinfo.storebranch.address.purokNum}{" "}
+                          {storeBranchinfo.storebranch.address.streetName}
+                          {storeBranchinfo.storebranch.address.barangay}{" "}
+                          {storeBranchinfo.storebranch.address.city}{" "}
                         </Col>
                         <Col sm="4" style={{ textAlign: "right" }}>
                           {" "}
-                          Shipping Fee: ₱ {storeBranchinfo.deliverFee}.00
+                          Shipping Fee: ₱{" "}
+                          {storeBranchinfo.storebranch.deliverFee}.00
                         </Col>
                       </Row>
                     </CardText>

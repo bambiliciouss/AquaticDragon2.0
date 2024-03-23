@@ -83,7 +83,7 @@ const UpdateTypeGallon = () => {
 
     if (isUpdated) {
       swal("Updated Successfully!", "", "success");
-      navigate(`/typesgallonlist`, {
+      navigate(`/typesgallonlist/${typeofgallondetails.storebranch}`, {
         replace: true,
       });
       dispatch({
@@ -111,8 +111,8 @@ const UpdateTypeGallon = () => {
 
   const onChange = (e) => {
     const file = e.target.files[0];
-    const allowedImageTypes = ['image/png', 'image/jpeg', 'image/jpg']; // Allowed image file types
-  
+    const allowedImageTypes = ["image/png", "image/jpeg", "image/jpg"]; // Allowed image file types
+
     if (e.target.name === "gallonImage") {
       if (file && allowedImageTypes.includes(file.type)) {
         const reader = new FileReader();
@@ -122,14 +122,13 @@ const UpdateTypeGallon = () => {
             setgallonImage(reader.result);
           }
         };
-  
+
         reader.readAsDataURL(e.target.files[0]);
       } else {
         swal("Please select a valid image file (PNG, JPEG, JPG).", "", "error");
-        e.target.value = null; 
+        e.target.value = null;
       }
-    } 
-  
+    }
   };
   return (
     <>
@@ -154,7 +153,7 @@ const UpdateTypeGallon = () => {
                       <CardHeader className="bg-white border-0">
                         <Row className="align-items-center">
                           <Col xs="8">
-                            <h3 className="mb-0">Machine Cleaning Record</h3>
+                            <h3 className="mb-0">Type of Gallon Record</h3>
                           </Col>
                         </Row>
                       </CardHeader>

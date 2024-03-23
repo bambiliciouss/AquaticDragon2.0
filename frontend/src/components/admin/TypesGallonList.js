@@ -29,22 +29,23 @@ import Header2 from "components/Headers/Header2";
 import AdminFooter from "components/Footers/AdminFooter.js";
 import { DELETE_TYPESGALLON_RESET } from "../../constants/typesgallonConstants";
 import { CREATE_TYPESGALLON_RESET } from "../../constants/typesgallonConstants";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   allTypesGallon,
   deleteTypesGallon,
   createTypesGallon,
   clearErrors,
 } from "actions/typesgallonAction";
+import { getStoreDetails } from "actions/storebranchActions";
 
 const TypesGallonList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate(); // Use useNavigate hook from react-router-dom
-
+  const { storeBranch } = useSelector((state) => state.storeDetails);
   const { error, typeofGallon } = useSelector((state) => state.allTypesGallon);
   const { typesGalloncreated } = useSelector((state) => state.newTypesGallon);
   const { isDeleted } = useSelector((state) => state.typesGallon);
-
+  const { id } = useParams();
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
 
@@ -62,16 +63,17 @@ const TypesGallonList = () => {
   );
 
   useEffect(() => {
-    dispatch(allTypesGallon());
+    dispatch(allTypesGallon(id));
+    dispatch(getStoreDetails(id));
     if (isDeleted) {
-      navigate("/typesgallonlist");
+      navigate(`/typesgallonlist/${storeBranch._id}`);
       dispatch({ type: DELETE_TYPESGALLON_RESET });
     }
     if (typesGalloncreated) {
       console.log("success gallon registration");
       swal("Type of Gallon Created!", "", "success");
       setModal(false);
-      navigate("/typesgallonlist", { replace: true });
+      navigate(`/typesgallonlist/${storeBranch._id}`, { replace: true });
       dispatch({
         type: CREATE_TYPESGALLON_RESET,
       });
@@ -108,31 +110,30 @@ const TypesGallonList = () => {
     formData.set("price", data.price);
     formData.set("gallonImage", gallonImage);
 
-    dispatch(createTypesGallon(formData));
+    dispatch(createTypesGallon(id, formData));
   };
 
   const onChange = (e) => {
     const file = e.target.files[0];
-    const allowedImageTypes = ['image/png', 'image/jpeg', 'image/jpg']; // Allowed image file types
-  
+    const allowedImageTypes = ["image/png", "image/jpeg", "image/jpg"]; // Allowed image file types
+
     if (e.target.name === "gallonImage") {
       if (file && allowedImageTypes.includes(file.type)) {
         const reader = new FileReader();
-  
+
         reader.onload = () => {
           if (reader.readyState === 2) {
             setgallonImagePreview(reader.result);
             setgallonImage(reader.result);
           }
         };
-  
+
         reader.readAsDataURL(e.target.files[0]);
       } else {
         swal("Please select a valid image file (PNG, JPEG, JPG).", "", "error");
-        e.target.value = null; 
+        e.target.value = null;
       }
-    } 
-  
+    }
   };
   const setGallonTypes = () => {
     const data = {
@@ -211,7 +212,9 @@ const TypesGallonList = () => {
             <CardHeader className="bg-white border-0">
               <Row className="align-items-center">
                 <Col xs="8">
-                  <h3 className="mb-0">Types of Gallon </h3>
+                  <h3 className="mb-0">
+                    Types of Gallon ( {storeBranch.branch} ){" "}
+                  </h3>
                 </Col>
                 <Col md="4">
                   <Button

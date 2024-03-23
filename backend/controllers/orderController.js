@@ -1,4 +1,5 @@
 const Order = require("../models/order");
+const StoreBranch = require("../models/storeBranch");
 const ErrorHandler = require("../utils/errorHandler");
 const cloudinary = require("cloudinary");
 const mongoose = require("mongoose");
@@ -84,6 +85,45 @@ exports.allOrders = async (req, res, next) => {
     res
       .status(500)
       .json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
+exports.allOrdersAdmin = async (req, res, next) => {
+  try {
+    const storeBranch = await StoreBranch.find({
+      deleted: false,
+      user: req.user.id,
+    });
+
+    if (!storeBranch) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Store branch not found" });
+    }
+
+    const storeBranchIDs = storeBranch.map(branch => branch._id);
+
+
+    // // Get all the orders from the admin's branches only
+    const orders = await Order.find({
+      "selectedStore.store": storeBranchIDs,
+    }).populate("customer", "fname lname", );
+
+    const orderCount = orders.length;
+
+    res.status(200).json({
+      success: true,
+      orderCount: orderCount,
+      orders: orders,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Internal Server Error",
+        error: error.message,
+      });
   }
 };
 

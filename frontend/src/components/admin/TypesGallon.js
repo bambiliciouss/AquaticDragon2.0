@@ -55,7 +55,7 @@ import {
   DELETE_STORESTAFF_RESET,
 } from "../../constants/storestaffConstants";
 
-const MachineCleaning = (args) => {
+const TypesGallon = (args) => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const { loading, error, storeBranch } = useSelector(
@@ -92,7 +92,7 @@ const MachineCleaning = (args) => {
             <button
               className="btn btn-primary py-1 px-2 ml-2"
               onClick={() =>
-                navigate(`/create/store/machincecleaning/${storeBranches._id}`)
+                navigate(`/typesgallonlist/${storeBranches._id}`)
               }>
               View Record
             </button>
@@ -111,7 +111,7 @@ const MachineCleaning = (args) => {
 
   return (
     <>
-      <MetaData title={"Machine Cleaning"} />
+      <MetaData title={"Types of Gallon"} />
       <Sidebar
         logo={{
           innerLink: "/",
@@ -127,7 +127,7 @@ const MachineCleaning = (args) => {
             <CardHeader className="bg-white border-0">
               <Row className="align-items-center">
                 <Col xs="8">
-                  <h3 className="mb-0">Machine Cleaning Record</h3>
+                  <h3 className="mb-0">Types of Gallon</h3>
                 </Col>
               </Row>
             </CardHeader>
@@ -151,4 +151,4 @@ const MachineCleaning = (args) => {
   );
 };
 
-export default MachineCleaning;
+export default TypesGallon;

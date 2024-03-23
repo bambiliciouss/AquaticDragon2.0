@@ -62,6 +62,12 @@ const UpdateOrderDetails = () => {
 
   let { id } = useParams();
 
+  const orderStatusLatest = order.orderStatus?.reduce((latest, status) => {
+    if (!latest.datedAt || status.datedAt > latest.datedAt) {
+      return status;
+    }
+    return latest;
+  }, {});
   useEffect(() => {
     dispatch(getOrderDetails(id));
 
@@ -114,7 +120,8 @@ const UpdateOrderDetails = () => {
                                 color="primary"
                                 type="button"
                                 onClick={toggle}>
-                                Update Order Status
+                                Update Order Status{" "}
+                                {orderStatus && orderStatus.orderLevel}
                               </Button>
 
                               <Modal
@@ -136,7 +143,9 @@ const UpdateOrderDetails = () => {
                                         className="form-control"
                                         name="orderStatus"
                                         value={
-                                          orderStatus && orderStatus.orderLevel
+                                          orderStatusLatest
+                                            ? orderStatusLatest.orderLevel
+                                            : ""
                                         }
                                         onChange={(e) =>
                                           setOrderLevel(e.target.value)
@@ -150,11 +159,21 @@ const UpdateOrderDetails = () => {
                                         <option value="Order Accepted">
                                           Order Accepted
                                         </option>
+
+                                        <option value="Container has been picked up">
+                                          Container has been picked up
+                                        </option>
+                                        <option value="Container is at the Store">
+                                          Container is at the Store
+                                        </option>
                                         <option value="Out for Delivery">
                                           Out for Delivery
                                         </option>
                                         <option value="Delivered">
                                           Delivered
+                                        </option>
+                                        <option value="Rejected">
+                                          Rejected
                                         </option>
                                       </select>
                                     </InputGroup>
@@ -263,7 +282,9 @@ const UpdateOrderDetails = () => {
                                 {" "}
                                 <i className="ni ni-cart" /> Order(s)
                               </CardTitle>
-                              <CardText style={{ textDecoration: "underline"}}>Type of Gallon</CardText>
+                              <CardText style={{ textDecoration: "underline" }}>
+                                Type of Gallon
+                              </CardText>
                               <CardText>
                                 {" "}
                                 {orderItems &&
@@ -380,7 +401,7 @@ const UpdateOrderDetails = () => {
                                   Notes:
                                 </span>{" "}
                                 <Input
-                                  placeholder="Add Notes here ..."
+                                  // placeholder="Add Notes here ..."
                                   rows="3"
                                   type="textarea"
                                   value={notes}

@@ -17,6 +17,7 @@ import AuthNavbar from "components/Navbars/AuthNavbar.js";
 import MetaData from "../layout/MetaData";
 import { useNavigate } from "react-router-dom";
 import swal from "sweetalert";
+import CheckoutSteps from "./CheckoutSteps";
 const OrderReceivedMethod = () => {
   const navigate = useNavigate();
   const [selectedOrderClaimingMethod, setSelectedOrderClaimingMethod] =
@@ -49,7 +50,7 @@ const OrderReceivedMethod = () => {
       JSON.stringify(data)
     );
 
-    navigate("/storeselection");
+    navigate("/payment");
   };
 
   return (
@@ -65,6 +66,7 @@ const OrderReceivedMethod = () => {
           marginLeft: "20%",
           marginRight: "20%",
         }}>
+            <CheckoutSteps store containerstatus orderclaimingmethod/>
         <Card className="bg-secondary shadow">
           <CardHeader className="bg-white border-0">
             <Row className="align-items-center">

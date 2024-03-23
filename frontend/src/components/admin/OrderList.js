@@ -15,7 +15,11 @@ import AdminFooter from "components/Footers/AdminFooter.js";
 import QRCode from "react-qr-code";
 import { DELETE_GALLON_RESET } from "../../constants/gallonConstants";
 import swal from "sweetalert";
-import { allOrders, clearErrors } from "../../actions/orderActions";
+import {
+  allOrders,
+  allOrdersAdmin,
+  clearErrors,
+} from "../../actions/orderActions";
 import Loader from "components/layout/Loader";
 import {
   Button,
@@ -30,8 +34,12 @@ import {
   Container,
   Row,
   Col,
+  Badge,
 } from "reactstrap";
-import { allStoreBranch, deleteStoreBranch } from "actions/storebranchActions";
+import {
+  allAdminStoreBranch,
+  deleteStoreBranch,
+} from "actions/storebranchActions";
 const OrderList = () => {
   const dispatch = useDispatch();
 
@@ -42,8 +50,8 @@ const OrderList = () => {
   const [activeStoreBranch, setActiveStoreBranch] = useState(null);
 
   useEffect(() => {
-    dispatch(allOrders());
-    dispatch(allStoreBranch());
+    dispatch(allOrdersAdmin());
+    dispatch(allAdminStoreBranch());
 
     if (error) {
       dispatch(clearErrors());
@@ -54,7 +62,8 @@ const OrderList = () => {
     const sortedOrders = orders
       .filter(
         (order) =>
-          !activeStoreBranch || order.selectedStore.store === activeStoreBranch._id
+          !activeStoreBranch ||
+          order.selectedStore.store === activeStoreBranch._id
       )
       .sort((a, b) => {
         return new Date(b.createdAt) - new Date(a.createdAt);
@@ -104,11 +113,41 @@ const OrderList = () => {
         return latest;
       }, {});
 
+      let statusBadgeColor = "";
+      switch (latestOrderStatus.orderLevel) {
+        case "Order Placed":
+          statusBadgeColor = "secondary";
+          break;
+        case "Order Accepted":
+          statusBadgeColor = "primary";
+          break;
+        case "Container has been picked up":
+        case "Container is at the Store":
+          statusBadgeColor = "info";
+          break;
+        case "Out for Delivery":
+          statusBadgeColor = "warning";
+          break;
+        case "Delivered":
+          statusBadgeColor = "success";
+          break;
+        case "Rejected":
+          statusBadgeColor = "danger";
+          break;
+        default:
+          statusBadgeColor = "light";
+          break;
+      }
+
       data.rows.push({
         // id: order._id,
         numOfItems: order.orderItems.length,
         amount: `₱${order.totalPrice}`,
-        status: latestOrderStatus.orderLevel || "N/A",
+        status: (
+          <Badge color={statusBadgeColor}>
+            {latestOrderStatus.orderLevel || "N/A"}
+          </Badge>
+        ),
         customer: `${order.customer.fname} ${order.customer.lname}`,
         actions: (
           <Link to={`/update/order/${order._id}`} className="btn btn-info">
@@ -120,10 +159,17 @@ const OrderList = () => {
 
     return data;
   };
-
+  const [activeButton, setActiveButton] = useState(null);
   const handleButtonClick = (storeId) => {
     // Handle button click logic, e.g., setting the active store branch
     setActiveStoreBranch(storeBranch.find((branch) => branch._id === storeId));
+    setActiveButton(storeId);
+  };
+
+  const allordersButton = () => {
+    setActiveStoreBranch(null);
+    setActiveButton(null);
+    // dispatch(allOrdersAdmin());
   };
 
   return (
@@ -149,10 +195,16 @@ const OrderList = () => {
               </Row>
 
               <Row className="align-items-center">
+                <Button onClick={() => allordersButton()}>
+                  <h3 className="mb-0">All Orders</h3>
+                </Button>
                 {storeBranch.map((storeBranches) => (
                   <Button
                     key={storeBranches._id} // Assuming storeBranches has a unique identifier like _id
                     id={`button-${storeBranches._id}`} // Unique id for each button
+                    className={
+                      activeButton === storeBranches._id ? "active" : ""
+                    }
                     onClick={() => handleButtonClick(storeBranches._id)} // Replace with your click handler
                   >
                     <h3 className="mb-0">{storeBranches.branch}</h3>

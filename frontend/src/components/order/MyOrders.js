@@ -26,6 +26,7 @@ import {
   Col,
   Table,
   Pagination,
+  Badge,
 } from "reactstrap";
 
 const ListOrders = () => {
@@ -85,11 +86,41 @@ const ListOrders = () => {
         return latest;
       }, {});
 
+      let statusBadgeColor = "";
+      switch (latestOrderStatus.orderLevel) {
+        case "Order Placed":
+          statusBadgeColor = "secondary";
+          break;
+        case "Order Accepted":
+          statusBadgeColor = "primary";
+          break;
+        case "Container has been picked up":
+        case "Container is at the Store":
+          statusBadgeColor = "info";
+          break;
+        case "Out for Delivery":
+          statusBadgeColor = "warning";
+          break;
+        case "Delivered":
+          statusBadgeColor = "success";
+          break;
+        case "Rejected":
+          statusBadgeColor = "danger";
+          break;
+        default:
+          statusBadgeColor = "light";
+          break;
+      }
+
       data.rows.push({
         id: order._id,
         numOfItems: order.orderItems.length,
         amount: `₱${order.totalPrice}`,
-        status: latestOrderStatus.orderLevel || "N/A",
+        status: (
+          <Badge color={statusBadgeColor}>
+            {latestOrderStatus.orderLevel || "N/A"}
+          </Badge>
+        ),
         actions: (
           <Link to={`/order/${order._id}`} className="btn btn-primary">
             <i className="fa fa-eye"></i>

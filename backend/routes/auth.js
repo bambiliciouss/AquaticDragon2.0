@@ -28,6 +28,7 @@ const {
   admingetAllAddresses,
   updateAdminProfile,
   registerAdmin,
+  AllStoreUsers,
 } = require("../controllers/authController");
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
@@ -102,6 +103,13 @@ router.get(
   isAuthenticatedUser,
   authorizeRoles("admin"),
   AllUsers
+);
+
+router.get(
+  "/admin/store/users",
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
+  AllStoreUsers
 );
 
 router.get(
