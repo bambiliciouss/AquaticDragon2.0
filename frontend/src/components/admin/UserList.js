@@ -309,7 +309,7 @@ const UserList = () => {
               width: "auto",
               border: "8px solid darkblue",
             }}>
-            <img
+            {/* <img
               src="/images/qr_header.png"
               alt="QR Header"
               style={{
@@ -321,7 +321,7 @@ const UserList = () => {
                 width: "300px",
                 height: "100px",
               }}
-            />
+            /> */}
             {qrdetails && <QRCode value={qrdetails} size={260} />}
             <div
               style={{

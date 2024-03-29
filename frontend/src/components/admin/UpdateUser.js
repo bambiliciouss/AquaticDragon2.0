@@ -45,6 +45,7 @@ import {
   InputGroup,
   Form,
   Badge,
+  Input,
 } from "reactstrap";
 
 import { AdminallAddress } from "actions/addressAction";
@@ -246,6 +247,8 @@ const UpdateUser = () => {
 
     return data;
   };
+  const defaultAddress =
+    user?.addresses?.find((address) => address.isDefault) || {};
 
   return (
     <>
@@ -275,246 +278,243 @@ const UpdateUser = () => {
                         </Row>
                       </CardHeader>
                       <CardBody>
-                        <Form
-                          onSubmit={submitHandler}
-                          encType="multipart/form-data">
-                          <Row>
-                            <Col lg="3">
-                              <label className="form-control-label">
-                                Avatar
-                              </label>
+                        <Form>
+                          <h6 className="heading-small text-muted mb-4">
+                            User information
+                          </h6>
+                          <div className="pl-lg-4">
+                            <Row>
+                              <Col lg="3">
+                                <div className="text-center">
+                                  <img
+                                    className="avatar border-gray"
+                                    style={{
+                                      width: "180px",
+                                      height: "180px",
+                                      borderRadius: "30%",
+                                    }}
+                                    src={user.avatar && user.avatar.url}
+                                    alt="User"
+                                  />
+                                </div>
+                              </Col>
+                              <Col lg="9">
+                                <Row>
+                                  <Col lg="6">
+                                    <FormGroup>
+                                      <label
+                                        className="form-control-label"
+                                        htmlFor="input-first-name">
+                                        First name
+                                      </label>
+                                      <Input
+                                        className="form-control-alternative"
+                                        id="input-first-name"
+                                        type="text"
+                                        value={user ? user.fname : ""}
+                                        readOnly
+                                      />
+                                    </FormGroup>
+                                  </Col>
+                                  <Col lg="6">
+                                    <FormGroup>
+                                      <label
+                                        className="form-control-label"
+                                        htmlFor="input-last-name">
+                                        Last name
+                                      </label>
+                                      <Input
+                                        className="form-control-alternative"
+                                        id="input-last-name"
+                                        type="text"
+                                        value={user ? user.lname : ""}
+                                        readOnly
+                                      />
+                                    </FormGroup>
+                                  </Col>
+                                </Row>
+                                <Row>
+                                  <Col lg="12">
+                                    <FormGroup>
+                                      <label
+                                        className="form-control-label"
+                                        htmlFor="input-email">
+                                        Email address
+                                      </label>
+                                      <Input
+                                        className="form-control-alternative"
+                                        id="input-email"
+                                        type="email"
+                                        value={user ? user.email : ""}
+                                        readOnly
+                                      />
+                                    </FormGroup>
+                                  </Col>
+                                </Row>
+                                <Row>
+                                  <Col md="12">
+                                    <FormGroup>
+                                      <label
+                                        className="form-control-label"
+                                        htmlFor="input-address">
+                                        Phone No.
+                                      </label>
+                                      <Input
+                                        className="form-control-alternative"
+                                        id="input-phone"
+                                        type="text"
+                                        value={user ? user.phone : ""}
+                                        readOnly
+                                      />
+                                    </FormGroup>
+                                  </Col>
+                                </Row>
+                              </Col>
+                            </Row>
+                          </div>
+                          <hr className="my-4" />
+                          {/* Address */}
+                          <h6 className="heading-small text-muted mb-4">
+                            Contact information
+                          </h6>
+                          <div className="pl-lg-4">
+                            <Row>
+                              <Col lg="6">
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-city">
+                                    House No.
+                                  </label>
+                                  <Input
+                                    className="form-control-alternative"
+                                    id="input-city"
+                                    type="text"
+                                    placeholder={
+                                      defaultAddress &&
+                                      defaultAddress.houseNo !== ""
+                                        ? defaultAddress.houseNo
+                                        : "Update..."
+                                    }
+                                    value={
+                                      defaultAddress
+                                        ? defaultAddress.houseNo
+                                        : ""
+                                    }
+                                    readOnly
+                                  />
+                                </FormGroup>
+                              </Col>
+                              <Col lg="6">
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-country">
+                                    Purok No.
+                                  </label>
+                                  <Input
+                                    className="form-control-alternative"
+                                    id="input-country"
+                                    type="text"
+                                    placeholder={
+                                      defaultAddress &&
+                                      defaultAddress.purokNum !== ""
+                                        ? defaultAddress.purokNum
+                                        : "Update..."
+                                    }
+                                    value={
+                                      defaultAddress
+                                        ? defaultAddress.purokNum
+                                        : ""
+                                    }
+                                    readOnly
+                                  />
+                                </FormGroup>
+                              </Col>
+                            </Row>
 
-                              <div className="text-center">
-                                <img
-                                  className="avatar border-gray"
-                                  style={{
-                                    width: "100px",
-                                    height: "100px",
-                                    borderRadius: "50%",
-                                  }}
-                                  src={avatarPreview}
-                                  alt="User"
-                                />
-                              </div>
-
-                              <div className="custom-file">
-                                <input
-                                  type="file"
-                                  className="custom-file-input"
-                                  name="avatar"
-                                  accept="images/*"
-                                  onChange={onChange}
-                                />
-                                <label
-                                  htmlFor="customFile"
-                                  className="custom-file-label">
-                                  Choose Avatar
-                                </label>
-                              </div>
-                            </Col>
-                            <Col lg="9">
-                              <Row>
-                                <Col lg="6">
-                                  <FormGroup>
-                                    <label className="form-control-label">
-                                      First Name
-                                    </label>
-                                    <input
-                                      type="text"
-                                      className="form-control"
-                                      placeholder="First Name"
-                                      value={fname}
-                                      onChange={(e) => setFname(e.target.value)}
-                                    />
-                                  </FormGroup>
-                                </Col>
-                                <Col lg="6">
-                                  <FormGroup>
-                                    <label className="form-control-label">
-                                      Last Name
-                                    </label>
-                                    <input
-                                      type="text"
-                                      className="form-control"
-                                      placeholder="Last Name"
-                                      value={lname}
-                                      onChange={(e) => setLname(e.target.value)}
-                                    />
-                                  </FormGroup>
-                                </Col>
-                              </Row>
-                              <Row>
-                                <Col lg="12">
-                                  <FormGroup>
-                                    <label className="form-control-label">
-                                      Phone No.
-                                    </label>
-                                    <input
-                                      type="text"
-                                      className="form-control"
-                                      placeholder="Phone"
-                                      value={phone}
-                                      onChange={(e) => setPhone(e.target.value)}
-                                    />
-                                  </FormGroup>
-                                </Col>
-                                {/* <Col lg="3">
-                                  <FormGroup>
-                                    <label className="form-control-label">
-                                      Unit, Building, House No.
-                                    </label>
-                                    <input
-                                      type="text"
-                                      className="form-control"
-                                      placeholder="Unit, Building, House No."
-                                      value={houseNo}
-                                      onChange={(e) =>
-                                        setHouseNo(e.target.value)
-                                      }
-                                    />
-                                  </FormGroup>
-                                </Col>
-                                <Col lg="4">
-                                  <FormGroup>
-                                    <label className="form-control-label">
-                                      Purok No.
-                                    </label>
-                                    <select
-                                      className="form-control"
-                                      id="purokSelect"
-                                      value={purokNum}
-                                      onChange={(e) =>
-                                        setPurokNum(e.target.value)
-                                      }>
-                                      <option value="" disabled>
-                                        Select Purok No.
-                                      </option>
-                                      <option value="Purok 1">Purok 1</option>
-                                      <option value="Purok 2">Purok 2</option>
-                                      <option value="Purok 3">Purok 3</option>
-                                      <option value="Purok 4">Purok 4</option>
-                                      <option value="Purok 5">Purok 5</option>
-                                      <option value="Purok 6">Purok 6</option>
-                                      <option value="Purok 7">Purok 7</option>
-                                      <option value="Purok 8">Purok 8</option>
-                                      <option value="Purok 9">Purok 9</option>
-                                      <option value="Purok 10">Purok 10</option>
-                                    </select>
-                                  </FormGroup>
-                                </Col> */}
-                              </Row>
-
-                              {/* <Row>
-                                <Col lg="12">
-                                  <FormGroup>
-                                    <label className="form-control-label">
-                                      Email
-                                    </label>
-                                    <input
-                                      type="text"
-                                      className="form-control"
-                                      placeholder="Email"
-                                      value={email}
-                                      onChange={(e) => setEmail(e.target.value)}
-                                    />
-                                  </FormGroup>
-                                </Col>
-                              </Row> */}
-
-                              {/* <Row>
-                                <Col lg="12">
-                                  <FormGroup>
-                                    <label className="form-control-label">
-                                      Street Name
-                                    </label>
-                                    <input
-                                      type="text"
-                                      className="form-control"
-                                      placeholder="Street Name"
-                                      value={streetName}
-                                      onChange={(e) =>
-                                        setStreetName(e.target.value)
-                                      }
-                                    />
-                                  </FormGroup>
-                                </Col>
-                              </Row>
-                              <Row>
-                                <Col lg="6">
-                                  <FormGroup>
-                                    <label className="form-control-label">
-                                      Barangay
-                                    </label>
-                                    <select
-                                      className="form-control"
-                                      id="barangaySelect"
-                                      value={barangay}
-                                      onChange={(e) =>
-                                        setBarangay(e.target.value)
-                                      }>
-                                      <option value="" disabled>
-                                        Select Barangay
-                                      </option>
-                                      <option value="Central Bicutan">
-                                        Central Bicutan
-                                      </option>
-                                      <option value="Upper Bicutan">
-                                        Upper Bicutan
-                                      </option>
-                                      <option value="New Lower Bicutan">
-                                        New Lower Bicutan
-                                      </option>
-                                    </select>
-                                  </FormGroup>
-                                </Col>
-                                <Col lg="6">
-                                  <FormGroup>
-                                    <label className="form-control-label">
-                                      City
-                                    </label>
-                                    <select
-                                      className="form-control"
-                                      id="citySelect"
-                                      value={city}
-                                      onChange={(e) => setCity(e.target.value)}>
-                                      <option value="" disabled>
-                                        Select City
-                                      </option>
-                                      <option value="Taguig City">
-                                        Taguig City
-                                      </option>
-                                    </select>
-                                  </FormGroup>
-                                </Col>
-                              </Row> */}
-                            </Col>
-                          </Row>
-
-                          <div className="text-right">
-                            <Button className="my-4" color="info" type="submit">
-                              Update
-                            </Button>
-                            <Button
-                              className="my-4 mr-4"
-                              color="secondary"
-                              onClick={() => navigate("/userlist")}>
-                              Back
-                            </Button>
+                            <Row>
+                              <Col md="12">
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-address">
+                                    Street Name.
+                                  </label>
+                                  <Input
+                                    className="form-control-alternative"
+                                    id="input-phone"
+                                    type="text"
+                                    placeholder={
+                                      defaultAddress &&
+                                      defaultAddress.streetName !== ""
+                                        ? defaultAddress.streetName
+                                        : "Update..."
+                                    }
+                                    value={
+                                      defaultAddress
+                                        ? defaultAddress.streetName
+                                        : ""
+                                    }
+                                    readOnly
+                                  />
+                                </FormGroup>
+                              </Col>
+                            </Row>
+                            <Row>
+                              <Col lg="6">
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-city">
+                                    Barangay
+                                  </label>
+                                  <Input
+                                    className="form-control-alternative"
+                                    id="input-city"
+                                    type="text"
+                                    placeholder={
+                                      defaultAddress &&
+                                      defaultAddress.barangay !== ""
+                                        ? defaultAddress.barangay
+                                        : "Update..."
+                                    }
+                                    value={
+                                      defaultAddress
+                                        ? defaultAddress.barangay
+                                        : ""
+                                    }
+                                    readOnly
+                                  />
+                                </FormGroup>
+                              </Col>
+                              <Col lg="6">
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-country">
+                                    City
+                                  </label>
+                                  <Input
+                                    className="form-control-alternative"
+                                    id="input-country"
+                                    type="text"
+                                    placeholder={
+                                      defaultAddress &&
+                                      defaultAddress.city !== ""
+                                        ? defaultAddress.city
+                                        : "Update..."
+                                    }
+                                    value={
+                                      defaultAddress ? defaultAddress.city : ""
+                                    }
+                                    readOnly
+                                  />
+                                </FormGroup>
+                              </Col>
+                            </Row>
                           </div>
                         </Form>
-
-                        <Row>
-                          <Col>
-                            <MDBDataTable
-                              data={setAddresses()}
-                              className="px-3"
-                              bordered
-                              hover
-                              noBottomColumns
-                              responsive
-                            />
-                          </Col>
-                        </Row>
                       </CardBody>
                     </Card>
                   </div>
