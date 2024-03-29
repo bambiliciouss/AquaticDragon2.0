@@ -25,6 +25,7 @@ const OrderSummary = () => {
   let navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.cart);
+  const { cartProductItems } = useSelector((state) => state.cartProduct);
   const { error } = useSelector((state) => state.newOrder);
   const [notes, setNotes] = useState();
   useEffect(() => {
@@ -37,6 +38,7 @@ const OrderSummary = () => {
 
   const order = {
     orderItems: cartItems,
+    orderProducts: cartProductItems,
     notes,
     user,
   };
@@ -60,8 +62,11 @@ const OrderSummary = () => {
     order.selectedStore = {
       store: storeBranchinfo.storebranch._id,
       branchNo: storeBranchinfo.storebranch.branch,
-      address: `${storeBranchinfo.storebranch.address.houseNo}, ${storeBranchinfo.storebranch.address.purokNum}, ${storeBranchinfo.storebranch.address.streetName}, ${storeBranchinfo.storebranch.address.barangay}, ${storeBranchinfo.storebranch.address.city}  `,
-      deliveryFee: storeBranchinfo.storebranch.deliverFee,
+      address: `${storeBranchinfo.storebranch.address.houseNo}, ${storeBranchinfo.storebranch.address.purokNum}, ${storeBranchinfo.storebranch.address.streetName}, ${storeBranchinfo.storebranch.address.barangay}, ${storeBranchinfo.storebranch.address.city}`,
+      deliveryFee:
+        orderclaimingOptioninfo.orderClaimingMethod === "Delivery"
+          ? storeBranchinfo.storebranch.deliverFee
+          : 0,
     };
   }
 
@@ -85,8 +90,16 @@ const OrderSummary = () => {
     (acc, item) => acc + item.price * item.quantity,
     0
   );
-  const deliveryFee = parseFloat(storeBranchinfo.storebranch.deliverFee);
-  const totalPrice = itemsPrice + deliveryFee;
+
+  const productsPrice = cartProductItems.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
+  const deliveryFee =
+    orderclaimingOptioninfo.orderClaimingMethod === "Delivery"
+      ? parseFloat(storeBranchinfo.storebranch.deliverFee)
+      : 0;
+  const totalPrice = itemsPrice + deliveryFee + productsPrice;
 
   order.totalPrice = totalPrice;
 
@@ -165,19 +178,20 @@ const OrderSummary = () => {
                       {" "}
                       {cartItems.map((item) => (
                         <Row>
+                          <Col sm="5">{item.type} (REFILL)</Col>
+                          <Col sm="3" style={{ textAlign: "center" }}>
+                            {item.quantity} pc(s)
+                          </Col>
+
+                          <Col sm="4" style={{ textAlign: "right" }}>
+                            ₱{item.price}.00
+                          </Col>
+                        </Row>
+                      ))}
+                      {cartProductItems.map((item) => (
+                        <Row>
                           <Col sm="5">
-                            {/* <div style={{ textAlign: "center" }}>
-                              <img
-                                src={item.image}
-                                alt={item.image}
-                                style={{
-                                  width: 100,
-                                  height: 100,
-                                  display: "inline-block",
-                                }}
-                              />
-                            </div> */}
-                            {item.type}
+                            {item.type.typeofGallon} (NEW CONTAINER)
                           </Col>
                           <Col sm="3" style={{ textAlign: "center" }}>
                             {item.quantity} pc(s)
@@ -215,7 +229,10 @@ const OrderSummary = () => {
                         <Col sm="4" style={{ textAlign: "right" }}>
                           {" "}
                           Shipping Fee: ₱{" "}
-                          {storeBranchinfo.storebranch.deliverFee}.00
+                          {orderclaimingOptioninfo.orderClaimingMethod ===
+                          "Delivery"
+                            ? `${storeBranchinfo.storebranch.deliverFee}.00`
+                            : "0.00"}
                         </Col>
                       </Row>
                     </CardText>
@@ -267,7 +284,7 @@ const OrderSummary = () => {
               </Row>
               <div style={{ marginBottom: "20px" }}></div>
 
-              <Row>
+              {/* <Row>
                 <Col sm="12">
                   <Card body>
                     <CardText>
@@ -282,7 +299,7 @@ const OrderSummary = () => {
                     </CardText>
                   </Card>
                 </Col>
-              </Row>
+              </Row> */}
               <div style={{ marginBottom: "20px" }}></div>
               <Row>
                 <Col sm="12">

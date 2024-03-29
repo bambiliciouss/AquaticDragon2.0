@@ -7,7 +7,8 @@ const {
   addOrderStatus,
   allOrders,
   getSingleOrder,
-  allOrdersAdmin
+  allOrdersAdmin,
+  addOrderStatuswithRider,
 } = require("../controllers/orderController");
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
@@ -16,10 +17,14 @@ router.route("/order/new").post(isAuthenticatedUser, newOrder);
 router.route("/orders/me").get(isAuthenticatedUser, myOrders);
 router.route("/order/:id").put(isAuthenticatedUser, addOrderStatus);
 router
+  .route("/order/assign/rider/:id")
+  .put(isAuthenticatedUser, addOrderStatuswithRider);
+
+router
   .route("/admin/orders/")
   .get(isAuthenticatedUser, authorizeRoles("admin"), allOrders);
 
-  router
+router
   .route("/all/admin/orders/")
   .get(isAuthenticatedUser, authorizeRoles("admin"), allOrdersAdmin);
 

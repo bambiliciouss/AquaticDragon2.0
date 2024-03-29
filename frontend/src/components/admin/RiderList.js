@@ -1,9 +1,9 @@
 import React, { Fragment, useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
-import { allUsers, deleteUser } from "actions/userActions";
+import { allRider, allUsers, deleteUser } from "actions/userActions";
 import { MDBDataTable } from "mdbreact";
 
 import Sidebar from "components/Sidebar/Sidebar";
@@ -52,17 +52,18 @@ import {
   CardText,
 } from "reactstrap";
 import { CREATE_STORESTAFF_RESET } from "../../constants/storestaffConstants";
+import { getStoreDetails } from "actions/storebranchActions";
 const RiderList = (args) => {
   const dispatch = useDispatch();
 
   let navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
-  const { loading, error, users } = useSelector((state) => state.allUsers);
+  const { users } = useSelector((state) => state.allStaff);
   const { storestaffcreated } = useSelector((state) => state.newStorestaff);
   const { isDeleted } = useSelector((state) => state.user);
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
-
+  const { id } = useParams();
   const [medcert, setMedcert] = useState("");
   const [barangayclearance, setBarangayclearance] = useState("");
   const [driverslicense, setDriversLicense] = useState("");
@@ -100,33 +101,11 @@ const RiderList = (args) => {
     formState: { errors },
   } = useForm();
 
-  const notifyError = (message = "") =>
-    toast.error(message, {
-      position: "bottom-left",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-
-  const notifySuccess = (message = "") =>
-    toast.success(message, {
-      position: "bottom-left",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-
   const [avatar, setAvatar] = useState("");
   const [avatarPreview, setAvatarPreview] = useState(
     "/images/default_avatar.jpg"
   );
-  const { storeBranch } = useSelector((state) => state.allStoreBranch);
+  const { storeBranch } = useSelector((state) => state.storeDetails);
   const [userIdModal, setUserIdModal] = useState(null);
   const { storeStaffdetails } = useSelector((state) => state.singleStoreStaff);
 
@@ -167,7 +146,9 @@ const RiderList = (args) => {
 
   useEffect(() => {
     setRole("rider");
-    dispatch(allUsers());
+    dispatch(allRider(id));
+    dispatch(getStoreDetails(id));
+    console.log("storebranch", storeBranch);
     console.log(
       "eto result beh",
       storeStaffdetails.map((staff) => staff.storebranch)
@@ -209,6 +190,7 @@ const RiderList = (args) => {
     formData.set("barangayclearance", barangayclearance);
     formData.set("driverslicense", driverslicense);
     formData.set("role", role);
+    formData.set("storebranch", id);
 
     dispatch(newrider(formData));
     toggle();
@@ -291,7 +273,7 @@ const RiderList = (args) => {
   const setUsers = () => {
     // const filter = user ? users.filter((x) => x._id !== user._id) : users;
     const filter = user
-      ? users.filter((x) => x._id !== user._id && x.role === "rider")
+      ? users.filter((x) => x._id !== user._id && x.storebranch === id)
       : users;
 
     const data = {
@@ -392,7 +374,9 @@ const RiderList = (args) => {
             <CardHeader className="bg-white border-0">
               <Row className="align-items-center">
                 <Col xs="8">
-                  <h3 className="mb-0">List of Rider(s)</h3>
+                  <h3 className="mb-0">
+                    List of Riders ( {storeBranch.branch} )
+                  </h3>
                 </Col>
                 <Col md="4">
                   <Button
@@ -862,67 +846,6 @@ const RiderList = (args) => {
           <AdminFooter />
         </Container>
       </div>
-      <Modal
-        className="modal-dialog-centered"
-        isOpen={userIdModalVisible}
-        toggle={toggleUserIdModal}
-        {...args}>
-        <ModalHeader toggle={toggleUserIdModal}>Store Branch </ModalHeader>
-        <ModalBody>
-          <>
-            {storeBranch.map((branch) => (
-              <Row key={branch._id}>
-                <Col sm="12">
-                  <Card body>
-                    <FormGroup check>
-                      <label className="form-check-label">
-                        <Input
-                          type="radio"
-                          name="branchSelection"
-                          // checked={
-                          //   (selectedBranch &&
-                          //     selectedBranch._id === branch._id) ||
-                          //   storeStaffdetails.some(
-                          //     (staff) => staff.storebranch._id === branch._id
-                          //   )
-                          // }
-                          // onChange={() => handleBranchSelection(branch)}
-                          checked={
-                            (selectedBranch &&
-                              branch &&
-                              selectedBranch._id === branch._id) ||
-                            (storeStaffdetails &&
-                              branch &&
-                              storeStaffdetails.some(
-                                (staff) => staff.storebranch._id === branch._id
-                              ))
-                          }
-                          onChange={() => handleBranchSelection(branch)}
-                        />
-                        <CardText>Branch No: {branch.branch}</CardText>
-                        <CardText style={{ fontSize: "0.9rem" }}>
-                          Address: {branch.address.houseNo}{" "}
-                          {branch.address.purokNum} {branch.address.streetName}{" "}
-                          {branch.address.barangay} {branch.address.city},
-                        </CardText>
-                      </label>
-                    </FormGroup>
-                  </Card>
-                </Col>
-              </Row>
-              //  <div style={{ marginBottom: "20px" }}></div>
-            ))}
-          </>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={assignHandler}>
-            Assign Branch
-          </Button>
-          <Button color="secondary" onClick={toggleUserIdModal}>
-            Close
-          </Button>
-        </ModalFooter>
-      </Modal>
     </>
   );
 };

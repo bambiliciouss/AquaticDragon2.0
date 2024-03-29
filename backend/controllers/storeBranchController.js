@@ -72,6 +72,7 @@ exports.AdminAllStoreBranch = async (req, res, next) => {
       deleted: false,
       user: req.user.id,
     });
+
     res.status(200).json({
       success: true,
       storeBranch,
@@ -180,21 +181,37 @@ exports.AllStoreBranchUser = async (req, res, next) => {
         .status(404)
         .json({ success: false, message: "User not found" });
     }
-    const defaultAddress = user.addresses.find((address) => address.isDefault);
-
+    const defaultAddress = user.addresses.find(
+      (address) => !address.isDeleted && address.isDefault
+    );
+    // console.log("Default Address:", defaultAddress);
     if (!defaultAddress) {
       return res
         .status(404)
-        .json({ success: false, message: "Default address not found" });
+        .json({ success: false, message: "Please set up your address first." });
     }
-
     // Extract the barangay value from the default address
     const defaultAddressBarangay = defaultAddress.barangay;
+    if (!defaultAddressBarangay) {
+      return res.status(404).json({
+        success: false,
+        message: "Default address barangay not found",
+      });
+    }
 
     const storeBarangay = await StoreBarangay.find({
       deleted: false,
       barangay: defaultAddressBarangay,
     }).populate("storebranch", "branch address storeImage deliverFee");
+
+    // if (storeBarangay.length === 0) {
+    //   return res
+    //     .status(404)
+    //     .json({
+    //       success: false,
+    //       message: "No store available store in your area",
+    //     });
+    // }
 
     // const storeBranches = await StoreBranch.find({ deleted: false });
     res.status(200).json({

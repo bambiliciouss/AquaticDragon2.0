@@ -10,6 +10,7 @@ const {
   DeleteProductStocklogs,
   updateProduct,
   deleteProduct,
+
 } = require("../controllers/productController");
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
@@ -31,11 +32,13 @@ router.put(
 
 router
   .route("/admin/all/product/:id")
-  .get(isAuthenticatedUser, authorizeRoles("admin"), SingleProductStock);
+  .get(isAuthenticatedUser, SingleProductStock);
 
 router
   .route("/admin/all/product/store/:id")
-  .get(isAuthenticatedUser, authorizeRoles("admin"), AllProductStockinStore);
+  .get(isAuthenticatedUser, AllProductStockinStore);
+
+
 
 router
   .route("/admin/product/stocklogs/:id")

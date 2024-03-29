@@ -185,6 +185,11 @@ const userSchema = new mongoose.Schema({
     },
   },
 
+  storebranch: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "StoreBranch",
+  },
+
   validID: {
     public_id: {
       type: String,

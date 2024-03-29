@@ -29,6 +29,9 @@ const {
   updateAdminProfile,
   registerAdmin,
   AllStoreUsers,
+  AllStoreEmployee,
+  GetStaffDetails,
+  AllStoreRider,
 } = require("../controllers/authController");
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
@@ -113,10 +116,30 @@ router.get(
 );
 
 router.get(
+  "/admin/store/employee/:id",
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
+  AllStoreEmployee
+);
+
+router.get(
+  "/admin/store/rider/:id",
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
+  AllStoreRider
+);
+router.get(
   "/admin/user/:id",
   isAuthenticatedUser,
   authorizeRoles("admin"),
   GetUserDetails
+);
+
+router.get(
+  "/admin/staff/:id",
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
+  GetStaffDetails
 );
 
 router.delete(

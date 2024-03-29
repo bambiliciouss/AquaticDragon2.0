@@ -172,12 +172,12 @@ const Sidebar = (props) => {
               </NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href="/employeelist" onClick={closeCollapse}>
+              <NavLink href="/employee" onClick={closeCollapse}>
                 <i className="ni ni-badge text-blue" /> Employees
               </NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href="/riderlist" onClick={closeCollapse}>
+              <NavLink href="/rider" onClick={closeCollapse}>
                 <i className="ni ni-user-run text-orange" /> Riders
               </NavLink>
             </NavItem>

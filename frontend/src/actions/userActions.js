@@ -36,6 +36,12 @@ import {
   USER_DETAILS_REQUEST,
   USER_DETAILS_SUCCESS,
   USER_DETAILS_FAIL,
+  ALL_RIDERS_FAIL,
+  ALL_RIDERS_REQUEST,
+  ALL_RIDERS_SUCCESS,
+  ALL_EMPLOYEES_REQUEST,
+  ALL_EMPLOYEES_SUCCESS,
+  ALL_EMPLOYEES_FAIL,
 } from "../constants/userConstants";
 
 export const newregister = (userData) => async (dispatch) => {
@@ -169,6 +175,12 @@ export const login = (email, password) => async (dispatch) => {
 export const logout = () => async (dispatch) => {
   try {
     await axios.get(`/api/v1/logout`);
+    // Clear session storage
+    sessionStorage.clear();
+
+    // Clear local storage
+    localStorage.clear();
+
     dispatch({
       type: LOGOUT_SUCCESS,
     });
@@ -384,6 +396,40 @@ export const allUsers = () => async (dispatch) => {
   }
 };
 
+export const allEmployee = (id) => async (dispatch) => {
+  try {
+    dispatch({ type: ALL_EMPLOYEES_REQUEST });
+    const { data } = await axios.get(`/api/v1/admin/store/employee/${id}`);
+    console.log("EMPLOYEES", data.users);
+    dispatch({
+      type: ALL_EMPLOYEES_SUCCESS,
+      payload: data.users,
+    });
+  } catch (error) {
+    dispatch({
+      type: ALL_EMPLOYEES_FAIL,
+      payload: error.response.data.message,
+    });
+  }
+};
+
+export const allRider = (id) => async (dispatch) => {
+  try {
+    dispatch({ type: ALL_RIDERS_REQUEST });
+    const { data } = await axios.get(`/api/v1/admin/store/rider/${id}`);
+    dispatch({
+      type: ALL_RIDERS_SUCCESS,
+      payload: data.users,
+    });
+    // console.log(data);
+  } catch (error) {
+    dispatch({
+      type: ALL_RIDERS_FAIL,
+      payload: error.response.data.message,
+    });
+  }
+};
+
 export const deleteUser = (id) => async (dispatch) => {
   try {
     dispatch({ type: DELETE_USER_REQUEST });
@@ -524,6 +570,33 @@ export const getUserQRDetails = (id) => async (dispatch) => {
     };
 
     const { data } = await axios.get(`/api/v1/user/qr/${id}`, config);
+
+    // Log user details
+    console.log("userdetails", data.user);
+
+    dispatch({
+      type: USER_DETAILS_SUCCESS,
+      payload: data.user,
+    });
+  } catch (error) {
+    dispatch({
+      type: USER_DETAILS_FAIL,
+      payload: error.response.data.message,
+    });
+  }
+};
+
+export const getStaffDetails = (id) => async (dispatch) => {
+  try {
+    dispatch({ type: USER_DETAILS_REQUEST });
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    };
+
+    const { data } = await axios.get(`/api/v1/admin/staff/${id}`, config);
 
     // Log user details
     console.log("userdetails", data.user);

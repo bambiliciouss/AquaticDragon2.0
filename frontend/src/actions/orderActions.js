@@ -132,3 +132,29 @@ export const updateOrder = (id, orderData) => async (dispatch) => {
     });
   }
 };
+
+export const updateOrderwithRider = (id, orderData) => async (dispatch) => {
+  try {
+    dispatch({ type: UPDATE_ORDER_REQUEST });
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    };
+    const { data } = await axios.put(
+      `/api/v1/order/assign/rider/${id}`,
+      orderData,
+      config
+    );
+    dispatch({
+      type: UPDATE_ORDER_SUCCESS,
+      payload: data.success,
+    });
+  } catch (error) {
+    dispatch({
+      type: UPDATE_ORDER_FAIL,
+      payload: error.response.data.message,
+    });
+  }
+};

@@ -602,6 +602,7 @@ exports.registerEmployee = async (req, res, next) => {
       email,
       password,
       role,
+      storebranch,
     } = req.body;
 
     const address = {
@@ -629,6 +630,7 @@ exports.registerEmployee = async (req, res, next) => {
         url: barangayClearanceResult.secure_url,
       },
       role,
+      storebranch,
     });
 
     const token = await new Token({
@@ -694,6 +696,7 @@ exports.registerRider = async (req, res, next) => {
       email,
       password,
       role,
+      storebranch,
     } = req.body;
 
     const address = {
@@ -725,6 +728,7 @@ exports.registerRider = async (req, res, next) => {
         url: driverLicenseResult.secure_url,
       },
       role,
+      storebranch,
     });
 
     const token = await new Token({
@@ -755,6 +759,7 @@ exports.updateProfileRider = async (req, res, next) => {
     fname: req.body.fname,
     lname: req.body.lname,
     phone: req.body.phone,
+    storebranch: req.body.storebranch,
   };
 
   const newAddressData = {
@@ -854,6 +859,7 @@ exports.updateProfileRider = async (req, res, next) => {
     user.fname = newUserData.fname;
     user.lname = newUserData.lname;
     user.phone = newUserData.phone;
+    user.storebranch = newUserData.storebranch;
     if (req.body.avatar !== "") {
       user.avatar = newUserData.avatar;
     }
@@ -886,10 +892,12 @@ exports.updateProfileRider = async (req, res, next) => {
 };
 
 exports.updateProfileEmployee = async (req, res, next) => {
+  console.log("storebranch ID", req.body.storebranch);
   const newUserData = {
     fname: req.body.fname,
     lname: req.body.lname,
     phone: req.body.phone,
+    storebranch: req.body.storebranch,
   };
 
   const newAddressData = {
@@ -969,6 +977,7 @@ exports.updateProfileEmployee = async (req, res, next) => {
     user.fname = newUserData.fname;
     user.lname = newUserData.lname;
     user.phone = newUserData.phone;
+    user.storebranch = newUserData.storebranch;
     if (req.body.avatar !== "") {
       user.avatar = newUserData.avatar;
     }
@@ -1413,6 +1422,66 @@ exports.AllStoreUsers = async (req, res, next) => {
       success: true,
       counter,
       usersWithTransactions,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
+exports.AllStoreEmployee = async (req, res, next) => {
+  console.log(req.params.id);
+  try {
+    const users = await User.find({
+      deleted: false,
+      role: "employee",
+      storebranch: req.params.id,
+    });
+    res.status(200).json({
+      success: true,
+      users,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
+exports.AllStoreRider = async (req, res, next) => {
+  console.log(req.params.id);
+  try {
+    const users = await User.find({
+      deleted: false,
+      role: "rider",
+      storebranch: req.params.id,
+    });
+    res.status(200).json({
+      success: true,
+      users,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
+exports.GetStaffDetails = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id).populate(
+      "storebranch",
+      "branch _id"
+    );
+    if (!user) {
+      return next(
+        new ErrorHandler(`User does not found with id: ${req.params.id}`)
+      );
+    }
+    res.status(200).json({
+      success: true,
+      user,
     });
   } catch (error) {
     res

@@ -1,9 +1,9 @@
 import React, { Fragment, useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
-import { allUsers, deleteUser } from "actions/userActions";
+import { allEmployee, deleteUser } from "actions/userActions";
 import { MDBDataTable } from "mdbreact";
 
 import Sidebar from "components/Sidebar/Sidebar";
@@ -53,15 +53,17 @@ import {
 import { CREATE_STORESTAFF_RESET } from "../../constants/storestaffConstants";
 import { REGISTER_USER_RESET } from "../../constants/userConstants";
 
+import { getStoreDetails } from "actions/storebranchActions";
 const EmployeeList = (args) => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
-  const { loading, error, users } = useSelector((state) => state.allUsers);
+  const { users } = useSelector((state) => state.allStaff);
   const { storestaffcreated } = useSelector((state) => state.newStorestaff);
   const { isDeleted } = useSelector((state) => state.user);
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
+  const { id } = useParams();
 
   const [empuser, setUser] = useState({
     fname: "",
@@ -82,28 +84,7 @@ const EmployeeList = (args) => {
     formState: { errors },
     reset,
   } = useForm();
-  const notifyError = (message = "") =>
-    toast.error(message, {
-      position: "bottom-left",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-
-  const notifySuccess = (message = "") =>
-    toast.success(message, {
-      position: "bottom-left",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-
+  const { storeBranch } = useSelector((state) => state.storeDetails);
   const [avatar, setAvatar] = useState("");
   const [medcert, setMedcert] = useState("");
   const [barangayclearance, setBarangayclearance] = useState("");
@@ -123,7 +104,6 @@ const EmployeeList = (args) => {
   //   setEmployeeDetailsModal(true);
   // };
 
-  const { storeBranch } = useSelector((state) => state.allStoreBranch);
   const [userIdModal, setUserIdModal] = useState(null);
   const { storeStaffdetails } = useSelector((state) => state.singleStoreStaff);
 
@@ -169,7 +149,8 @@ const EmployeeList = (args) => {
 
   useEffect(() => {
     setRole("employee");
-    dispatch(allUsers());
+    dispatch(allEmployee(id));
+    dispatch(getStoreDetails(id));
     console.log(
       "eto result beh",
       storeStaffdetails.map((staff) => staff.storebranch)
@@ -183,7 +164,7 @@ const EmployeeList = (args) => {
       console.log("success ");
       swal("The Employee is now assigned to the store!", "", "success");
       toggleUserIdModal();
-      navigate("/employeelist", { replace: true });
+      navigate(`/employeelist/${id}`, { replace: true });
       dispatch({
         type: CREATE_STORESTAFF_RESET,
       });
@@ -210,16 +191,17 @@ const EmployeeList = (args) => {
     formData.set("medcert", medcert);
     formData.set("barangayclearance", barangayclearance);
     formData.set("role", role);
+    formData.set("storebranch", id);
 
     dispatch(newemployee(formData));
     toggle();
-    window.location.reload();
 
-    swal(
-      "An email sent to your employee's email account, please verify",
-      "",
-      "success"
-    );
+    // swal(
+    //   "An email sent to your employee's email account, please verify",
+    //   "",
+    //   "success"
+    // );
+    window.location.reload();
   };
 
   const deleteUserHandler = (id) => {
@@ -275,9 +257,9 @@ const EmployeeList = (args) => {
 
   const setUsers = () => {
     // const filter = user ? users.filter((x) => x._id !== user._id) : users;
-    const filter = user
-      ? users.filter((x) => x._id !== user._id && x.role === "employee")
-      : users;
+    // const filter = user
+    //   ? users.filter((x) => x._id !== user._id && x.storebranch === id)
+    //   : users;
 
     const data = {
       columns: [
@@ -317,7 +299,7 @@ const EmployeeList = (args) => {
       rows: [],
     };
 
-    filter.forEach((user) => {
+    users.forEach((user) => {
       const defaultAddress =
         user.addresses.find((address) => address.isDefault) || {};
       data.rows.push({
@@ -351,11 +333,11 @@ const EmployeeList = (args) => {
               onClick={() => deleteUserHandler(user._id)}>
               <i className="fa fa-trash"></i>
             </button>
-            <button
+            {/* <button
               className="btn btn-info py-1 px-2 ml-2"
               onClick={() => openUserIdModal(user._id)}>
               Assign Store
-            </button>
+            </button> */}
           </Fragment>
         ),
       });
@@ -363,8 +345,6 @@ const EmployeeList = (args) => {
 
     return data;
   };
-
-
 
   return (
     <>
@@ -384,7 +364,9 @@ const EmployeeList = (args) => {
             <CardHeader className="bg-white border-0">
               <Row className="align-items-center">
                 <Col xs="8">
-                  <h3 className="mb-0">List of Employee(s)</h3>
+                  <h3 className="mb-0">
+                    List of Employees ( {storeBranch.branch} )
+                  </h3>
                 </Col>
                 <Col md="4">
                   <Button
@@ -812,7 +794,7 @@ const EmployeeList = (args) => {
         </Container>
       </div>
 
-      <Modal
+      {/* <Modal
         className="modal-dialog-centered"
         isOpen={userIdModalVisible}
         toggle={toggleUserIdModal}
@@ -820,9 +802,7 @@ const EmployeeList = (args) => {
         <ModalHeader toggle={toggleUserIdModal}>Store Branch </ModalHeader>
         <ModalBody>
           <>
-            {/* {storeStaffdetails.map((staff) => (
-              <CardText>Branch No: {staff.storebranch._id}</CardText>
-            ))} */}
+           
 
             {storeBranch.map((branch) => (
               <Row key={branch._id}>
@@ -830,7 +810,7 @@ const EmployeeList = (args) => {
                   <Card body>
                     <FormGroup check>
                       <label className="form-check-label">
-                        {/* <CardText>Branch No: {branch._id}</CardText> */}
+                     
                         <Input
                           type="radio"
                           name="branchSelection"
@@ -866,7 +846,7 @@ const EmployeeList = (args) => {
             Close
           </Button>
         </ModalFooter>
-      </Modal>
+      </Modal> */}
     </>
   );
 };

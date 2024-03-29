@@ -272,10 +272,10 @@ const StoreBranchList = (args) => {
           label: "Actions",
           field: "actions",
         },
-        {
-          label: "List of assigned Staff",
-          field: "list",
-        },
+        // {
+        //   label: "List of assigned Staff",
+        //   field: "list",
+        // },
         {
           label: "Barangay Scope",
           field: "barangay",

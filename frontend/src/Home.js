@@ -100,19 +100,19 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import { Icon, divIcon, point } from "leaflet";
 import { useDispatch, useSelector } from "react-redux";
-import { allStoreBranch } from "actions/storebranchActions";
+// import { allStoreBranch } from "actions/storebranchActions";
 
 const Home = () => {
   const location = useLocation();
   const dispatch = useDispatch();
-  const { storeBranch } = useSelector((state) => state.allStoreBranch);
+  // const { storeBranch } = useSelector((state) => state.allStoreBranch);
 
   React.useEffect(() => {
-    dispatch(allStoreBranch());
+    // dispatch(allStoreBranch());
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
 
-    console.log(storeBranch);
+    // console.log(storeBranch);
   }, [location, dispatch]);
 
   // const markers = [
@@ -126,11 +126,11 @@ const Home = () => {
   //   },
   // ];
 
-  const customIcon = new Icon({
-    iconUrl: "https://cdn-icons-png.flaticon.com/512/447/447031.png",
-    // iconUrl: require("./icons/placeholder.png"),
-    iconSize: [38, 38], // size of the icon
-  });
+  // const customIcon = new Icon({
+  //   iconUrl: "https://cdn-icons-png.flaticon.com/512/447/447031.png",
+  //   // iconUrl: require("./icons/placeholder.png"),
+  //   iconSize: [38, 38], // size of the icon
+  // });
 
   return (
     <>
@@ -163,7 +163,7 @@ const Home = () => {
           </Container>
         </section>
 
-        <section className="section section-lg mt-8">
+        {/* <section className="section section-lg mt-8">
           <Container>
             <MapContainer
               center={[14.494066571438568, 121.0510134107358]}
@@ -184,7 +184,7 @@ const Home = () => {
               ))}
             </MapContainer>
           </Container>
-        </section>
+        </section> */}
       </main>
       {/* <AuthFooter /> */}
     </>

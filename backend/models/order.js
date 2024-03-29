@@ -28,6 +28,30 @@ const orderSchema = mongoose.Schema({
       },
     },
   ],
+
+  orderProducts: [
+    {
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        // required: true,
+        ref: "Product",
+      },
+      type: {
+        type: mongoose.Schema.Types.ObjectId,
+        // required: true,
+        ref: "TypeOfGallon",
+      },
+      quantity: {
+        type: Number,
+        default: 1,
+      },
+      price: {
+        type: Number,
+        required: true,
+      },
+    },
+  ],
+
   containerStatus: {
     type: String,
     required: true,
@@ -105,10 +129,10 @@ const orderSchema = mongoose.Schema({
     default: 0.0,
   },
 
-  notes: {
-    type: String,
-    default: "",
-  },
+  // notes: {
+  //   type: String,
+  //   default: "",
+  // },
 
   createdAt: {
     type: Date,

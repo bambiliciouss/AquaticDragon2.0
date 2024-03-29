@@ -121,6 +121,8 @@ const OrderList = () => {
         case "Order Accepted":
           statusBadgeColor = "primary";
           break;
+
+        case "Container for pick up":
         case "Container has been picked up":
         case "Container is at the Store":
           statusBadgeColor = "info";

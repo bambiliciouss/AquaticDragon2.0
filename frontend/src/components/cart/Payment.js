@@ -16,6 +16,7 @@ import AuthNavbar from "components/Navbars/AuthNavbar.js";
 import MetaData from "../layout/MetaData";
 import { useNavigate } from "react-router-dom";
 import CheckoutSteps from "./CheckoutSteps";
+import swal from "sweetalert";
 const Payment = () => {
   const navigate = useNavigate();
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
@@ -29,6 +30,13 @@ const Payment = () => {
   }, []);
 
   const processToNextStep = () => {
+    if (!selectedPaymentMethod) {
+      // Show SweetAlert message if no radio button is clicked
+
+      swal("Please select payment method before proceeding!", "", "error");
+      return; // Stop further execution
+    }
+
     const data = {
       paymentMethod: selectedPaymentMethod,
     };
@@ -51,7 +59,7 @@ const Payment = () => {
           marginLeft: "20%",
           marginRight: "20%",
         }}>
-           <CheckoutSteps store gallon containerstatus payment />
+        <CheckoutSteps store gallon containerstatus payment />
         <Card className="bg-secondary shadow">
           <CardHeader className="bg-white border-0">
             <Row className="align-items-center">

@@ -42,7 +42,8 @@ import BarangayHealth from "components/admin/BarangayHealth";
 import PhysicalChemTest from "components/admin/PhysicalChemTest";
 import BusinessPermit from "components/admin/BusinessPermit";
 import TypesGallon from "components/admin/TypesGallon";
-
+import Employee from "components/admin/Employee";
+import Rider from "components/admin/Rider";
 
 import UpdateRider from "components/admin/UpdateRider";
 import UpdateEmployee from "components/admin/UpdateEmployee";
@@ -123,8 +124,8 @@ function App() {
         {/* ADMIN */}
         <Route path="/dashboard" element={ <ProtectedRoute><Dashboard /></ProtectedRoute>} exact="true" />
         <Route path="/userlist" element={<ProtectedRoute><UserList /></ProtectedRoute>} exact="true" />
-        <Route path="/riderlist" element={<ProtectedRoute><RiderList /></ProtectedRoute>} exact="true" />
-        <Route path="/employeelist" element={<ProtectedRoute><EmployeeList /></ProtectedRoute>} exact="true" />
+        <Route path="/riderlist/:id" element={<ProtectedRoute><RiderList /></ProtectedRoute>} exact="true" />
+        <Route path="/employeelist/:id" element={<ProtectedRoute><EmployeeList /></ProtectedRoute>} exact="true" />
         <Route path="/gallonlist" element={<ProtectedRoute><GallonList /></ProtectedRoute>} exact="true" />
         <Route path="/storebranchlist" element={<ProtectedRoute><StoreBranchList /></ProtectedRoute>}exact="true"/>
         <Route path="/machinecleaning" element={<ProtectedRoute><MachineCleaning /></ProtectedRoute>} exact="true"/>
@@ -183,7 +184,8 @@ function App() {
 
         
         <Route path="/create/store/barangay/:id" element={<ProtectedRoute> <StoreBarangayList /> </ProtectedRoute>}  exact="true"  />
-
+        <Route path="/employee" element={<ProtectedRoute><Employee/></ProtectedRoute>} exact="true" />
+        <Route path="/rider" element={<ProtectedRoute><Rider/></ProtectedRoute>} exact="true" />
       </Routes>
     </>
   );

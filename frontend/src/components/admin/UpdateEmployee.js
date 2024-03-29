@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import {
-  getUserDetails,
+  getStaffDetails,
   updateEmployee,
   clearErrors,
 } from "actions/userActions";
@@ -43,14 +43,20 @@ import {
   InputGroupText,
   InputGroup,
   Form,
+  Input,
 } from "reactstrap";
-
+import {
+  allAdminStoreBranch,
+  deleteStoreBranch,
+} from "actions/storebranchActions";
 const UpdateEmployee = () => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
   const { error, isUpdated } = useSelector((state) => state.user);
   const { user } = useSelector((state) => state.userDetails);
   const { id } = useParams();
+
+  const { storeBranch } = useSelector((state) => state.allStoreBranch);
 
   const [fname, setFname] = useState("");
   const [lname, setLname] = useState("");
@@ -65,6 +71,7 @@ const UpdateEmployee = () => {
     "/images/default_avatar.jpg"
   );
   const [role, setRole] = useState("");
+  const [store, setStore] = useState("");
   const [medcert, setMedcert] = useState("");
   const [medcertPreview, setMedcertPreview] = useState(
     "/images/default_avatar.jpg"
@@ -88,25 +95,15 @@ const UpdateEmployee = () => {
       progress: undefined,
     });
 
-  const notifySuccess = (message = "") =>
-    toast.success(message, {
-      position: "bottom-left",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-
   useEffect(() => {
     setRole("employee");
+    dispatch(allAdminStoreBranch());
 
     const defaultAddress =
       user?.addresses?.find((address) => address.isDefault) || {};
 
     if (user && user._id !== id) {
-      dispatch(getUserDetails(id));
+      dispatch(getStaffDetails(id));
     } else {
       setFname(user.fname);
       setLname(user.lname);
@@ -119,6 +116,7 @@ const UpdateEmployee = () => {
       setAvatarPreview(user.avatar.url);
       setMedcertPreview(user.medcert.url);
       setBarangayclearancePreview(user.barangayclearance.url);
+      setStore(user.storebranch._id);
     }
 
     if (error) {
@@ -129,10 +127,11 @@ const UpdateEmployee = () => {
     if (isUpdated) {
       //notifySuccess("Update Successfully");
       swal("Updated Successfully!", "", "success");
-      navigate("/employeelist", { replace: true });
+      navigate(`/employeelist/${user.storebranch._id}`, { replace: true });
       dispatch({
         type: UPDATE_PROFILE_RESET,
       });
+      window.location.reload();
     }
   }, [dispatch, error, isUpdated, navigate, user]);
 
@@ -152,7 +151,7 @@ const UpdateEmployee = () => {
     formData.append("medcert", medcert);
     formData.append("barangayclearance", barangayclearance);
     formData.append("role", role);
-
+    formData.append("storebranch", store);
     dispatch(updateEmployee(id, formData));
   };
 
@@ -320,6 +319,23 @@ const UpdateEmployee = () => {
                                   className="custom-file-label">
                                   Choose Avatar
                                 </label>
+                              </div>
+
+                              <div>
+                                <label className="form-control-label">
+                                  Assigned Store
+                                </label>
+                                <select
+                                  className="form-control"
+                                  value={store}
+                                  onChange={(e) => setStore(e.target.value)}>
+                                  <option value="">Select Store</option>
+                                  {storeBranch.map((branch) => (
+                                    <option key={branch._id} value={branch._id}>
+                                      {branch.branch}
+                                    </option>
+                                  ))}
+                                </select>
                               </div>
                             </Col>
                             <Col lg="9">

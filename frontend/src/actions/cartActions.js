@@ -4,6 +4,8 @@ import {
   REMOVE_ITEM_CART,
   SAVE_STOREBRANCH_INFO,
   CLEAR_CART,
+  ADD_TO_CART_PRODUCT,
+  REMOVE_ITEM_CART_PRODUCT,
 } from "../constants/cartConstants";
 
 export const addItemToCart = (id, quantity) => async (dispatch, getState) => {
@@ -21,6 +23,25 @@ export const addItemToCart = (id, quantity) => async (dispatch, getState) => {
   localStorage.setItem("cartItems", JSON.stringify(getState().cart.cartItems));
 };
 
+export const addProductToCart =
+  (id, quantity) => async (dispatch, getState) => {
+    const { data } = await axios.get(`/api/v1/admin/all/product//${id}`);
+    console.log("PRODUCTS", data);
+    dispatch({
+      type: ADD_TO_CART_PRODUCT,
+      payload: {
+        product: data.product._id,
+        type: data.product.typesgallon,
+        price: data.product.price,
+        quantity,
+      },
+    });
+    localStorage.setItem(
+      "cartProductItems",
+      JSON.stringify(getState().cartProduct.cartProductItems)
+    );
+  };
+
 export const storebranchInfo = (data) => async (dispatch) => {
   dispatch({
     type: SAVE_STOREBRANCH_INFO,
@@ -35,6 +56,17 @@ export const removeItemFromCart = (id) => async (dispatch, getState) => {
     payload: id,
   });
   localStorage.setItem("cartItems", JSON.stringify(getState().cart.cartItems));
+};
+
+export const removeProductFromCart = (id) => async (dispatch, getState) => {
+  dispatch({
+    type: REMOVE_ITEM_CART_PRODUCT,
+    payload: id,
+  });
+  localStorage.setItem(
+    "cartProductItems",
+    JSON.stringify(getState().cartProduct.cartProductItems)
+  );
 };
 
 export const clearCart = () => async (dispatch) => {

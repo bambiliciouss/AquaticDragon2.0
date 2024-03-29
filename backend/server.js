@@ -10,11 +10,11 @@ const cloudinary = require("cloudinary");
 
 dotenv.config({ path: "config/.env" });
 connectDatabase();
-autoAgeUp();
-notifyCleaning();
-barangayhealth();
-phychem();
-notifyBusinessP();
+// autoAgeUp();
+// notifyCleaning();
+// barangayhealth();
+// phychem();
+// notifyBusinessP();
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

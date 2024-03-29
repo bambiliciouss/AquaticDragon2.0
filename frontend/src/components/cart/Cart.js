@@ -2,7 +2,12 @@ import React, { Fragment, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import MetaData from "../layout/MetaData";
 import { useDispatch, useSelector } from "react-redux";
-import { addItemToCart, removeItemFromCart } from "../../actions/cartActions";
+import {
+  addItemToCart,
+  removeItemFromCart,
+  removeProductFromCart,
+  addProductToCart,
+} from "../../actions/cartActions";
 import AuthNavbar from "components/Navbars/AuthNavbar.js";
 import AuthFooter from "components/Footers/AuthFooter.js";
 import {
@@ -24,21 +29,37 @@ import CheckoutSteps from "./CheckoutSteps";
 const Cart = () => {
   const dispatch = useDispatch();
   const { cartItems } = useSelector((state) => state.cart);
-  const increaseQty = (id, quantity, stock) => {
+  const { cartProductItems } = useSelector((state) => state.cartProduct);
+
+  const storeBranchinfo = JSON.parse(sessionStorage.getItem("selectedStore"));
+  const increaseQty = (id, quantity) => {
     const newQty = quantity + 1;
     dispatch(addItemToCart(id, newQty));
   };
-
-  const storeBranchinfo = JSON.parse(sessionStorage.getItem("selectedStore"));
-
   const decreaseQty = (id, quantity) => {
     const newQty = Math.max(1, quantity - 1);
     dispatch(addItemToCart(id, newQty));
   };
 
+  const increasePQty = (id, quantity) => {
+    const newQty = quantity + 1;
+    dispatch(addProductToCart(id, newQty));
+  };
+  const decreasePQty = (id, quantity) => {
+    const newQty = Math.max(1, quantity - 1);
+    dispatch(addProductToCart(id, newQty));
+  };
+
+
+
   const removeCartItemHandler = (id) => {
     console.log(id);
     dispatch(removeItemFromCart(id));
+  };
+
+  const removeProductItemHandler = (id) => {
+    console.log(id);
+    dispatch(removeProductFromCart(id));
   };
 
   let navigate = useNavigate();
@@ -59,8 +80,7 @@ const Cart = () => {
           marginLeft: "10%",
           marginRight: "10%",
         }}>
-
-<CheckoutSteps store gallon />
+        <CheckoutSteps store gallon />
         <div className="col-md-12">
           <div className="content">
             <div className="row">
@@ -71,30 +91,37 @@ const Cart = () => {
                       <Col xs="8">
                         <h3 className="mb-0">Your Cart</h3>
                       </Col>
+                      <Col xs="4">
+                        <button
+                          className="btn btn-white btn-block"
+                          onClick={() => navigate("/gallon/order")}>
+                          Add More Items
+                        </button>
+                      </Col>
                     </Row>
                   </CardHeader>
                   <CardBody>
-                    {cartItems.length === 0 ? (
+                    <p>
+                      <strong>
+                        Selected Store: {storeBranchinfo.storebranch.branch}{" "}
+                      </strong>
+                    </p>{" "}
+                    <p>
+                      <strong>
+                        {" "}
+                        Address: {
+                          storeBranchinfo.storebranch.address.houseNo
+                        }{" "}
+                        {storeBranchinfo.storebranch.address.streetName}{" "}
+                        {storeBranchinfo.storebranch.address.purokNum}{" "}
+                        {storeBranchinfo.storebranch.address.barangay}{" "}
+                        {storeBranchinfo.storebranch.address.city}
+                      </strong>
+                    </p>{" "}
+                    {cartItems.length === 0 && cartProductItems.length === 0 ? (
                       <p>Your Cart is Empty</p>
                     ) : (
                       <>
-                        <p>
-                          <strong>
-                            Selected Store: {storeBranchinfo.storebranch.branch}{" "}
-                          </strong>
-                        </p>
-                        <p>
-                          <strong>
-                            {" "}
-                            Address:{" "}
-                            {storeBranchinfo.storebranch.address.houseNo}{" "}
-                            {storeBranchinfo.storebranch.address.streetName}{" "}
-                            {storeBranchinfo.storebranch.address.purokNum}{" "}
-                            {storeBranchinfo.storebranch.address.barangay}{" "}
-                            {storeBranchinfo.storebranch.address.city}
-                          </strong>
-                        </p>{" "}
-                        {/* <p>No of order/s: {cartItems.length} </p> */}
                         <div className="row d-flex justify-content-between">
                           <div className="col-12 col-lg-8">
                             {cartItems.map((item) => (
@@ -148,7 +175,7 @@ const Cart = () => {
                                   <div className="row">
                                     <div className="col-3">
                                       <span className="item-type">
-                                        {item.type}
+                                        {item.type} (REFILL)
                                       </span>
                                     </div>
 
@@ -200,6 +227,73 @@ const Cart = () => {
                                 <hr />
                               </Fragment>
                             ))}
+
+                            {cartProductItems.map((itemP) => (
+                              <Fragment>
+                                <hr />
+
+                                <div
+                                  className="cart-item"
+                                  key={itemP.gallon_id}>
+                                  <div className="row">
+                                    <div className="col-3">
+                                      <span className="item-type">
+                                        {itemP.type.typeofGallon} (NEW
+                                        CONTAINER) Total Stocks:{" "}
+                                      
+                                      </span>
+                                    </div>
+
+                                    <div className="col-2">
+                                      <span className="item-price">
+                                        ₱{itemP.price}.00
+                                      </span>
+                                    </div>
+                                    <div className="col-4">
+                                      <button
+                                        className="btn btn-danger"
+                                        onClick={() =>
+                                          decreasePQty(
+                                            itemP.product,
+                                            itemP.quantity
+                                          )
+                                        }>
+                                        -
+                                      </button>
+
+                                      <span className="item-quantity">
+                                        {itemP.quantity} pc(s)
+                                      </span>
+
+                                      <button
+                                        className="btn btn-primary mr-2"
+                                        onClick={() =>
+                                          increasePQty(
+                                            itemP.product,
+                                            itemP.quantity
+                                          )
+                                        }>
+                                        +
+                                      </button>
+                                    </div>
+
+                                    <div className="col-2">
+                                      <i
+                                        className="fa fa-trash btn btn-danger delete-cart-item"
+                                        onClick={() =>
+                                          removeProductItemHandler(
+                                            itemP.product
+                                          )
+                                        }>
+                                        Remove
+                                      </i>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <hr />
+                              </Fragment>
+                            ))}
                           </div>
 
                           <div className="col-12 col-lg-3 my-4">
@@ -214,7 +308,12 @@ const Cart = () => {
                                   {cartItems.reduce(
                                     (acc, item) => acc + Number(item.quantity),
                                     0
-                                  )}{" "}
+                                  ) +
+                                    cartProductItems.reduce(
+                                      (acc, itemP) =>
+                                        acc + Number(itemP.quantity),
+                                      0
+                                    )}{" "}
                                   (Units)
                                 </span>
                               </p>
@@ -223,13 +322,18 @@ const Cart = () => {
                                 Total:{" "}
                                 <span className="order-summary-values">
                                   ₱
-                                  {cartItems
-                                    .reduce(
+                                  {(
+                                    cartItems.reduce(
                                       (acc, item) =>
                                         acc + item.quantity * item.price,
                                       0
+                                    ) +
+                                    cartProductItems.reduce(
+                                      (acc, itemP) =>
+                                        acc + itemP.quantity * itemP.price,
+                                      0
                                     )
-                                    .toFixed(2)}
+                                  ).toFixed(2)}
                                 </span>
                               </p>
 
@@ -241,8 +345,6 @@ const Cart = () => {
                                 onClick={checkoutHandler}>
                                 Check out
                               </button>
-
-                              {/*<button id="checkout_btn" className="btn btn-primary btn-block" >Check out</button>*/}
                             </div>
                           </div>
                         </div>

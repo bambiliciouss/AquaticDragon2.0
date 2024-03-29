@@ -28,18 +28,22 @@ import {
   getOrderDetails,
   clearErrors,
   updateOrder,
+  updateOrderwithRider,
 } from "../../actions/orderActions";
 import { UPDATE_ORDER_RESET } from "../../constants/orderConstants";
 
 import Sidebar from "components/Sidebar/Sidebar";
 import AdminNavbar from "components/Navbars/AdminNavbar";
 import Header2 from "components/Headers/Header2";
+import { allRider, allUsers, deleteUser } from "actions/userActions";
 const UpdateOrderDetails = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
   const [orderLevelup, setOrderLevel] = useState("");
+  const [storeID, setstoreID] = useState("");
+  const [assignedRider, setAssignedRider] = useState("");
   const {
     loading,
     error,
@@ -48,13 +52,14 @@ const UpdateOrderDetails = () => {
 
   const {
     orderItems,
+    orderProducts,
     containerStatus,
     orderclaimingOption,
     selectedStore,
     deliveryAddress,
     paymentInfo,
     orderStatus,
-    notes,
+    // notes,
     customer,
     totalPrice,
     createdAt,
@@ -68,15 +73,27 @@ const UpdateOrderDetails = () => {
     }
     return latest;
   }, {});
+
+  const { users } = useSelector((state) => state.allStaff);
+
   useEffect(() => {
     dispatch(getOrderDetails(id));
-
     if (error) {
       alert.error(error);
-
       dispatch(clearErrors());
     }
   }, [dispatch, alert, error, id]);
+
+  useEffect(() => {
+    if (selectedStore && selectedStore.store) {
+      console.log("STORE", selectedStore.store);
+      dispatch(allRider(selectedStore.store));
+    }
+  }, [dispatch, selectedStore]);
+
+  useEffect(() => {
+    console.log("RIDERS", users);
+  }, [users]);
 
   const updateOrderHandler = (id) => {
     const formData = new FormData();
@@ -87,6 +104,18 @@ const UpdateOrderDetails = () => {
     toggle();
     window.location.reload();
   };
+
+  const assignHandler = (id) => {
+    const formData = new FormData();
+
+    formData.set("orderLevel", orderLevelup);
+    formData.set("staff", assignedRider);
+
+    dispatch(updateOrderwithRider(id, formData));
+    toggle();
+    window.location.reload();
+  };
+
   return (
     <>
       <MetaData title={"Order Details"} />
@@ -102,7 +131,7 @@ const UpdateOrderDetails = () => {
         <Header2 />
         <Container className="mt--7" fluid>
           <div className="user-profile">
-            <div class="wrapper ">
+            <div className="wrapper ">
               <div className="content">
                 <div className="row">
                   <div className="col-md-12">
@@ -142,11 +171,12 @@ const UpdateOrderDetails = () => {
                                       <select
                                         className="form-control"
                                         name="orderStatus"
-                                        value={
-                                          orderStatusLatest
-                                            ? orderStatusLatest.orderLevel
-                                            : ""
-                                        }
+                                        // value={
+                                        //   orderStatusLatest
+                                        //     ? orderStatusLatest.orderLevel
+                                        //     : orderLevelup
+                                        // }
+                                        value={orderLevelup}
                                         onChange={(e) =>
                                           setOrderLevel(e.target.value)
                                         }>
@@ -159,7 +189,9 @@ const UpdateOrderDetails = () => {
                                         <option value="Order Accepted">
                                           Order Accepted
                                         </option>
-
+                                        <option value="Container for pick up">
+                                          Container for pick up
+                                        </option>
                                         <option value="Container has been picked up">
                                           Container has been picked up
                                         </option>
@@ -178,8 +210,52 @@ const UpdateOrderDetails = () => {
                                       </select>
                                     </InputGroup>
                                   </FormGroup>
+                                  {(orderLevelup === "Container for pick up" ||
+                                    orderLevelup === "Out for Delivery") && (
+                                    <FormGroup>
+                                      <label className="form-control-label">
+                                        Assign a Rider
+                                      </label>
+                                      <select
+                                        className="form-control"
+                                        value={assignedRider}
+                                        onChange={(e) =>
+                                          setAssignedRider(e.target.value)
+                                        }>
+                                        <option value="">Select Rider</option>
+                                        {users.map((item) => (
+                                          <option
+                                            key={item._id}
+                                            value={item._id}>
+                                            {item.fname} {item.lname}
+                                          </option>
+                                        ))}
+                                      </select>
+                                    </FormGroup>
+                                  )}
                                 </ModalBody>
                                 <ModalFooter>
+                                  <Button
+                                    color="primary"
+                                    type="submit"
+                                    onClick={
+                                      () =>
+                                        orderLevelup ===
+                                          "Container for pick up" ||
+                                        orderLevelup === "Out for Delivery"
+                                          ? assignHandler(order._id) // Function for assigning
+                                          : updateOrderHandler(order._id) // Function for updating
+                                    }>
+                                    {orderLevelup === "Container for pick up" ||
+                                    orderLevelup === "Out for Delivery"
+                                      ? "Assign"
+                                      : "Update"}
+                                  </Button>
+                                  <Button color="secondary" onClick={toggle}>
+                                    Back
+                                  </Button>
+                                </ModalFooter>
+                                {/* <ModalFooter>
                                   <Button
                                     color="primary"
                                     type="submit"
@@ -191,7 +267,7 @@ const UpdateOrderDetails = () => {
                                   <Button color="secondary" onClick={toggle}>
                                     Back
                                   </Button>
-                                </ModalFooter>
+                                </ModalFooter> */}
                               </Modal>
                             </Col>
                           )}
@@ -290,19 +366,24 @@ const UpdateOrderDetails = () => {
                                 {orderItems &&
                                   orderItems.map((item, index) => (
                                     <Row key={index}>
+                                      <Col sm="5">{item.type} (REFILL)</Col>
+                                      <Col
+                                        sm="3"
+                                        style={{ textAlign: "center" }}>
+                                        {item.quantity} pc(s)
+                                      </Col>
+                                      <Col
+                                        sm="4"
+                                        style={{ textAlign: "right" }}>
+                                        ₱{item.price}.00
+                                      </Col>
+                                    </Row>
+                                  ))}
+                                {orderProducts &&
+                                  orderProducts.map((item, index) => (
+                                    <Row key={index}>
                                       <Col sm="5">
-                                        {/* <div style={{ textAlign: "center" }}>
-                                          <img
-                                            src={item.image}
-                                            alt={item.image}
-                                            style={{
-                                              width: 100,
-                                              height: 100,
-                                              display: "inline-block",
-                                            }}
-                                          />
-                                        </div> */}
-                                        {item.type}
+                                        {item.type.typeofGallon} (NEW CONTAINER)
                                       </Col>
                                       <Col
                                         sm="3"
@@ -393,7 +474,7 @@ const UpdateOrderDetails = () => {
                           </Col>
                         </Row>
                         <div style={{ marginBottom: "20px" }}></div>
-                        <Row>
+                        {/* <Row>
                           <Col sm="12">
                             <Card body>
                               <CardText>
@@ -410,7 +491,7 @@ const UpdateOrderDetails = () => {
                               </CardText>
                             </Card>
                           </Col>
-                        </Row>
+                        </Row> */}
                         <div style={{ marginBottom: "20px" }}></div>
                         <Row>
                           <Col sm="12">

@@ -2,6 +2,7 @@ import {
   REGISTER_USER_REQUEST,
   REGISTER_USER_SUCCESS,
   REGISTER_USER_FAIL,
+  REGISTER_USER_RESET,
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
   LOGIN_FAIL,
@@ -41,6 +42,12 @@ import {
   REGISTER_ADMIN_REQUEST,
   REGISTER_ADMIN_SUCCESS,
   REGISTER_ADMIN_FAIL,
+  ALL_RIDERS_FAIL,
+  ALL_RIDERS_REQUEST,
+  ALL_RIDERS_SUCCESS,
+  ALL_EMPLOYEES_REQUEST,
+  ALL_EMPLOYEES_SUCCESS,
+  ALL_EMPLOYEES_FAIL,
 } from "../constants/userConstants";
 
 export const authReducer = (state = { user: {} }, action) => {
@@ -72,7 +79,7 @@ export const authReducer = (state = { user: {} }, action) => {
       };
 
     case REGISTER_USER_FAIL:
-      case REGISTER_ADMIN_FAIL: 
+    case REGISTER_ADMIN_FAIL:
     case LOGIN_FAIL:
     case LOAD_USER_FAIL:
       return {
@@ -256,6 +263,42 @@ export const allUsersReducer = (state = { users: [] }, action) => {
       };
 
     case ALL_USERS_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+
+    case CLEAR_ERRORS:
+      return {
+        ...state,
+        error: null,
+      };
+
+    default:
+      return state;
+  }
+};
+
+export const allStaffReducer = (state = { users: [] }, action) => {
+  switch (action.type) {
+    case ALL_RIDERS_REQUEST:
+    case ALL_EMPLOYEES_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+
+    case ALL_RIDERS_SUCCESS:
+    case ALL_EMPLOYEES_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        users: action.payload,
+      };
+
+    case ALL_RIDERS_FAIL:
+    case ALL_EMPLOYEES_FAIL:
       return {
         ...state,
         loading: false,

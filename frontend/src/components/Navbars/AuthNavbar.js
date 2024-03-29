@@ -30,6 +30,7 @@ import {
   UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
+  Button,
   DropdownItem,
 } from "reactstrap";
 import React from "react";
@@ -40,6 +41,7 @@ import swal from "sweetalert";
 const AdminNavbar = () => {
   const { user, loading } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.cart);
+  const { cartProductItems } = useSelector((state) => state.cartProduct);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -47,6 +49,8 @@ const AdminNavbar = () => {
     dispatch(logout());
     swal("Logout Sucessfully", "", "success");
   };
+
+  const storeBranchinfo = JSON.parse(sessionStorage.getItem("selectedStore"));
 
   const Avatar = ({ src, alt, size }) => {
     const avatarStyle = {
@@ -114,14 +118,26 @@ const AdminNavbar = () => {
             <Nav className="ml-auto" navbar>
               {user ? (
                 <>
-                  <NavItem>
-                    <NavLink className="nav-link-icon" to="/cart" tag={Link}>
-                      <i className="ni ni-cart" />
-                      <span className="nav-link-inner--text">
-                        {cartItems.length}
-                      </span>
-                    </NavLink>
-                  </NavItem>
+                  {storeBranchinfo ? (
+                    <NavItem>
+                      <NavLink className="nav-link-icon" to="/cart" tag={Link}>
+                        <i className="ni ni-cart" />
+                        <span className="nav-link-inner--text">
+                          {cartItems.length + cartProductItems.length}
+                        </span>
+                      </NavLink>
+                    </NavItem>
+                  ) : (
+                    <NavItem>
+                      <NavLink
+                        className="nav-link-icon"
+                        to="/storeselection"
+                        tag={Link}>
+                        <i className="ni ni-cart" />
+                        <span className="nav-link-inner--text">Order Now</span>
+                      </NavLink>
+                    </NavItem>
+                  )}
                   <UncontrolledDropdown nav>
                     <DropdownToggle
                       caret
@@ -152,10 +168,10 @@ const AdminNavbar = () => {
                         Gallons
                       </DropdownItem> */}
 
-                      <DropdownItem href="/storeselection">
+                      {/* <DropdownItem href="/storeselection">
                         <i className="now-ui-icons business_chart-bar-32"></i>
                         Order Now
-                      </DropdownItem>
+                      </DropdownItem> */}
                       <DropdownItem href="/login" onClick={logoutHandler}>
                         <i className="now-ui-icons media-1_button-power"></i>
                         Logout

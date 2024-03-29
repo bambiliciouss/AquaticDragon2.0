@@ -16,8 +16,7 @@ exports.createProduct = async (req, res, next) => {
     if (existingProduct) {
       return res.status(400).json({
         success: false,
-        message:
-          "Product already exists.",
+        message: "Product already exists.",
       });
     }
 
@@ -129,7 +128,20 @@ exports.AllProductStockinStore = async (req, res, next) => {
     const product = await Product.find({
       storebranch: req.params.id,
       deleted: false,
-    }).populate("typesgallon", "typeofGallon");
+    }).populate("typesgallon", "typeofGallon gallonImage.url");
+
+    // products.forEach((product) => {
+    //   let totalStocks = 0;
+    //   product.stocks.forEach((stock) => {
+    //     if (!stock.deleted) {
+    //       totalStocks += stock.quantity;
+    //     }
+    //   });
+    //   console.log(
+    //     `Total stocks for ${product.typesgallon.typeofGallon}: ${totalStocks}`
+    //   );
+    // });
+
     res.status(200).json({
       success: true,
       product,

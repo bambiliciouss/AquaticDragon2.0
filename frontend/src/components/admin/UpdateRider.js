@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import {
-  getUserDetails,
+  getStaffDetails,
   updateRider,
   deleteUser,
   clearErrors,
@@ -45,7 +45,10 @@ import {
   InputGroup,
   Form,
 } from "reactstrap";
-
+import {
+  allAdminStoreBranch,
+  deleteStoreBranch,
+} from "actions/storebranchActions";
 const UpdateRider = () => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
@@ -82,6 +85,9 @@ const UpdateRider = () => {
   const [selectedFileName, setSelectedFileName] = useState("");
   const [selectedFileNameBC, setSelectedFileNameBC] = useState("");
   const [selectedFileNameDL, setSelectedFileNameDL] = useState("");
+  const [store, setStore] = useState("");
+
+  const { storeBranch } = useSelector((state) => state.allStoreBranch);
 
   const notifyError = (message = "") =>
     toast.error(message, {
@@ -107,12 +113,12 @@ const UpdateRider = () => {
 
   useEffect(() => {
     setRole("rider");
-
+    dispatch(allAdminStoreBranch());
     const defaultAddress =
       user?.addresses?.find((address) => address.isDefault) || {};
 
     if (user && user._id !== id) {
-      dispatch(getUserDetails(id));
+      dispatch(getStaffDetails(id));
     } else {
       setFname(user.fname);
       setLname(user.lname);
@@ -126,6 +132,7 @@ const UpdateRider = () => {
       setMedcertPreview(user.medcert.url);
       setBarangayclearancePreview(user.barangayclearance.url);
       setDriverslicensePreview(user.driverslicense.url);
+      setStore(user.storebranch._id);
     }
 
     if (error) {
@@ -160,7 +167,7 @@ const UpdateRider = () => {
     formData.append("barangayclearance", barangayclearance);
     formData.append("driverslicense", driverslicense);
     formData.append("role", role);
-
+    formData.append("storebranch", store);
     dispatch(updateRider(id, formData));
   };
 
@@ -362,6 +369,23 @@ const UpdateRider = () => {
                                   className="custom-file-label">
                                   Choose Avatar
                                 </label>
+                              </div>
+
+                              <div>
+                                <label className="form-control-label">
+                                  Assigned Store
+                                </label>
+                                <select
+                                  className="form-control"
+                                  value={store}
+                                  onChange={(e) => setStore(e.target.value)}>
+                                  <option value="">Select Store</option>
+                                  {storeBranch.map((branch) => (
+                                    <option key={branch._id} value={branch._id}>
+                                      {branch.branch}
+                                    </option>
+                                  ))}
+                                </select>
                               </div>
                             </Col>
                             <Col lg="9">

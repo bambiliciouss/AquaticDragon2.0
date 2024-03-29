@@ -45,13 +45,14 @@ const OrderDetails = () => {
 
   const {
     orderItems,
+    orderProducts,
     containerStatus,
     orderclaimingOption,
     selectedStore,
     deliveryAddress,
     paymentInfo,
     orderStatus,
-    notes,
+    // notes,
     customer,
     totalPrice,
     createdAt,
@@ -242,6 +243,25 @@ const OrderDetails = () => {
                           </Col>
                         </Row>
                       ))}
+
+{orderProducts &&
+                                  orderProducts.map((item, index) => (
+                                    <Row key={index}>
+                                      <Col sm="5">
+                                        {item.type.typeofGallon} (NEW CONTAINER)
+                                      </Col>
+                                      <Col
+                                        sm="3"
+                                        style={{ textAlign: "center" }}>
+                                        {item.quantity} pc(s)
+                                      </Col>
+                                      <Col
+                                        sm="4"
+                                        style={{ textAlign: "right" }}>
+                                        ₱{item.price}.00
+                                      </Col>
+                                    </Row>
+                                  ))}
                   </CardText>
                 </Card>
               </Col>
@@ -316,7 +336,7 @@ const OrderDetails = () => {
               </Col>
             </Row>
             <div style={{ marginBottom: "20px" }}></div>
-            <Row>
+            {/* <Row>
               <Col sm="12">
                 <Card body>
                   <CardText>
@@ -331,7 +351,7 @@ const OrderDetails = () => {
                   </CardText>
                 </Card>
               </Col>
-            </Row>
+            </Row> */}
             <div style={{ marginBottom: "20px" }}></div>
             <Row>
               <Col sm="12">

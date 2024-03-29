@@ -79,6 +79,7 @@ export const allProductList = (id) => async (dispatch) => {
   }
 };
 
+
 export const allProductStockLogs = (id) => async (dispatch) => {
   try {
     dispatch({ type: ALL_PRODUCTSTOCKLOG_REQUEST });
