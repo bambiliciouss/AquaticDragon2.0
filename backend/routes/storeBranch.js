@@ -8,8 +8,8 @@ const {
   GetStoreDetails,
   updateStoreBranch,
   AdminAllStoreBranch,
-  AllStoreBranchUser
-
+  AllStoreBranchUser,
+  getAdminBranches
 } = require("../controllers/storeBranchController");
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
@@ -55,4 +55,6 @@ router.put(
   isAuthenticatedUser,
   updateStoreBranch
 );
+
+router.get('/admin/all/store/branches/:id', getAdminBranches)
 module.exports = router;
