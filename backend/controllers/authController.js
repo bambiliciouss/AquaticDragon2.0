@@ -1408,7 +1408,7 @@ exports.AllStoreUsers = async (req, res, next) => {
     const orders = await Order.find({
       "selectedStore.store": storeBranchIDs,
     })
-      .populate("customer", "fname lname avatar addresses")
+      .populate("customer", "fname lname avatar addresses role")
       .populate("selectedStore.store");
 
     // Extract unique user IDs from orders
