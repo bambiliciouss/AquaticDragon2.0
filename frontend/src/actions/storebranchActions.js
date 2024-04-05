@@ -100,6 +100,22 @@ export const allAdminStoreBranch = () => async (dispatch) => {
   }
 };
 
+export const allAdminBranches = (id) => async (dispatch) => {
+  try {
+    dispatch({ type: ALL_STOREBRANCH_REQUEST });
+    const { data } = await axios.get(`/api/v1/admin/all/store/branches/${id}`);
+    dispatch({
+      type: ALL_STOREBRANCH_SUCCESS,
+      payload: data.branches,
+    });
+  } catch (error) {
+    dispatch({
+      type: ALL_STOREBRANCH_FAIL,
+      payload: error.response.data.message,
+    });
+  }
+}
+
 export const deleteStoreBranch = (id) => async (dispatch) => {
   try {
     dispatch({ type: DELETE_STOREBRANCH_REQUEST });
