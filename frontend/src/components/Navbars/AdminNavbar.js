@@ -36,6 +36,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../actions/userActions";
 import swal from "sweetalert";
+import DropdownComponent from "components/button/Dropdown";
 const AdminNavbar = (props) => {
   const dispatch = useDispatch();
   const { user, loading } = useSelector((state) => state.auth);
@@ -67,6 +68,7 @@ const AdminNavbar = (props) => {
               </FormGroup>
             </Form> */}
             <Nav className="align-items-center d-none d-md-flex" navbar>
+              <DropdownComponent/>
               <UncontrolledDropdown nav>
                 <DropdownToggle className="pr-0" nav>
                   <Media className="align-items-center">
