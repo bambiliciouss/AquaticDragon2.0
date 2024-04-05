@@ -58,6 +58,7 @@
     "nouislider": "15.4.0",
     "osm": "^1.0.0",
     "react": "18.2.0",
+    "react-bootstrap": "^2.10.2",
     "react-chartjs-2": "2.11.2",
     "react-copy-to-clipboard": "5.1.0",
     "react-datetime": "3.2.0",
