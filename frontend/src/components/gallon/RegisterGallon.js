@@ -23,7 +23,7 @@ import { CREATE_GALLON_RESET } from "../../constants/gallonConstants";
 import { useForm } from "react-hook-form";
 
 import { allTypesGallon } from "actions/typesgallonAction";
-
+import swal from 'sweetalert';
 const RegisterGallon = () => {
   const [gallon, setGallon] = useState({
     type: "",
