@@ -224,3 +224,21 @@ exports.AllStoreBranchUser = async (req, res, next) => {
       .json({ message: "Internal Server Error", error: error.message });
   }
 };
+
+exports.getAdminBranches = async (req, res, next) => {
+  try{
+    const userID = req.params.id
+    const branches = await StoreBranch.find({user: userID, deleted: false})
+    if (!branches){
+      return res.status(404).json({success: false, message: "Branches not found"})
+    }
+    res.status(200).json({
+      success: true,
+      branches: branches
+    })
+
+
+  }catch(error){
+
+  }
+}
