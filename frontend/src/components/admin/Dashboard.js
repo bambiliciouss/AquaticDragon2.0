@@ -15,7 +15,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 // node.js library that concatenates classes (strings)
 import classnames from "classnames";
 // javascipt plugin for creating charts
@@ -56,9 +56,50 @@ import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import AdminFooter from "components/Footers/AdminFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 import MetaData from "components/layout/MetaData.js";
+
+
+// Default Admin Chart (All store sales)
+import { allStoreSalesAction, clearErrors } from "../../actions/adminAction";
+import { useDispatch, useSelector } from "react-redux";
 const Dashboard = (props) => {
   const [activeNav, setActiveNav] = useState(1);
   const [chartExample1Data, setChartExample1Data] = useState("data1");
+  const dispatch = useDispatch();
+  const { sales, loading, error } = useSelector((state) => state.adminStoreSales);
+  const {user} = useSelector((state)=>state.auth)
+  const [data , setData] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "Sales",
+        data: [],
+        maxBarThickness: 20,
+      },
+    ],
+  })
+
+  useEffect(()=>{
+    if (sales){
+      let salesData = {
+        labels: sales.map((sale) => sale.branch),
+        datasets: [
+          {
+            label: "Sales",
+            data: sales.map((sale) => sale.totalSales),
+            maxBarThickness: 30,
+          },
+        ],
+      }
+      setData(salesData)
+    }
+  },[sales])
+
+  useEffect(()=>{
+    dispatch(allStoreSalesAction(user._id));
+    if(error){
+      dispatch(clearErrors())
+    }
+  },[dispatch, error])
 
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
@@ -72,7 +113,7 @@ const Dashboard = (props) => {
 
   const location = useLocation();
 
-  React.useEffect(() => {
+  useEffect(() => {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
   }, [location]);
@@ -91,10 +132,34 @@ const Dashboard = (props) => {
         <AdminNavbar />
         <Header />
         {/* Page content */}
-        {/* <Container className="mt--7" fluid>
+        <Container className="mt--7" fluid>
           <Row>
-            <Col className="mb-5 mb-xl-0" xl="8">
-              <Card className="bg-gradient-default shadow">
+            <Col className="mb-5 mb-xl-4" xl="12">
+            <Card className="shadow">
+                <CardHeader className="bg-transparent">
+                  <Row className="align-items-center">
+                    <div className="col">
+                      <h6 className="text-uppercase text-muted ls-1 mb-1">
+                        Performance
+                      </h6>
+                      <h2 className="mb-0">Total orders</h2>
+                    </div>
+                  </Row>
+                </CardHeader>
+                <CardBody>
+                
+                  <div className="chart">
+                    <Bar
+                      data={data}
+                      options={chartExample2.options}
+                    />
+                  </div>
+                </CardBody>
+              </Card>
+              
+            </Col>
+            {/* <Col xl="4">
+            <Card className="bg-gradient-default shadow">
                 <CardHeader className="bg-transparent">
                   <Row className="align-items-center">
                     <div className="col">
@@ -139,29 +204,6 @@ const Dashboard = (props) => {
                       data={chartExample1[chartExample1Data]}
                       options={chartExample1.options}
                       getDatasetAtEvent={(e) => console.log(e)}
-                    />
-                  </div>
-                </CardBody>
-              </Card>
-            </Col>
-            <Col xl="4">
-              <Card className="shadow">
-                <CardHeader className="bg-transparent">
-                  <Row className="align-items-center">
-                    <div className="col">
-                      <h6 className="text-uppercase text-muted ls-1 mb-1">
-                        Performance
-                      </h6>
-                      <h2 className="mb-0">Total orders</h2>
-                    </div>
-                  </Row>
-                </CardHeader>
-                <CardBody>
-                
-                  <div className="chart">
-                    <Bar
-                      data={chartExample2.data}
-                      options={chartExample2.options}
                     />
                   </div>
                 </CardBody>
@@ -352,9 +394,9 @@ const Dashboard = (props) => {
                   </tbody>
                 </Table>
               </Card>
-            </Col>
+            </Col> */}
           </Row>
-        </Container> */}
+        </Container>
         <Container fluid>
           <AdminFooter />
         </Container>
