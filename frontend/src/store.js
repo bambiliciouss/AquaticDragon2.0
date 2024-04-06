@@ -110,7 +110,16 @@ import {
   storebarangayReducer,
 } from "reducers/storebarangayReducers";
 
+import {
+  allStoreSalesReducer,
+} from "reducers/adminReducers";
+
+
 const reducers = combineReducers({
+  adminStoreSales: allStoreSalesReducer,
+
+
+
   auth: authReducer,
   user: userReducer,
   forgotPassword: forgotPasswordReducer,

@@ -4,7 +4,7 @@ const User = require("../models/user");
 const ErrorHandler = require("../utils/errorHandler");
 const cloudinary = require("cloudinary");
 const mongoose = require("mongoose");
-
+const Order = require("../models/order");
 exports.registerStoreBranch = async (req, res, next) => {
   try {
     const result = await new Promise((resolve, reject) => {
@@ -242,3 +242,47 @@ exports.getAdminBranches = async (req, res, next) => {
 
   }
 }
+
+
+exports.getSalesByBranch = async (req, res) => {
+  try {
+    const branches = await StoreBranch.find({ user: req.params.id });
+    const branchIds = branches.map((branch)=>branch._id);
+    
+    const salesByBranch = await Order.aggregate([
+      {
+        $match: {
+          'selectedStore.store': { $in: branchIds },
+        },
+      },
+      {
+        $group: {
+          _id: '$selectedStore.store',
+          totalSales: { $sum: '$totalPrice' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'storebranches', // replace with the actual name of your store branches collection
+          localField: '_id',
+          foreignField: '_id',
+          as: 'store',
+        },
+      },
+      {
+        $unwind: '$store',
+      },
+      {
+        $project: {
+          _id: 0,
+          branch: '$store.branch',
+          totalSales: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json(salesByBranch);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
