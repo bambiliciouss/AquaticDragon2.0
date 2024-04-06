@@ -1388,6 +1388,34 @@ exports.admingetAllAddresses = async (req, res) => {
 //   }
 // };
 
+exports.SingleBranchUsers = async (req, res, next) => {
+  try {
+    // // Get all the orders from the admin's branches only
+    const orders = await Order.find({
+      "selectedStore.store": req.params.id,
+    })
+      .populate("customer", "fname lname avatar addresses role")
+      .populate("selectedStore.store");
+
+    // Extract unique user IDs from orders
+    const usersWithTransactions = [
+      ...new Set(orders.map((order) => order.customer)),
+    ];
+
+    const counter = usersWithTransactions.length;
+
+    res.status(200).json({
+      success: true,
+      counter,
+      usersWithTransactions,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+}
+
 exports.AllStoreUsers = async (req, res, next) => {
   try {
     // Fetch all orders
@@ -1408,7 +1436,7 @@ exports.AllStoreUsers = async (req, res, next) => {
     const orders = await Order.find({
       "selectedStore.store": storeBranchIDs,
     })
-      .populate("customer", "fname lname avatar addresses")
+      .populate("customer", "fname lname avatar addresses role")
       .populate("selectedStore.store");
 
     // Extract unique user IDs from orders
@@ -1448,6 +1476,24 @@ exports.AllStoreEmployee = async (req, res, next) => {
       .json({ message: "Internal Server Error", error: error.message });
   }
 };
+exports.AllStaff = async (req, res, next) => {
+  console.log(req.params.id);
+  try {
+    const users = await User.find({
+      deleted: false,
+      role: { $in: ["employee", "rider"] },
+      storebranch: req.params.id,
+    });
+    res.status(200).json({
+      success: true,
+      users,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+}
 
 exports.AllStoreRider = async (req, res, next) => {
   console.log(req.params.id);

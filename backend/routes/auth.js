@@ -32,6 +32,8 @@ const {
   AllStoreEmployee,
   GetStaffDetails,
   AllStoreRider,
+  AllStaff,
+  SingleBranchUsers,
 } = require("../controllers/authController");
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
@@ -121,6 +123,20 @@ router.get(
   authorizeRoles("admin"),
   AllStoreEmployee
 );
+
+router.get(
+  "/admin/store/staff/:id",
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
+  AllStaff
+)
+
+router.get(
+  "/admin/store/customer/:id",
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
+  SingleBranchUsers
+)
 
 router.get(
   "/admin/store/rider/:id",
