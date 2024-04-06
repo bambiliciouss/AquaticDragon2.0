@@ -21,20 +21,30 @@ import { Card, CardBody, CardTitle, Container, Row, Col } from "reactstrap";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { allUsers } from "../../actions/userActions";
+
+import { getAllStaff, getSingleBranchUsers } from "../../actions/adminAction";
 import { allGallons } from "../../actions/gallonActions";
 
 const Header = () => {
   const dispatch = useDispatch();
-  const { users } = useSelector((state) => state.allUsers);
+  const { users } = useSelector((state) => state.adminStoreCustomer);
+  const {users: staff} = useSelector((state)=>state.adminStoreStaff);
   const { gallons } = useSelector((state) => state.allGallons);
   const currentDate = new Date();
   const formattedDate = currentDate.toDateString();
+  const {branch: branchID} = useSelector((state) => state.adminStoreBranch);
   useEffect(() => {
-    dispatch(allUsers());
+    
+    
     dispatch(allGallons());
-    console.log("users", users.length);
-    // console.log("gallons", gallons.length);
+    
   }, [dispatch]);
+  useEffect(()=>{
+    if (branchID){
+      dispatch(getSingleBranchUsers(branchID));
+      dispatch(getAllStaff(branchID))
+    }
+  },[branchID])
   return (
     <>
       <div className="header bg-gradient-info pb-8 pt-5 pt-md-8">
@@ -84,8 +94,8 @@ const Header = () => {
                         </CardTitle>
                         <span className="h2 font-weight-bold mb-0">
                           {" "}
-                          {users &&
-                            users.filter((user) => user.role === "employee")
+                          {staff &&
+                            staff.filter((user) => user.role === "employee")
                               .length}
                         </span>
                       </div>
@@ -115,8 +125,8 @@ const Header = () => {
                           Riders
                         </CardTitle>
                         <span className="h2 font-weight-bold mb-0">
-                          {users &&
-                            users.filter((user) => user.role === "rider")
+                          {staff &&
+                            staff.filter((user) => user.role === "rider")
                               .length}
                         </span>
                       </div>
