@@ -7,6 +7,7 @@ const {
   getOtherGallonInventoryDetails,
   updateOtherGallonStoreInventory,
   deleteOtherGallonStoreInventory,
+  getTotalSalesWalkin
 } = require("../controllers/othergalloninventoryController");
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
@@ -33,6 +34,9 @@ router.put(
   isAuthenticatedUser,
   updateOtherGallonStoreInventory
 );
+
+router.get("/admin/sales/othergallon/inventory", getTotalSalesWalkin)
+
 
 router
   .route("/delete/othergallon/inventory/:id")

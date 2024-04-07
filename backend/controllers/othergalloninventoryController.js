@@ -114,3 +114,48 @@ exports.deleteOtherGallonStoreInventory = async (req, res, next) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
+
+
+exports.getTotalSalesWalkin = async (req, res) => {
+  try {
+
+    const totalSalesByBranch = await OtherGallon.aggregate([
+      {
+        $match: {
+          deleted: false
+
+        },
+      },
+      {
+        $group: {
+          _id: '$storebranch',
+          totalSales: { $sum: { $multiply: ['$price', '$quantity'] } },
+        },
+      },
+      {
+        $lookup: {
+          from: 'storebranches', // replace with the actual name of your store branches collection
+          localField: '_id',
+          foreignField: '_id',
+          as: 'storebranch',
+        },
+      },
+      {
+        $unwind: '$storebranch',
+      },
+      {
+        $project: {
+          _id: 1,
+          totalSales: 1,
+          branch: '$storebranch.branch',
+        },
+      },
+    ]);
+    
+    res.status(200).json({
+      success:true,
+      totalSalesByBranch: totalSalesByBranch});
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

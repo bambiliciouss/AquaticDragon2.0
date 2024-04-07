@@ -11,6 +11,9 @@ import {
     ALL_CUSTOMER_REQUEST,
     ALL_CUSTOMER_SUCCESS,
     ALL_CUSTOMER_FAIL,
+    SALES_WALKIN_REQUEST,
+    SALES_WALKIN_SUCCESS,
+    SALES_WALKIN_FAIL,
     CLEAR_ERRORS,
 } from '../constants/adminConstants';
 
@@ -108,6 +111,33 @@ export const adminUsersReducer = (state = { users: [] }, action) => {
                 users: action.payload,
             };
         case ALL_CUSTOMER_FAIL:
+            return {
+                loading: false,
+                error: action.payload,
+            };
+        case CLEAR_ERRORS:
+            return {
+                ...state,
+                error: null,
+            };
+        default:
+            return state;
+    }
+}
+
+export const adminSalesWalkinReducer = (state = { sales: [] }, action) => {
+    switch(action.type){
+        case SALES_WALKIN_REQUEST:
+            return {
+                loading: true,
+                sales: [],
+            };
+        case SALES_WALKIN_SUCCESS:
+            return {
+                loading: false,
+                sales: action.payload,
+            };
+        case SALES_WALKIN_FAIL:
             return {
                 loading: false,
                 error: action.payload,

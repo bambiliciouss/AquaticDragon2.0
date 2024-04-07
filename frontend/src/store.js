@@ -113,9 +113,10 @@ import {
 import {
   allStoreSalesReducer,
   adminSingleStoreReducer,
+  adminSalesWalkinReducer,
+  adminStaffReducer,
+  adminUsersReducer
 } from "reducers/adminReducers";
-import { adminStaffReducer } from "reducers/adminReducers";
-import { adminUsersReducer } from "reducers/adminReducers";
 
 
 const reducers = combineReducers({
@@ -123,7 +124,8 @@ const reducers = combineReducers({
   adminStoreBranch: adminSingleStoreReducer,
   adminStoreStaff: adminStaffReducer,
   adminStoreCustomer: adminUsersReducer,
-
+  adminSalesWalkin: adminSalesWalkinReducer,
+  
   auth: authReducer,
   user: userReducer,
   forgotPassword: forgotPasswordReducer,
