@@ -27,8 +27,8 @@ import { allGallons } from "../../actions/gallonActions";
 
 const Header = () => {
   const dispatch = useDispatch();
-  const { users } = useSelector((state) => state.adminStoreCustomer);
-  const {users: staff} = useSelector((state)=>state.adminStoreStaff);
+  const { users, loading: customerLoading } = useSelector((state) => state.adminStoreCustomer);
+  const {users: staff, loading: staffLoading} = useSelector((state)=>state.adminStoreStaff);
   const { gallons } = useSelector((state) => state.allGallons);
   const currentDate = new Date();
   const formattedDate = currentDate.toDateString();
@@ -63,8 +63,8 @@ const Header = () => {
                           Customers
                         </CardTitle>
                         <span className="h2 font-weight-bold mb-0">
-                          {users &&
-                            users.filter((user) => user.role === "user").length}
+                          {users && !customerLoading &&
+                            users.filter((user) => user.role === "user").length > 0 ? users.filter((user) => user.role === "user").length : "Select a branch"}
                         </span>
                       </div>
                       <Col className="col-auto">
@@ -94,9 +94,9 @@ const Header = () => {
                         </CardTitle>
                         <span className="h2 font-weight-bold mb-0">
                           {" "}
-                          {staff &&
+                          {staff && !staffLoading &&
                             staff.filter((user) => user.role === "employee")
-                              .length}
+                              .length > 0 ? staff.filter((user) => user.role === "employee").length:"Select a branch"}
                         </span>
                       </div>
                       <Col className="col-auto">
@@ -125,9 +125,9 @@ const Header = () => {
                           Riders
                         </CardTitle>
                         <span className="h2 font-weight-bold mb-0">
-                          {staff &&
+                          {staff &&!staffLoading &&
                             staff.filter((user) => user.role === "rider")
-                              .length}
+                              .length > 0 ? staff.filter((user) => user.role === "rider").length:"Select a branch"}
                         </span>
                       </div>
                       <Col className="col-auto">
