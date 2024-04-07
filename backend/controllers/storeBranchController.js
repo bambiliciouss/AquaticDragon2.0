@@ -274,7 +274,7 @@ exports.getSalesByBranch = async (req, res) => {
       },
       {
         $project: {
-          _id: 0,
+          _id:1,
           branch: '$store.branch',
           totalSales: 1,
         },
