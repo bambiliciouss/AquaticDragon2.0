@@ -9,6 +9,7 @@ const {
   getSingleOrder,
   allOrdersAdmin,
   addOrderStatuswithRider,
+  getOrderTransactions,
 } = require("../controllers/orderController");
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
@@ -29,5 +30,5 @@ router
   .get(isAuthenticatedUser, authorizeRoles("admin"), allOrdersAdmin);
 
 router.route("/order/:id").get(isAuthenticatedUser, getSingleOrder);
-
+router.get("/admin/all/orders/:id", getOrderTransactions)
 module.exports = router;

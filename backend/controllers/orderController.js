@@ -219,3 +219,39 @@ exports.getSingleOrder = async (req, res, next) => {
       .json({ message: "Internal Server Error", error: error.message });
   }
 };
+
+exports.getOrderTransactions = async (req, res, next) => {
+  try {
+    const branch = req.params.id
+    const transactions = await Order.aggregate([
+      {
+        $match: {
+          'selectedStore.store': new mongoose.Types.ObjectId(branch),
+          $or: [
+            { containerStatus: {$regex: "Walk In", $options: "i"}, orderclaimingOption: {$regex: "Walk In", $options: "i"} },
+            { containerStatus: {$regex: "Walk In", $options: "i"}, orderclaimingOption: {$regex: "Deliver", $options: "i"} },
+            { containerStatus: {$regex:"Pick Up",$options: "i"}, orderclaimingOption: {$regex: "Walk In", $options: "i"} },
+            { containerStatus: {$regex:"Pick Up",$options: "i"}, orderclaimingOption: {$regex: "Deliver", $options: "i"} }
+          ]
+        }
+      },
+      {
+        $group: {
+          // _id: { containerStatus: "$containerStatus", orderclaimingOption: "$orderclaimingOption" },
+          _id: { $concat: [ "$containerStatus", " - ", "$orderclaimingOption" ]},
+          // orders: { $push: "$$ROOT" },
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    res.status(200).json({
+      success: true,
+      transactions
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+};
