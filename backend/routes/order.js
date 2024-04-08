@@ -31,6 +31,6 @@ router
   .get(isAuthenticatedUser, authorizeRoles("admin"), allOrdersAdmin);
 
 router.route("/order/:id").get(isAuthenticatedUser, getSingleOrder);
-router.get("/admin/all/orders/:id", getOrderTransactions);
-router.get("/admin/orders/byGallon/:id", getOrdersByGallonType)
+router.get("/admin/all/orders/:id", isAuthenticatedUser, authorizeRoles("admin"), getOrderTransactions);
+router.get("/admin/orders/byGallon/:id",isAuthenticatedUser, authorizeRoles("admin"), getOrdersByGallonType)
 module.exports = router;
