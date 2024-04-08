@@ -17,6 +17,9 @@ import {
     ALL_ORDER_TRANSACTIONS_REQUEST,
     ALL_ORDER_TRANSACTIONS_SUCCESS,
     ALL_ORDER_TRANSACTIONS_FAIL,
+    ALL_ORDER_GALLON_TYPE_REQUEST,
+    ALL_ORDER_GALLON_TYPE_SUCCESS,
+    ALL_ORDER_GALLON_TYPE_FAIL,
     CLEAR_ERRORS,
 } from '../constants/adminConstants';
 
@@ -168,6 +171,33 @@ export const adminOrderTransactionsReducer = (state = { transactions: [] }, acti
                 transactions: action.payload,
             };
         case ALL_ORDER_TRANSACTIONS_FAIL:
+            return {
+                loading: false,
+                error: action.payload,
+            };
+        case CLEAR_ERRORS:
+            return {
+                ...state,
+                error: null,
+            };
+        default:
+            return state;
+    }
+}
+
+export const adminOrderGallonTypeReducer = (state = { gallons: [] }, action) => {
+    switch(action.type){
+        case ALL_ORDER_GALLON_TYPE_REQUEST:
+            return {
+                loading: true,
+                gallons: [],
+            };
+        case ALL_ORDER_GALLON_TYPE_SUCCESS:
+            return {
+                loading: false,
+                gallons: action.payload,
+            };
+        case ALL_ORDER_GALLON_TYPE_FAIL:
             return {
                 loading: false,
                 error: action.payload,

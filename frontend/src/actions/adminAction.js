@@ -22,6 +22,10 @@ import {
     ALL_ORDER_TRANSACTIONS_SUCCESS,
     ALL_ORDER_TRANSACTIONS_FAIL,
 
+    ALL_ORDER_GALLON_TYPE_REQUEST,
+    ALL_ORDER_GALLON_TYPE_SUCCESS,
+    ALL_ORDER_GALLON_TYPE_FAIL,
+
     CLEAR_ERRORS,
 } from "../constants/adminConstants";
 import axios from 'axios'
@@ -116,6 +120,24 @@ export const getOrderTransactions = (id) => async (dispatch) => {
     } catch (error) {
         dispatch({
             type: ALL_ORDER_TRANSACTIONS_FAIL,
+            payload: error.response
+                ? error.response.data.message
+                : "Unknown error occurred",
+        });
+    }
+}
+
+export const getOrderByGallonType = (id) => async (dispatch) => {
+    try {
+        dispatch({ type: ALL_ORDER_GALLON_TYPE_REQUEST });
+        const { data } = await axios.get(`/api/v1/admin/orders/byGallon/${id}`);
+        dispatch({
+            type: ALL_ORDER_GALLON_TYPE_SUCCESS,
+            payload: data.orders,
+        });
+    } catch (error) {
+        dispatch({
+            type: ALL_ORDER_GALLON_TYPE_FAIL,
             payload: error.response
                 ? error.response.data.message
                 : "Unknown error occurred",
