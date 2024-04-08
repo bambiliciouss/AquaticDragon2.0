@@ -60,7 +60,7 @@ import MetaData from "components/layout/MetaData.js";
 
 
 // Default Admin Chart (All store sales)
-import { allStoreSalesAction, getSalesWalkin, getOrderTransactions, clearErrors } from "../../actions/adminAction";
+import { allStoreSalesAction, getSalesWalkin, getOrderTransactions, getOrderByGallonType, clearErrors } from "../../actions/adminAction";
 import { useDispatch, useSelector } from "react-redux";
 const Dashboard = (props) => {
   const [activeNav, setActiveNav] = useState(1);
@@ -71,6 +71,7 @@ const Dashboard = (props) => {
   const { user } = useSelector((state) => state.auth)
   const { branch } = useSelector((state) => state.adminStoreBranch)
   const { sales: walkinSales } = useSelector((state) => state.adminSalesWalkin);
+  const {gallons} = useSelector((state) => state.adminOrderGallonType)
   const [totalSales, setTotalSales] = useState(0)
   const [data, setData] = useState({
     labels: [],
@@ -83,6 +84,16 @@ const Dashboard = (props) => {
     ],
   })
   const [data2, setData2] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "Sales",
+        data: [],
+        maxBarThickness: 20,
+      },
+    ],
+  })
+  const [data3, setData3] = useState({
     labels: [],
     datasets: [
       {
@@ -129,7 +140,24 @@ const Dashboard = (props) => {
       }
       setData2(salesData)
     }
-  }, [sales, transactions])
+    if (gallons){
+      let salesData = {
+        labels: gallons.map((sale) => sale.typeName),
+        datasets: [
+          {
+            label: "Sales",
+            data: gallons.map((sale) => sale.count),
+            maxBarThickness: 30,
+            backgroundColor: gallons.map(() => getRandomColor()), // Add this line
+          },
+        ],
+      }
+      setData3(salesData)
+      console.log("Gallons: ", gallons);
+    }
+  }, [sales, transactions, gallons])
+
+
 
   const getTotalSales = (order,walkin) => {
     if (order.length > 0 && walkin.length > 0){
@@ -137,16 +165,13 @@ const Dashboard = (props) => {
       const totalSalesWalkin = walkin.find((sale) => sale._id === branch).totalSales || 0;
       setTotalSales(totalSalesOrder + totalSalesWalkin)
     }
-    else{
-      console.log("order: ", order)
-      console.log("walkin: ", walkin)
-    } 
   }
   useEffect(()=>{
     
     if (branch){
       getTotalSales(sales,walkinSales)
       dispatch(getOrderTransactions(branch));
+      dispatch(getOrderByGallonType(branch));
     }
   },[sales, walkinSales, branch])
   useEffect(() => {
@@ -314,7 +339,7 @@ const Dashboard = (props) => {
 
                   <div className="chart">
                     <Bar
-                      data={data2}
+                      data={data3}
                       options={chartExample2.options}
                     />
                   </div>
