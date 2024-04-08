@@ -14,6 +14,9 @@ import {
     SALES_WALKIN_REQUEST,
     SALES_WALKIN_SUCCESS,
     SALES_WALKIN_FAIL,
+    ALL_ORDER_TRANSACTIONS_REQUEST,
+    ALL_ORDER_TRANSACTIONS_SUCCESS,
+    ALL_ORDER_TRANSACTIONS_FAIL,
     CLEAR_ERRORS,
 } from '../constants/adminConstants';
 
@@ -138,6 +141,33 @@ export const adminSalesWalkinReducer = (state = { sales: [] }, action) => {
                 sales: action.payload,
             };
         case SALES_WALKIN_FAIL:
+            return {
+                loading: false,
+                error: action.payload,
+            };
+        case CLEAR_ERRORS:
+            return {
+                ...state,
+                error: null,
+            };
+        default:
+            return state;
+    }
+}
+
+export const adminOrderTransactionsReducer = (state = { transactions: [] }, action) => {
+    switch(action.type){
+        case ALL_ORDER_TRANSACTIONS_REQUEST:
+            return {
+                loading: true,
+                transactions: [],
+            };
+        case ALL_ORDER_TRANSACTIONS_SUCCESS:
+            return {
+                loading: false,
+                transactions: action.payload,
+            };
+        case ALL_ORDER_TRANSACTIONS_FAIL:
             return {
                 loading: false,
                 error: action.payload,

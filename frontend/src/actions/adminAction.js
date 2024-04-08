@@ -18,6 +18,10 @@ import {
     SALES_WALKIN_SUCCESS, 
     SALES_WALKIN_FAIL,
 
+    ALL_ORDER_TRANSACTIONS_REQUEST,
+    ALL_ORDER_TRANSACTIONS_SUCCESS,
+    ALL_ORDER_TRANSACTIONS_FAIL,
+
     CLEAR_ERRORS,
 } from "../constants/adminConstants";
 import axios from 'axios'
@@ -86,7 +90,7 @@ export const getSalesWalkin = () => async (dispatch)=>{
     try {
         dispatch({ type: SALES_WALKIN_REQUEST });
         const { data } = await axios.get(`/api/v1/admin/sales/othergallon/inventory`);
-        console.log("data in action: ", data);
+        
         dispatch({
             type: SALES_WALKIN_SUCCESS,
             payload: data.totalSalesByBranch,
@@ -94,6 +98,24 @@ export const getSalesWalkin = () => async (dispatch)=>{
     } catch (error) {
         dispatch({
             type: SALES_WALKIN_FAIL,
+            payload: error.response
+                ? error.response.data.message
+                : "Unknown error occurred",
+        });
+    }
+}
+
+export const getOrderTransactions = (id) => async (dispatch) => {
+    try {
+        dispatch({ type: ALL_ORDER_TRANSACTIONS_REQUEST });
+        const { data } = await axios.get(`/api/v1/admin/all/orders/${id}`);
+        dispatch({
+            type: ALL_ORDER_TRANSACTIONS_SUCCESS,
+            payload: data.transactions,
+        });
+    } catch (error) {
+        dispatch({
+            type: ALL_ORDER_TRANSACTIONS_FAIL,
             payload: error.response
                 ? error.response.data.message
                 : "Unknown error occurred",
