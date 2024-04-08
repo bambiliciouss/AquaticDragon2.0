@@ -255,3 +255,30 @@ exports.getOrderTransactions = async (req, res, next) => {
       .json({ message: "Internal Server Error", error: error.message });
   }
 };
+
+
+exports.getOrdersByGallonType = async (req, res, next) => {
+  try {
+    const branchID = req.params.id;
+    const orders = await Order.aggregate([
+      {
+        $match: {
+          'selectedStore.store': new mongoose.Types.ObjectId(branchID)
+        }
+      },
+      { $unwind: "$orderItems" },
+      {
+        $group: {
+          _id: "$orderItems.gallon",
+          typeName: { $first: "$orderItems.type" },
+          count: { $sum: "$orderItems.quantity" }
+        }
+      }
+    ]);
+
+    res.json(orders);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
