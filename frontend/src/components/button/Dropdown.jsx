@@ -6,14 +6,23 @@ import { useDispatch, useSelector } from 'react-redux';
 const DropdownComponent = () => {
     const dispatch = useDispatch();
     const { storeBranch, loading, error } = useSelector((state) => state.allStoreBranch);
-    
+   
     const { user } = useSelector((state) => state.auth);
+    
     const [branch, setBranch] = useState("");
     const dropdownHandler = (branch) => {
         setBranch(branch.branch);
         dispatch(setBranchID(branch._id));
-        
+        localStorage.setItem("branch", branch._id);
     }
+    useEffect(()=>{
+        const storedBranchId = localStorage.getItem("branch");
+        if (storedBranchId){
+            dispatch(setBranchID(storedBranchId));
+            const name = storeBranch.find((branch) => branch._id === storedBranchId);
+            setBranch(name ? name.branch : "");
+        }
+    },[storeBranch])
     useEffect(() => {
         dispatch(allAdminBranches(user._id));
         if (error) {
