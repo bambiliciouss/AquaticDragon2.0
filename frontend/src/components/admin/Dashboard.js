@@ -60,16 +60,17 @@ import MetaData from "components/layout/MetaData.js";
 
 
 // Default Admin Chart (All store sales)
-import { allStoreSalesAction, getSalesWalkin, clearErrors } from "../../actions/adminAction";
+import { allStoreSalesAction, getSalesWalkin, getOrderTransactions, clearErrors } from "../../actions/adminAction";
 import { useDispatch, useSelector } from "react-redux";
 const Dashboard = (props) => {
   const [activeNav, setActiveNav] = useState(1);
   const [chartExample1Data, setChartExample1Data] = useState("data1");
   const dispatch = useDispatch();
   const { sales, loading, error } = useSelector((state) => state.adminStoreSales);
+  const {transactions} = useSelector((state) => state.adminOrderTransaction);
   const { user } = useSelector((state) => state.auth)
   const { branch } = useSelector((state) => state.adminStoreBranch)
-  const { sales: walkinSales } = useSelector((state) => state.adminSalesWalkin)
+  const { sales: walkinSales } = useSelector((state) => state.adminSalesWalkin);
   const [totalSales, setTotalSales] = useState(0)
   const [data, setData] = useState({
     labels: [],
@@ -81,7 +82,24 @@ const Dashboard = (props) => {
       },
     ],
   })
-
+  const [data2, setData2] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "Sales",
+        data: [],
+        maxBarThickness: 20,
+      },
+    ],
+  })
+  let hue = Math.random() * 360;
+  const goldenRatioConjugate = 0.618033988749895;
+  function getRandomColor() {
+      hue += goldenRatioConjugate;
+      hue = hue % 1;
+      const h = Math.floor(hue*360)
+      return `hsl(${h},60%,60%)`
+  }
   useEffect(() => {
     if (sales) {
       let salesData = {
@@ -91,26 +109,50 @@ const Dashboard = (props) => {
             label: "Sales",
             data: sales.map((sale) => sale.totalSales),
             maxBarThickness: 30,
+            backgroundColor: sales.map(() => getRandomColor()), // Add this line
           },
         ],
       }
       setData(salesData)
     }
-  }, [sales])
+    if (transactions){
+      let salesData = {
+        labels: transactions.map((sale) => sale._id),
+        datasets: [
+          {
+            label: "Sales",
+            data: transactions.map((sale) => sale.count),
+            maxBarThickness: 30,
+            backgroundColor: transactions.map(() => getRandomColor()), // Add this line
+          },
+        ],
+      }
+      setData2(salesData)
+    }
+  }, [sales, transactions])
 
   const getTotalSales = (order,walkin) => {
-    const totalSalesOrder = order.find((sale) => sale._id === branch).totalSales;
-    const totalSalesWalkin = walkin.find((sale) => sale._id === branch).totalSales;
-    setTotalSales(totalSalesOrder + totalSalesWalkin)
+    if (order.length > 0 && walkin.length > 0){
+      const totalSalesOrder = order.find((sale) => sale._id === branch).totalSales || 0;
+      const totalSalesWalkin = walkin.find((sale) => sale._id === branch).totalSales || 0;
+      setTotalSales(totalSalesOrder + totalSalesWalkin)
+    }
+    else{
+      console.log("order: ", order)
+      console.log("walkin: ", walkin)
+    } 
   }
   useEffect(()=>{
-    if (sales && walkinSales && branch){
+    
+    if (branch){
       getTotalSales(sales,walkinSales)
+      dispatch(getOrderTransactions(branch));
     }
   },[sales, walkinSales, branch])
   useEffect(() => {
     dispatch(allStoreSalesAction(user._id));
     dispatch(getSalesWalkin());
+    
     
     if (error) {
       dispatch(clearErrors())
@@ -153,13 +195,13 @@ const Dashboard = (props) => {
           <Row>
             <Col className="mb-5 mb-xl-4" lg="6" xl="4">
 
-              <Card className="card-stats border-warning mb-4 mb-xl-0">
+              <Card className="card-stats mb-4 mb-xl-0">
                 <CardBody>
                   <Row className="align-items-center">
                     <div className="col">
                       <CardTitle
                         tag="h2"
-                        className="text-uppercase text-warning mb-0  font-weight-bolder">
+                        className="text-uppercase text-black mb-0  font-weight-bolder">
                         Total Sales
                       </CardTitle>
 
@@ -167,7 +209,7 @@ const Dashboard = (props) => {
                     <Col className="col-auto">
                       <CardTitle
                         tag={sales && branch && sales.find((sale) => sale._id === branch) ? "h1" : "h3"}
-                        className="text-uppercase text-warning mb-0 font-weight-bolder">
+                        className="text-uppercase text-primary mb-0 font-weight-bolder">
                         {totalSales ? `₱${totalSales}` : "Select a branch"}
                       </CardTitle>
 
@@ -179,13 +221,13 @@ const Dashboard = (props) => {
             </Col>
             <Col className="mb-5 mb-xl-4" lg="6" xl="4">
 
-              <Card className="card-stats border-warning mb-4 mb-xl-0">
+              <Card className="card-stats mb-4 mb-xl-0">
                 <CardBody>
                   <Row className="align-items-center">
                     <div className="col">
                       <CardTitle
                         tag="h2"
-                        className="text-uppercase text-warning mb-0  font-weight-bolder">
+                        className="text-uppercase text-black mb-0  font-weight-bolder">
                         Total Sales Ordering
                       </CardTitle>
 
@@ -193,7 +235,7 @@ const Dashboard = (props) => {
                     <Col className="col-auto">
                     <CardTitle
                         tag={sales && branch && sales.find((sale) => sale._id === branch) ? "h1" : "h3"}
-                        className="text-uppercase text-warning mb-0 font-weight-bolder">
+                        className="text-uppercase text-primary mb-0 font-weight-bolder">
                         {sales && branch && sales.find((sale) => sale._id === branch) ? `₱${sales.find((sale) => sale._id === branch).totalSales}` : "Select a branch"}
                       </CardTitle>
 
@@ -205,21 +247,21 @@ const Dashboard = (props) => {
             </Col>
             <Col className="mb-5 mb-xl-4" lg="6" xl="4">
 
-              <Card className="card-stats border-warning mb-4 mb-xl-0">
+              <Card className="card-stats mb-4 mb-xl-0">
                 <CardBody>
                   <Row className="align-items-center">
                     <div className="col">
                       <CardTitle
                         tag="h2"
-                        className="text-uppercase text-warning mb-0  font-weight-bolder">
-                        Total Sales Walkin
+                        className="text-uppercase text-black mb-0  font-weight-bolder">
+                        Total Sales Walk In
                       </CardTitle>
 
                     </div>
                     <Col className="col-auto">
                       <CardTitle
                         tag={walkinSales && branch && walkinSales.find((sale) => sale._id === branch) ? "h1" : "h3"}
-                        className="text-uppercase text-warning mb-0 font-weight-bolder">
+                        className="text-uppercase text-primary mb-0 font-weight-bolder">
                         {walkinSales && branch && walkinSales.find((sale) => sale._id === branch) ? `₱${walkinSales.find((sale) => sale._id === branch).totalSales}` : "Select a branch"}
                       </CardTitle>
 
@@ -230,6 +272,56 @@ const Dashboard = (props) => {
 
             </Col>
 
+          </Row>
+          <Row>
+            <Col className="mb-5 mb-xl-4" xl="6">
+              <Card className="shadow">
+                <CardHeader className="bg-transparent">
+                  <Row className="align-items-center">
+                    <div className="col">
+                      <h6 className="text-uppercase text-muted ls-1 mb-1">
+                        Performance
+                      </h6>
+                      <h2 className="mb-0">Order Transactions</h2>
+                    </div>
+                  </Row>
+                </CardHeader>
+                <CardBody>
+
+                  <div className="chart">
+                    <Bar
+                      data={data2}
+                      options={chartExample2.options}
+                    />
+                  </div>
+                </CardBody>
+              </Card>
+
+            </Col>
+            <Col className="mb-5 mb-xl-4" xl="6">
+              <Card className="shadow">
+                <CardHeader className="bg-transparent">
+                  <Row className="align-items-center">
+                    <div className="col">
+                      <h6 className="text-uppercase text-muted ls-1 mb-1">
+                        Performance
+                      </h6>
+                      <h2 className="mb-0">Gallon Type</h2>
+                    </div>
+                  </Row>
+                </CardHeader>
+                <CardBody>
+
+                  <div className="chart">
+                    <Bar
+                      data={data2}
+                      options={chartExample2.options}
+                    />
+                  </div>
+                </CardBody>
+              </Card>
+
+            </Col>
           </Row>
           <Row>
             <Col className="mb-5 mb-xl-4" xl="12">
@@ -257,7 +349,8 @@ const Dashboard = (props) => {
 
             </Col>
           </Row>
-          {/* <Col xl="4">
+          {/* <Row>
+          <Col xl="4">
             <Card className="bg-gradient-default shadow">
                 <CardHeader className="bg-transparent">
                   <Row className="align-items-center">
@@ -494,7 +587,7 @@ const Dashboard = (props) => {
                 </Table>
               </Card>
             </Col> 
-          </Row>*/}
+          </Row> */}
         </Container>
         <Container fluid>
           <AdminFooter />

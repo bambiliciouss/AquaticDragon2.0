@@ -375,10 +375,15 @@ let chartExample2 = {
         {
           ticks: {
             callback: function (value) {
+              
               if (!(value % 10)) {
-                //return '$' + value + 'k'
                 return value;
               }
+              else if (!(value % 1)){
+                return value; 
+              }
+              
+
             },
           },
         },
