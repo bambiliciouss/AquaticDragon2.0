@@ -60,13 +60,14 @@ import MetaData from "components/layout/MetaData.js";
 
 
 // Default Admin Chart (All store sales)
-import { allStoreSalesAction, getSalesWalkin, getOrderTransactions, getOrderByGallonType, clearErrors } from "../../actions/adminAction";
+import { allStoreSalesAction, getSalesWalkin,getSalesOrderByBranch, getOrderTransactions, getOrderByGallonType, clearErrors } from "../../actions/adminAction";
 import { useDispatch, useSelector } from "react-redux";
 const Dashboard = (props) => {
   const [activeNav, setActiveNav] = useState(1);
   const [chartExample1Data, setChartExample1Data] = useState("data1");
   const dispatch = useDispatch();
   const { sales, loading, error } = useSelector((state) => state.adminStoreSales);
+  const {orders} = useSelector((state)=>state.adminSalesOrder)
   const {transactions} = useSelector((state) => state.adminOrderTransaction);
   const { user } = useSelector((state) => state.auth)
   const { branch } = useSelector((state) => state.adminStoreBranch)
@@ -94,6 +95,16 @@ const Dashboard = (props) => {
     ],
   })
   const [data3, setData3] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "Sales",
+        data: [],
+        maxBarThickness: 20,
+      },
+    ],
+  })
+  const [data4, setData4] = useState({
     labels: [],
     datasets: [
       {
@@ -140,20 +151,33 @@ const Dashboard = (props) => {
       }
       setData2(salesData)
     }
-    if (gallons){
+    if (gallons && gallons.length > 0){
       let salesData = {
-        labels: gallons.map((sale) => sale.typeName),
+        labels: gallons[0]["Refill"].map((sale) => sale.typeName),
         datasets: [
           {
             label: "Sales",
-            data: gallons.map((sale) => sale.count),
+            data: gallons[0]["Refill"].map((sale) => sale.count),
             maxBarThickness: 30,
             backgroundColor: gallons.map(() => getRandomColor()), // Add this line
           },
         ],
       }
       setData3(salesData)
-      console.log("Gallons: ", gallons);
+      let salesData4 = {
+        labels: gallons[0]["New Container"].map((sale) => sale.typeName),
+        datasets: [
+          {
+            label: "Sales",
+            data: gallons[0]["New Container"].map((sale) => sale.count),
+            maxBarThickness: 30,
+            backgroundColor: gallons[0]["New Container"].map(() => getRandomColor()),
+          },
+        ],
+        
+      }
+      setData4(salesData4);
+      
     }
   }, [sales, transactions, gallons])
 
@@ -169,7 +193,7 @@ const Dashboard = (props) => {
   useEffect(()=>{
     
     if (branch){
-      getTotalSales(sales,walkinSales)
+      getTotalSales(orders,walkinSales)
       dispatch(getOrderTransactions(branch));
       dispatch(getOrderByGallonType(branch));
     }
@@ -177,7 +201,7 @@ const Dashboard = (props) => {
   useEffect(() => {
     dispatch(allStoreSalesAction(user._id));
     dispatch(getSalesWalkin());
-    
+    dispatch(getSalesOrderByBranch(user._id));
     
     if (error) {
       dispatch(clearErrors())
@@ -259,9 +283,9 @@ const Dashboard = (props) => {
                     </div>
                     <Col className="col-auto">
                     <CardTitle
-                        tag={sales && branch && sales.find((sale) => sale._id === branch) ? "h1" : "h3"}
+                        tag={orders && branch && orders .find((sale) => sale._id === branch) ? "h1" : "h3"}
                         className="text-uppercase text-primary mb-0 font-weight-bolder">
-                        {sales && branch && sales.find((sale) => sale._id === branch) ? `₱${sales.find((sale) => sale._id === branch).totalSales}` : "Select a branch"}
+                        {orders && branch && orders.find((sale) => sale._id === branch) ? `₱${orders.find((sale) => sale._id === branch).totalSales}` : "Select a branch"}
                       </CardTitle>
 
                     </Col>
@@ -299,7 +323,7 @@ const Dashboard = (props) => {
 
           </Row>
           <Row>
-            <Col className="mb-5 mb-xl-4" xl="6">
+            <Col className="mb-5 mb-xl-4" xl="4">
               <Card className="shadow">
                 <CardHeader className="bg-transparent">
                   <Row className="align-items-center">
@@ -323,7 +347,7 @@ const Dashboard = (props) => {
               </Card>
 
             </Col>
-            <Col className="mb-5 mb-xl-4" xl="6">
+            <Col className="mb-5 mb-xl-4" xl="4">
               <Card className="shadow">
                 <CardHeader className="bg-transparent">
                   <Row className="align-items-center">
@@ -331,7 +355,7 @@ const Dashboard = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Performance
                       </h6>
-                      <h2 className="mb-0">Gallon Type</h2>
+                      <h2 className="mb-0">Gallon Type (Refill)</h2>
                     </div>
                   </Row>
                 </CardHeader>
@@ -347,6 +371,139 @@ const Dashboard = (props) => {
               </Card>
 
             </Col>
+            <Col className="mb-5 mb-xl-4" xl="4">
+              <Card className="shadow">
+                <CardHeader className="bg-transparent">
+                  <Row className="align-items-center">
+                    <div className="col">
+                      <h6 className="text-uppercase text-muted ls-1 mb-1">
+                        Performance
+                      </h6>
+                      <h2 className="mb-0">Gallon Type (New Container)</h2>
+                    </div>
+                  </Row>
+                </CardHeader>
+                <CardBody>
+
+                  <div className="chart">
+                    <Bar
+                      data={data4}
+                      options={chartExample2.options}
+                    />
+                  </div>
+                </CardBody>
+              </Card>
+
+            </Col>
+          </Row>
+          <Row>
+          <Col className="mb-5 mb-xl-4" xl="4">
+              <Card className="shadow">
+                <CardHeader className="border-0">
+                  <Row className="align-items-center">
+                    <div className="col">
+                      <h3 className="mb-0">Product Inventory</h3>
+                    </div>
+                    <div className="col text-right">
+                      <Button
+                        color="primary"
+                        href="#pablo"
+                        onClick={(e) => e.preventDefault()}
+                        size="sm">
+                        See all
+                      </Button>
+                    </div>
+                  </Row>
+                </CardHeader>
+                <Table className="align-items-center table-flush" responsive>
+                  <thead className="thead-light">
+                    <tr>
+                      <th scope="col">Product</th>
+                      <th scope="col">Stocks</th>
+                      <th scope="col" />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">Facebook</th>
+                      <td>1,480</td>
+                      <td>
+                        <div className="d-flex align-items-center">
+                          <span className="mr-2">60%</span>
+                          <div>
+                            <Progress
+                              max="100"
+                              value="60"
+                              barClassName="bg-gradient-danger"
+                            />
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Facebook</th>
+                      <td>5,480</td>
+                      <td>
+                        <div className="d-flex align-items-center">
+                          <span className="mr-2">70%</span>
+                          <div>
+                            <Progress
+                              max="100"
+                              value="70"
+                              barClassName="bg-gradient-success"
+                            />
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Google</th>
+                      <td>4,807</td>
+                      <td>
+                        <div className="d-flex align-items-center">
+                          <span className="mr-2">80%</span>
+                          <div>
+                            <Progress max="100" value="80" />
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Instagram</th>
+                      <td>3,678</td>
+                      <td>
+                        <div className="d-flex align-items-center">
+                          <span className="mr-2">75%</span>
+                          <div>
+                            <Progress
+                              max="100"
+                              value="75"
+                              barClassName="bg-gradient-info"
+                            />
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th scope="row">twitter</th>
+                      <td>2,645</td>
+                      <td>
+                        <div className="d-flex align-items-center">
+                          <span className="mr-2">30%</span>
+                          <div>
+                            <Progress
+                              max="100"
+                              value="30"
+                              barClassName="bg-gradient-warning"
+                            />
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </Table>
+              </Card>
+            </Col> 
           </Row>
           <Row>
             <Col className="mb-5 mb-xl-4" xl="12">
@@ -357,7 +514,7 @@ const Dashboard = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Performance
                       </h6>
-                      <h2 className="mb-0">Total orders</h2>
+                      <h2 className="mb-0">Total Sales By Branch</h2>
                     </div>
                   </Row>
                 </CardHeader>
