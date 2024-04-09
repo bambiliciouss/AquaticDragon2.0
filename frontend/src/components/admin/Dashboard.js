@@ -61,7 +61,7 @@ import MetaData from "components/layout/MetaData.js";
 
 // Default Admin Chart (All store sales)
 import { allProductList } from "actions/productActions.js"; // Action for product inventory
-import { allStoreSalesAction, getSalesOrderByBarangay, getSalesWalkin, getSalesOrderByBranch, getOrderTransactions, getOrderByGallonType, clearErrors } from "../../actions/adminAction"; // Actions for sales, walkin sales, order sales, order transactions, order gallon type, barangay sales
+import { allStoreSalesAction, getSalesOrderByBarangay, getSalesWalkin, getSalesOrderByBranch, getOrderTransactions, getOrderByGallonType, getStaffPerformance, clearErrors } from "../../actions/adminAction"; // Actions for sales, walkin sales, order sales, order transactions, order gallon type, barangay sales, staff performance
 import { useDispatch, useSelector } from "react-redux";
 const Dashboard = (props) => {
 
@@ -77,6 +77,7 @@ const Dashboard = (props) => {
   const { gallons } = useSelector((state) => state.adminOrderGallonType) // Get the gallon type of all orders
   const { products } = useSelector((state) => state.allProducts); // Get the inventory of all products
   const { orders: barangay } = useSelector((state) => state.adminSalesBarangay); // Get the sales of all barangays
+  const { performance } = useSelector((state) => state.adminStaffPerformance); // Get the performance of all employees
   const [totalSales, setTotalSales] = useState(0)
   const [colors, setColors] = useState([])
   const [data, setData] = useState({
@@ -121,6 +122,26 @@ const Dashboard = (props) => {
   })
 
   const [data5, setData5] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "Sales",
+        data: [],
+
+      },
+    ],
+  })
+  const [data6, setData6] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "Sales",
+        data: [],
+
+      },
+    ],
+  })
+  const [data7, setData7] = useState({
     labels: [],
     datasets: [
       {
@@ -231,8 +252,36 @@ const Dashboard = (props) => {
       // console.log("barangay: ",barangay.orders)
 
     }
-  }, [sales, transactions, gallons, barangay])
-  
+    if (performance && performance.employees) {
+      let salesData = {
+        labels: performance.employees.map((sale) => sale._id),
+        datasets: [
+          {
+            label: "Sales",
+            data: performance.employees.map((sale) => sale.count),
+            maxBarThickness: 30,
+            backgroundColor: performance.employees.map(() => getRandomColor()),
+          },
+        ],
+      }
+      setData6(salesData)
+    }
+    if (performance && performance.riders){
+      let salesData = {
+        labels: performance.riders.map((sale) => sale._id),
+        datasets: [
+          {
+            label: "Sales",
+            data: performance.riders.map((sale) => sale.count),
+            maxBarThickness: 30,
+            backgroundColor: performance.riders.map(() => getRandomColor()),
+          },
+        ],
+      }
+      setData7(salesData)
+    }
+  }, [sales, transactions, gallons, barangay, performance])
+
 
   // Function to calculate the total sales of the selected branch
   const getTotalSales = (order, walkin) => {
@@ -262,6 +311,9 @@ const Dashboard = (props) => {
 
       // Get the sales of all barangays of the selected branch
       dispatch(getSalesOrderByBarangay(branch));
+
+      // Get the performance of all employees of the selected branch
+      dispatch(getStaffPerformance(branch))
     }
 
   }, [sales, walkinSales, branch])
@@ -477,7 +529,7 @@ const Dashboard = (props) => {
                 <CardHeader className="border-0">
                   <Row className="align-items-center">
                     <div className="col">
-                    <h6 className="text-uppercase text-muted ls-1 mb-1">
+                      <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Inventory
                       </h6>
                       <h3 className="mb-0">Product Stock</h3>
@@ -538,7 +590,7 @@ const Dashboard = (props) => {
                 <CardBody>
                   <div className="d-flex align-items-center justify-content-center">
                     <div className="chart">
-                      <Pie data={data5} options={options}/>
+                      <Pie data={data5} options={options} />
 
                     </div>
                     <div className="mt-5">
@@ -548,7 +600,7 @@ const Dashboard = (props) => {
                             <div className="mr-2 block mb-3 rounded-circle" style={{ width: '10px', height: '10px', backgroundColor: `${colors[index]}` }}></div>
                             <p className="d-flex w-100 justify-content-between text-sm font-medium text-black">
                               <span> {item._id}</span>
-                              <span className="ml-3"> {((item.count/barangay.totalOrders) * 100).toFixed(2)}%</span>
+                              <span className="ml-3"> {((item.count / barangay.totalOrders) * 100).toFixed(2)}%</span>
                               <span className="ml-3">({item.count}) </span>
                             </p>
                           </div>
@@ -562,6 +614,56 @@ const Dashboard = (props) => {
             </Col>
           </Row>
 
+          <Row>
+            <Col className="mb-5 mb-xl-4" xl="6">
+              <Card className="shadow">
+                <CardHeader className="bg-transparent">
+                  <Row className="align-items-center">
+                    <div className="col">
+                      <h6 className="text-uppercase text-muted ls-1 mb-1">
+                        Performance
+                      </h6>
+                      <h2 className="mb-0">Employee Performance</h2>
+                    </div>
+                  </Row>
+                </CardHeader>
+                <CardBody>
+
+                  <div className="chart">
+                    <Bar
+                      data={data6}
+                      options={chartExample2.options}
+                    />
+                  </div>
+                </CardBody>
+              </Card>
+
+            </Col>
+            <Col className="mb-5 mb-xl-4" xl="6">
+              <Card className="shadow">
+                <CardHeader className="bg-transparent">
+                  <Row className="align-items-center">
+                    <div className="col">
+                      <h6 className="text-uppercase text-muted ls-1 mb-1">
+                        Performance
+                      </h6>
+                      <h2 className="mb-0">Rider Performance</h2>
+                    </div>
+                  </Row>
+                </CardHeader>
+                <CardBody>
+
+                  <div className="chart">
+                    <Bar
+                      data={data7}
+                      options={chartExample2.options}
+                    />
+                  </div>
+                </CardBody>
+              </Card>
+
+            </Col>
+          </Row>
           {/* Total Sales By Branch */}
           <Row>
             <Col className="mb-5 mb-xl-4" xl="12">
