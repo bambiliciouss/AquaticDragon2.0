@@ -21,7 +21,7 @@ import {
 } from "reactstrap";
 import { CREATE_GALLON_RESET } from "../../constants/gallonConstants";
 import { useForm } from "react-hook-form";
-
+import swal from "sweetalert";
 import { allTypesGallon } from "actions/typesgallonAction";
 
 const RegisterGallon = () => {
