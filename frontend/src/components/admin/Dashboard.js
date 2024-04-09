@@ -21,7 +21,7 @@ import classnames from "classnames";
 // javascipt plugin for creating charts
 import Chart from "chart.js";
 // react plugin used to create charts
-import { Line, Bar } from "react-chartjs-2";
+import { Line, Bar, Pie } from "react-chartjs-2";
 // reactstrap components
 import {
   Button,
@@ -50,7 +50,7 @@ import {
 import Header from "components/Headers/Header.js";
 
 import React from "react";
-import { useLocation, Link} from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 
 // core components
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
@@ -60,21 +60,22 @@ import MetaData from "components/layout/MetaData.js";
 
 
 // Default Admin Chart (All store sales)
-import { allProductList } from "actions/productActions.js";
-import { allStoreSalesAction, getSalesWalkin, getSalesOrderByBranch, getOrderTransactions, getOrderByGallonType, clearErrors } from "../../actions/adminAction";
+import { allProductList } from "actions/productActions.js"; // Action for product inventory
+import { allStoreSalesAction, getSalesWalkin, getSalesOrderByBranch, getOrderTransactions, getOrderByGallonType, clearErrors } from "../../actions/adminAction"; // Actions for sales, walkin sales, order sales, order transactions, order gallon type
 import { useDispatch, useSelector } from "react-redux";
 const Dashboard = (props) => {
-  const [activeNav, setActiveNav] = useState(1);
-  const [chartExample1Data, setChartExample1Data] = useState("data1");
+
   const dispatch = useDispatch();
-  const { sales, loading, error } = useSelector((state) => state.adminStoreSales);
-  const { orders } = useSelector((state) => state.adminSalesOrder)
-  const { transactions } = useSelector((state) => state.adminOrderTransaction);
-  const { user } = useSelector((state) => state.auth)
-  const { branch } = useSelector((state) => state.adminStoreBranch)
-  const { sales: walkinSales } = useSelector((state) => state.adminSalesWalkin);
-  const { gallons } = useSelector((state) => state.adminOrderGallonType)
-  const { products } = useSelector((state) => state.allProducts);
+
+  const { sales, error } = useSelector((state) => state.adminStoreSales); // Get the sales of all stores
+  const { orders } = useSelector((state) => state.adminSalesOrder) // Get the sales of all online orders
+  const { transactions } = useSelector((state) => state.adminOrderTransaction); // Get the transactions of all orders
+  const { user } = useSelector((state) => state.auth) // Get the user id
+  const { branch } = useSelector((state) => state.adminStoreBranch) // Get the selected branch id
+  const { sales: walkinSales } = useSelector((state) => state.adminSalesWalkin); // Get the sales of all walk in orders
+  const { gallons } = useSelector((state) => state.adminOrderGallonType) // Get the gallon type of all orders
+  const { products } = useSelector((state) => state.allProducts); // Get the inventory of all products
+
   const [totalSales, setTotalSales] = useState(0)
   const [data, setData] = useState({
     labels: [],
@@ -116,6 +117,8 @@ const Dashboard = (props) => {
       },
     ],
   })
+
+  // Random color generator from the same hue
   let hue = Math.random() * 360;
   const goldenRatioConjugate = 0.618033988749895;
   function getRandomColor() {
@@ -124,11 +127,8 @@ const Dashboard = (props) => {
     const h = Math.floor(hue * 360)
     return `hsl(${h},60%,60%)`
   }
-  useEffect(() => {
-    if (products) {
-      console.log("prodcuts: ", products)
-    }
-  }, [products])
+  
+  // Change the data of the chart depending on the sales, transactions, gallons
   useEffect(() => {
     if (sales) {
       let salesData = {
@@ -138,7 +138,7 @@ const Dashboard = (props) => {
             label: "Sales",
             data: sales.map((sale) => sale.totalSales),
             maxBarThickness: 30,
-            backgroundColor: sales.map(() => getRandomColor()), // Add this line
+            backgroundColor: sales.map(() => getRandomColor()),
           },
         ],
       }
@@ -152,7 +152,7 @@ const Dashboard = (props) => {
             label: "Sales",
             data: transactions.map((sale) => sale.count),
             maxBarThickness: 30,
-            backgroundColor: transactions.map(() => getRandomColor()), // Add this line
+            backgroundColor: transactions.map(() => getRandomColor()), 
           },
         ],
       }
@@ -166,7 +166,7 @@ const Dashboard = (props) => {
             label: "Sales",
             data: gallons[0]["Refill"].map((sale) => sale.count),
             maxBarThickness: 30,
-            backgroundColor: gallons.map(() => getRandomColor()), // Add this line
+            backgroundColor: gallons.map(() => getRandomColor()), 
           },
         ],
       }
@@ -189,7 +189,7 @@ const Dashboard = (props) => {
   }, [sales, transactions, gallons])
 
 
-
+  // Function to calculate the total sales of the selected branch
   const getTotalSales = (order, walkin) => {
     if (order.length > 0 && walkin.length > 0) {
       const totalSalesOrder = order.find((sale) => sale._id === branch).totalSales || 0;
@@ -198,22 +198,40 @@ const Dashboard = (props) => {
       localStorage.setItem("totalSales", totalSalesOrder + totalSalesWalkin)
     }
   }
+
+  // Change depending on the branch
   useEffect(() => {
 
     if (branch) {
+      // Get the total sales of the selected branch
       getTotalSales(orders, walkinSales)
+
+      // Get the order transactions of the selected branch
       dispatch(getOrderTransactions(branch));
+
+      // Get the product stocks of the selected branch
       dispatch(allProductList(branch));
+
+      // Get the gallon type of the selected branch (Refill or New Container)
       dispatch(getOrderByGallonType(branch));
     }
-    
-  }, [sales, walkinSales, branch])
-  useEffect(() => {
 
+  }, [sales, walkinSales, branch])
+
+  // Universal UseEffect
+  useEffect(() => {
+    // Action for sales state
+    // Gets the total sales of all stores
     dispatch(allStoreSalesAction(user._id));
+
+    // Action for walkinSales state
+    // Gets the total sales of all walkin sales
     dispatch(getSalesWalkin());
+
+    // Action for orders state
+    // Gets the total sales of all orders
     dispatch(getSalesOrderByBranch(user._id));
-    
+
     if (error) {
       dispatch(clearErrors())
     }
@@ -222,12 +240,6 @@ const Dashboard = (props) => {
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
   }
-
-  const toggleNavs = (e, index) => {
-    e.preventDefault();
-    setActiveNav(index);
-    setChartExample1Data("data" + index);
-  };
 
   const location = useLocation();
 
@@ -252,6 +264,7 @@ const Dashboard = (props) => {
 
         {/* Page content */}
         <Container className="mt--7" fluid>
+          {/* Total Sales, Order Sales, Walk in Sales */}
           <Row>
             <Col className="mb-5 mb-xl-4" lg="6" xl="4">
 
@@ -331,8 +344,9 @@ const Dashboard = (props) => {
               </Card>
 
             </Col>
-
           </Row>
+
+          {/* Order transactions, Order Refill, Order New Container */}
           <Row>
             <Col className="mb-5 mb-xl-4" xl="4">
               <Card className="shadow">
@@ -407,8 +421,10 @@ const Dashboard = (props) => {
 
             </Col>
           </Row>
+
+          {/* Product Inventory, Barangays */}
           <Row>
-            <Col className="mb-5 mb-xl-4" xl="4">
+            <Col className="mb-5 mb-xl-4" xl="6">
               <Card className="shadow">
                 <CardHeader className="border-0">
                   <Row className="align-items-center">
@@ -417,12 +433,12 @@ const Dashboard = (props) => {
                     </div>
                     <div className="col text-right">
                       <Link to="/admin/product">
-                      <Button
-                        color="primary"
-                        href="#pablo"
-                        size="sm">
-                        See all
-                      </Button>
+                        <Button
+                          color="primary"
+                          href="#pablo"
+                          size="sm">
+                          See all
+                        </Button>
                       </Link>
                     </div>
                   </Row>
@@ -432,7 +448,7 @@ const Dashboard = (props) => {
                     <tr>
                       <th scope="col">Product</th>
                       <th scope="col">Stocks</th>
-                      
+
                     </tr>
                   </thead>
                   <tbody>
@@ -456,7 +472,12 @@ const Dashboard = (props) => {
                 </Table>
               </Card>
             </Col>
+            <Col className="mb-5 mb-xl-4" xl="6">
+
+            </Col>
           </Row>
+
+          {/* Total Sales By Branch */}
           <Row>
             <Col className="mb-5 mb-xl-4" xl="12">
               <Card className="shadow">
@@ -483,6 +504,8 @@ const Dashboard = (props) => {
 
             </Col>
           </Row>
+
+          {/* Template */}
           {/* <Row>
           <Col xl="4">
             <Card className="bg-gradient-default shadow">
