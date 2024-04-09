@@ -34,6 +34,10 @@ import {
     ALL_ORDER_BARANGAY_SUCCESS,
     ALL_ORDER_BARANGAY_FAIL,
 
+    STAFF_PERFORMANCE_REQUEST,
+    STAFF_PERFORMANCE_SUCCESS,  
+    STAFF_PERFORMANCE_FAIL,
+
     CLEAR_ERRORS,
 } from "../constants/adminConstants";
 import axios from 'axios'
@@ -182,6 +186,24 @@ export const getOrderByGallonType = (id) => async (dispatch) => {
     } catch (error) {
         dispatch({
             type: ALL_ORDER_GALLON_TYPE_FAIL,
+            payload: error.response
+                ? error.response.data.message
+                : "Unknown error occurred",
+        });
+    }
+}
+
+export const getStaffPerformance = (id) => async (dispatch) => {
+    try {
+        dispatch({ type: STAFF_PERFORMANCE_REQUEST });
+        const { data } = await axios.get(`/api/v1/admin/orders/staff/${id}`);
+        dispatch({
+            type: STAFF_PERFORMANCE_SUCCESS,
+            payload: data,
+        });
+    } catch (error) {
+        dispatch({
+            type: STAFF_PERFORMANCE_FAIL,
             payload: error.response
                 ? error.response.data.message
                 : "Unknown error occurred",
