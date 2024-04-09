@@ -110,6 +110,13 @@ import {
   storebarangayReducer,
 } from "reducers/storebarangayReducers";
 
+import {
+  allUsersSAReducer,
+  allPendingAdminSAReducer,
+  adminApprovalReducer,
+  allAdminSAReducer,
+} from "reducers/superadminReducers";
+
 const reducers = combineReducers({
   auth: authReducer,
   user: userReducer,
@@ -186,6 +193,11 @@ const reducers = combineReducers({
   allStorebarangay: allStorebarangayReducer,
   singleStorebarangay: singleStorebarangayReducer,
   storebarangay: storebarangayReducer,
+
+  allUsersSA: allUsersSAReducer,
+  allPendingAdminSA: allPendingAdminSAReducer,
+  adminApproval: adminApprovalReducer,
+  allAdminSA: allAdminSAReducer,
 });
 
 let initialState = {

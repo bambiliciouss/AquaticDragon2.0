@@ -14,10 +14,7 @@ import AdminFooter from "components/Footers/AdminFooter.js";
 
 import { DELETE_USER_RESET } from "../../constants/userConstants";
 import swal from "sweetalert";
-import {
-  allAdminStoreBranch,
-  deleteStoreBranch,
-} from "actions/storebranchActions";
+import { allUsersSA } from "actions/superadminActions";
 import {
   Button,
   Card,
@@ -42,12 +39,13 @@ import {
 } from "reactstrap";
 import * as htmlToImage from "html-to-image";
 import QRCode from "react-qr-code";
-const UserList = () => {
+
+const SuperAdminUserList = () => {
   const dispatch = useDispatch();
 
   let navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
-  const { loading, error, users } = useSelector((state) => state.allUsers);
+  const { loading, error, users } = useSelector((state) => state.allUsersSA);
   const { isDeleted } = useSelector((state) => state.user);
 
   const deleteUserHandler = (id) => {
@@ -109,11 +107,10 @@ const UserList = () => {
   };
 
   useEffect(() => {
-    dispatch(allUsers());
-    dispatch(allAdminStoreBranch());
+    dispatch(allUsersSA());
 
     if (isDeleted) {
-      navigate("/userlist");
+      navigate("/superadmin/userlist");
       dispatch({ type: DELETE_USER_RESET });
     }
 
@@ -122,16 +119,6 @@ const UserList = () => {
   // console.log("result", qrdetails);
 
   const setUsers = () => {
-    // const sortedOrders = users
-    // .filter(
-    //   (user) =>
-    //     !activeStoreBranch ||
-    //     user.selectedStore.store === activeStoreBranch._id
-    // )
-    // .sort((a, b) => {
-    //   return new Date(b.createdAt) - new Date(a.createdAt);
-    // });
-
     const data = {
       columns: [
         {
@@ -139,11 +126,6 @@ const UserList = () => {
           field: "image",
           sort: "asc",
         },
-        // {
-        //   label: "QR Code",
-        //   field: "qr",
-        //   sort: "asc",
-        // },
 
         {
           label: "Name",
@@ -181,14 +163,14 @@ const UserList = () => {
 
       data.rows.push({
         name: `${user.fname} ${user.lname}`,
-        phone: user.phone,
+        phone: `+63${user.phone}`,
         address: `${defaultAddress.houseNo} ${defaultAddress.purokNum} ${defaultAddress.streetName} ${defaultAddress.barangay} ${defaultAddress.city}`,
         // email: user.email,
         image: (
           <img
             className="d-block w-100"
             src={user.avatar.url}
-            alt={user.title}
+            alt={user.fname}
             img
             style={{ width: 50, height: 50 }}
           />
@@ -205,11 +187,11 @@ const UserList = () => {
               onClick={() => navigate(`/user/details/${user._id}`)}>
               <i className="fa fa-info-circle"></i>
             </button>
-            {/* <button
+            <button
               className="btn btn-danger py-1 px-2 ml-2"
               onClick={() => deleteUserHandler(user._id)}>
               <i className="fa fa-trash"></i>
-            </button> */}
+            </button>
           </Fragment>
         ),
       });
@@ -231,7 +213,7 @@ const UserList = () => {
 
   return (
     <>
-      <MetaData title={"Customer(s)"} />
+      <MetaData title={"Users"} />
       <Sidebar
         logo={{
           innerLink: "/",
@@ -247,24 +229,8 @@ const UserList = () => {
             <CardHeader className="bg-white border-0">
               <Row className="align-items-center">
                 <Col xs="8">
-                  <h3 className="mb-0">List of Customer(s)</h3>
+                  <h3 className="mb-0">List of Users</h3>
                 </Col>
-              </Row>
-              <Row className="align-items-center">
-                <Button
-                //  onClick={() => allordersButton()}
-                >
-                  <h3 className="mb-0">All Customers</h3>
-                </Button>
-                {storeBranch.map((storeBranches) => (
-                  <Button
-                    key={storeBranches._id} // Assuming storeBranches has a unique identifier like _id
-                    id={`button-${storeBranches._id}`} // Unique id for each button
-                    // onClick={() => handleButtonClick(storeBranches._id)} // Replace with your click handler
-                  >
-                    <h3 className="mb-0">{storeBranches.branch}</h3>
-                  </Button>
-                ))}
               </Row>
             </CardHeader>
             <CardBody style={{ overflowX: "auto" }}>
@@ -347,4 +313,4 @@ const UserList = () => {
   );
 };
 
-export default UserList;
+export default SuperAdminUserList;

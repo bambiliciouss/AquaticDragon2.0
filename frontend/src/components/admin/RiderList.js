@@ -493,7 +493,7 @@ const RiderList = (args) => {
                               </InputGroupText>
                             </InputGroupAddon>
                             <input
-                              placeholder="House No..."
+                              placeholder="Unit, Building, House No."
                               className="form-control"
                               type="text"
                               name="houseNo"
