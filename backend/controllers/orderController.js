@@ -319,3 +319,30 @@ exports.getOrdersByGallonType = async (req, res, next) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+exports.getOrderByBarangay = async (req, res, next) => {
+    try{
+      const branch = req.params.id;
+      const orders = await Order.aggregate([
+        {
+          $match: {
+            'selectedStore.store': new mongoose.Types.ObjectId(branch),
+            'deliveryAddress.barangay': { $exists: true}
+          }
+        },
+        {
+          $group: {
+            _id: "$deliveryAddress.barangay",
+            count: { $sum: 1 }
+          }
+        }
+      ])
+      res.status(200).json({
+        success: true,
+        orders
+      
+      })
+    }catch(error){
+        res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+}

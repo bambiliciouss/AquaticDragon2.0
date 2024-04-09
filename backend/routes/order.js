@@ -11,6 +11,7 @@ const {
   addOrderStatuswithRider,
   getOrderTransactions,
   getOrdersByGallonType,
+  getOrderByBarangay,
 } = require("../controllers/orderController");
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
@@ -32,5 +33,6 @@ router
 
 router.route("/order/:id").get(isAuthenticatedUser, getSingleOrder);
 router.get("/admin/all/orders/:id", isAuthenticatedUser, authorizeRoles("admin"), getOrderTransactions);
-router.get("/admin/orders/byGallon/:id",isAuthenticatedUser, authorizeRoles("admin"), getOrdersByGallonType)
+router.get("/admin/orders/byGallon/:id",isAuthenticatedUser, authorizeRoles("admin"), getOrdersByGallonType);
+router.get("/admin/orders/byBarangay/:id", getOrderByBarangay);
 module.exports = router;
