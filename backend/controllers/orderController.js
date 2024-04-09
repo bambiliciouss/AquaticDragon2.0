@@ -375,3 +375,35 @@ exports.getOrderByBarangay = async (req, res, next) => {
     res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 };
+
+
+exports.getAcceptedAndDeliveredOrders = async (req, res, next) => {
+  try {
+    const branch = req.params.id;
+    // Get counts for employees who accepted orders
+    const employees = await Order.aggregate([
+      { $unwind: "$orderStatus" },
+      { $match: { "orderStatus.orderLevel": "Order Accepted", "selectedStore.store": new mongoose.Types.ObjectId(branch) } },
+      { $lookup: { from: "users", localField: "orderStatus.staff", foreignField: "_id", as: "staff" } },
+      { $unwind: "$staff"},
+      { $group: { _id: {$concat:["$staff.fname"," ","$staff.lname"]}, count: { $sum: 1 } } }
+    ]);
+
+    // Get counts for riders who delivered orders
+    const riders = await Order.aggregate([
+      { $unwind: "$orderStatus" },
+      { $match: { "orderStatus.orderLevel": "Delivered","selectedStore.store": new mongoose.Types.ObjectId(branch) } },
+      { $lookup: { from: "users", localField: "orderStatus.staff", foreignField: "_id", as: "staff" } },
+      { $unwind: "$staff"},
+      { $group: { _id: {$concat: ["$staff.fname", " ", "$staff.lname"]}, count: { $sum: 1 } } }
+    ]);
+
+    res.status(200).json({
+      success: true,
+      employees: employees,
+      riders: riders
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error", error: error.message });
+  }
+}
