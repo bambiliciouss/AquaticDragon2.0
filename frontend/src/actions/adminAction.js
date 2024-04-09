@@ -30,6 +30,10 @@ import {
     ALL_ORDER_GALLON_TYPE_SUCCESS,
     ALL_ORDER_GALLON_TYPE_FAIL,
 
+    ALL_ORDER_BARANGAY_REQUEST,
+    ALL_ORDER_BARANGAY_SUCCESS,
+    ALL_ORDER_BARANGAY_FAIL,
+
     CLEAR_ERRORS,
 } from "../constants/adminConstants";
 import axios from 'axios'
@@ -62,6 +66,24 @@ export const getSalesOrderByBranch = (id) => async (dispatch) => {
     } catch (error) {
         dispatch({
             type: SALES_ORDER_FAIL,
+            payload: error.response
+                ? error.response.data.message
+                : "Unknown error occurred",
+        });
+    }
+}
+
+export const getSalesOrderByBarangay = (id) => async (dispatch) => {
+    try {
+        dispatch({ type: ALL_ORDER_BARANGAY_REQUEST });
+        const { data } = await axios.get(`/api/v1/admin/orders/byBarangay/${id}`);
+        dispatch({
+            type: ALL_ORDER_BARANGAY_SUCCESS,
+            payload: data,
+        });
+    } catch (error) {
+        dispatch({
+            type: ALL_ORDER_BARANGAY_FAIL,
             payload: error.response
                 ? error.response.data.message
                 : "Unknown error occurred",
