@@ -23,6 +23,10 @@ import {
     SALES_ORDER_REQUEST,
     SALES_ORDER_SUCCESS,
     SALES_ORDER_FAIL,
+    ALL_ORDER_BARANGAY_REQUEST,
+    ALL_ORDER_BARANGAY_SUCCESS,
+    ALL_ORDER_BARANGAY_FAIL,
+
     CLEAR_ERRORS,
 } from '../constants/adminConstants';
 
@@ -174,6 +178,33 @@ export const adminSalesOrderReducer = (state = { orders: [] }, action) => {
                 orders: action.payload,
             };
         case SALES_ORDER_FAIL:
+            return {
+                loading: false,
+                error: action.payload,
+            };
+        case CLEAR_ERRORS:
+            return {
+                ...state,
+                error: null,
+            };
+        default:
+            return state;
+    }
+}
+
+export const adminSalesBarangayReducer = (state = { orders: [] }, action) => {
+    switch(action.type){
+        case ALL_ORDER_BARANGAY_REQUEST:
+            return {
+                loading: true,
+                orders: [],
+            };
+        case ALL_ORDER_BARANGAY_SUCCESS:
+            return {
+                loading: false,
+                orders: action.payload,
+            };
+        case ALL_ORDER_BARANGAY_FAIL:
             return {
                 loading: false,
                 error: action.payload,
