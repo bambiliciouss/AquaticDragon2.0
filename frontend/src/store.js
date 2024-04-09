@@ -118,7 +118,8 @@ import {
   adminUsersReducer,
   adminOrderTransactionsReducer,
   adminOrderGallonTypeReducer,
-  adminSalesOrderReducer
+  adminSalesOrderReducer,
+  adminSalesBarangayReducer
 } from "reducers/adminReducers";
 
 
@@ -132,7 +133,8 @@ const reducers = combineReducers({
   adminSalesOrder: adminSalesOrderReducer,
   adminOrderTransaction: adminOrderTransactionsReducer,
   adminOrderGallonType: adminOrderGallonTypeReducer,
-  
+  adminSalesBarangay: adminSalesBarangayReducer,
+
   auth: authReducer,
   user: userReducer,
   forgotPassword: forgotPasswordReducer,
