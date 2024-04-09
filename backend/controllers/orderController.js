@@ -266,12 +266,49 @@ exports.getOrdersByGallonType = async (req, res, next) => {
           'selectedStore.store': new mongoose.Types.ObjectId(branchID)
         }
       },
-      { $unwind: "$orderItems" },
       {
-        $group: {
-          _id: "$orderItems.gallon",
-          typeName: { $first: "$orderItems.type" },
-          count: { $sum: "$orderItems.quantity" }
+        $facet: {
+          "Refill": [
+            { $match: { "orderItems": { $exists: true, $ne: [] } } },
+            { $unwind: "$orderItems" },
+            {
+              $group: {
+                _id: "$orderItems.gallon",
+                typeName: { $first: "$orderItems.type" },
+                count: { $sum: "$orderItems.quantity" }
+              }
+            }
+          ],
+          "New Container": [
+            { $match: { "orderProducts": { $exists: true, $ne: [] } } },
+            { $unwind: "$orderProducts" },
+            {
+              $group: {
+                _id: "$orderProducts.product",
+                typeName: { $first: "$orderProducts.type" },
+                count: { $sum: "$orderProducts.quantity" }
+              }
+            },
+            {
+              $lookup:{
+                from: "typeofgallons",
+                localField: "typeName",
+                foreignField: "_id",
+                as: "type"
+              }
+            },
+            {
+              $unwind: "$type"
+            },
+            {
+              $project: {
+                _id: 1,
+                typeName: "$type.typeofGallon",
+                count: 1
+              }
+            }
+
+          ]
         }
       }
     ]);
