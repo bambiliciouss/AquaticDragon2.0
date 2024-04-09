@@ -20,6 +20,9 @@ import {
     ALL_ORDER_GALLON_TYPE_REQUEST,
     ALL_ORDER_GALLON_TYPE_SUCCESS,
     ALL_ORDER_GALLON_TYPE_FAIL,
+    SALES_ORDER_REQUEST,
+    SALES_ORDER_SUCCESS,
+    SALES_ORDER_FAIL,
     CLEAR_ERRORS,
 } from '../constants/adminConstants';
 
@@ -144,6 +147,33 @@ export const adminSalesWalkinReducer = (state = { sales: [] }, action) => {
                 sales: action.payload,
             };
         case SALES_WALKIN_FAIL:
+            return {
+                loading: false,
+                error: action.payload,
+            };
+        case CLEAR_ERRORS:
+            return {
+                ...state,
+                error: null,
+            };
+        default:
+            return state;
+    }
+}
+
+export const adminSalesOrderReducer = (state = { orders: [] }, action) => {
+    switch(action.type){
+        case SALES_ORDER_REQUEST:
+            return {
+                loading: true,
+                orders: [],
+            };
+        case SALES_ORDER_SUCCESS:
+            return {
+                loading: false,
+                orders: action.payload,
+            };
+        case SALES_ORDER_FAIL:
             return {
                 loading: false,
                 error: action.payload,

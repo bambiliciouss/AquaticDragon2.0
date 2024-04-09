@@ -18,6 +18,10 @@ import {
     SALES_WALKIN_SUCCESS, 
     SALES_WALKIN_FAIL,
 
+    SALES_ORDER_REQUEST,
+    SALES_ORDER_SUCCESS,
+    SALES_ORDER_FAIL,
+    
     ALL_ORDER_TRANSACTIONS_REQUEST,
     ALL_ORDER_TRANSACTIONS_SUCCESS,
     ALL_ORDER_TRANSACTIONS_FAIL,
@@ -46,6 +50,24 @@ export const allStoreSalesAction = (id) => async (dispatch) => {
         });
     }
 };
+
+export const getSalesOrderByBranch = (id) => async (dispatch) => {
+    try {
+        dispatch({ type: SALES_ORDER_REQUEST });
+        const { data } = await axios.get(`/api/v1/admin/all/sales/order/${id}`);
+        dispatch({
+            type: SALES_ORDER_SUCCESS,
+            payload: data,
+        });
+    } catch (error) {
+        dispatch({
+            type: SALES_ORDER_FAIL,
+            payload: error.response
+                ? error.response.data.message
+                : "Unknown error occurred",
+        });
+    }
+}
 
 export const setBranchID = (id) => async (dispatch) => {
     dispatch({
