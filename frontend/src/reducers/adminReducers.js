@@ -196,12 +196,12 @@ export const adminSalesOrderReducer = (state = { orders: [] }, action) => {
     }
 }
 
-export const adminSalesBarangayReducer = (state = { orders: [] }, action) => {
+export const adminSalesBarangayReducer = (state = { orders: {} }, action) => {
     switch(action.type){
         case ALL_ORDER_BARANGAY_REQUEST:
             return {
                 loading: true,
-                orders: [],
+                orders: {},
             };
         case ALL_ORDER_BARANGAY_SUCCESS:
             return {

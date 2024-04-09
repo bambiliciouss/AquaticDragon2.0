@@ -266,7 +266,7 @@ const Dashboard = (props) => {
       }
       setData6(salesData)
     }
-    if (performance && performance.riders){
+    if (performance && performance.riders) {
       let salesData = {
         labels: performance.riders.map((sale) => sale._id),
         datasets: [
@@ -348,6 +348,11 @@ const Dashboard = (props) => {
     document.scrollingElement.scrollTop = 0;
   }, [location]);
 
+  useEffect(() => {
+    if (barangay) {
+      console.log("Barangay: ", barangay);
+    }
+  }, [barangay])
   return (
     <>
       <MetaData title={"Dashboard"} />
@@ -383,7 +388,7 @@ const Dashboard = (props) => {
                       <CardTitle
                         tag={sales && branch && sales.find((sale) => sale._id === branch) ? "h1" : "h3"}
                         className="text-uppercase text-primary mb-0 font-weight-bolder">
-                        {totalSales ? `₱${totalSales}` : localStorage.getItem("totalSales") ? `₱${localStorage.getItem("totalSales")}` : "Select a branch"}
+                        {totalSales ? `₱${totalSales}` : localStorage.getItem("totalSales") ? `₱${localStorage.getItem("totalSales")}` : <span className="text-danger">Select a branch</span>}
                       </CardTitle>
 
                     </Col>
@@ -409,7 +414,7 @@ const Dashboard = (props) => {
                       <CardTitle
                         tag={orders && branch && orders.find((sale) => sale._id === branch) ? "h1" : "h3"}
                         className="text-uppercase text-primary mb-0 font-weight-bolder">
-                        {orders && branch && orders.find((sale) => sale._id === branch) ? `₱${orders.find((sale) => sale._id === branch).totalSales}` : "Select a branch"}
+                        {orders && branch && orders.find((sale) => sale._id === branch) ? `₱${orders.find((sale) => sale._id === branch).totalSales}` : <span className="text-danger">Select a branch</span>}
                       </CardTitle>
 
                     </Col>
@@ -435,7 +440,7 @@ const Dashboard = (props) => {
                       <CardTitle
                         tag={walkinSales && branch && walkinSales.find((sale) => sale._id === branch) ? "h1" : "h3"}
                         className="text-uppercase text-primary mb-0 font-weight-bolder">
-                        {walkinSales && branch && walkinSales.find((sale) => sale._id === branch) ? `₱${walkinSales.find((sale) => sale._id === branch).totalSales}` : "Select a branch"}
+                        {walkinSales && branch && walkinSales.find((sale) => sale._id === branch) ? `₱${walkinSales.find((sale) => sale._id === branch).totalSales}` : <span className="text-danger">Select a branch</span>}
                       </CardTitle>
 
                     </Col>
@@ -456,7 +461,7 @@ const Dashboard = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Performance
                       </h6>
-                      <h2 className="mb-0">Order Transactions</h2>
+                      <h2 className="mb-0">Order Transactions {branch ? transactions && transactions.length === 0 && <span className="text-danger text-sm">(No results)</span> : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
                     </div>
                   </Row>
                 </CardHeader>
@@ -480,7 +485,8 @@ const Dashboard = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Performance
                       </h6>
-                      <h2 className="mb-0">Gallon Type (Refill)</h2>
+
+                      <h2 className="mb-0">Gallon Type (Refill) {branch ? (gallons.length === 0 ? <span className="text-danger text-sm">(No results)</span> : gallons[0].Refill.length === 0 ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
                     </div>
                   </Row>
                 </CardHeader>
@@ -504,7 +510,7 @@ const Dashboard = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Performance
                       </h6>
-                      <h2 className="mb-0">Gallon Type (New Container)</h2>
+                      <h2 className="mb-0">Gallon Type (New Container) {branch ? (gallons.length === 0 ? <span className="text-danger text-sm">(No results)</span> : gallons[0]["New Container"].length === 0 ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
                     </div>
                   </Row>
                 </CardHeader>
@@ -532,7 +538,7 @@ const Dashboard = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Inventory
                       </h6>
-                      <h3 className="mb-0">Product Stock</h3>
+                      <h3 className="mb-0">Product Stock {branch ? products && products.length === 0 && <span className="text-danger text-sm">(No results)</span> : <span className="text-danger text-sm">(Select a branch)</span>}</h3>
                     </div>
                     <div className="col text-right">
                       <Link to="/admin/product">
@@ -554,7 +560,7 @@ const Dashboard = (props) => {
 
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="position-relative h-100">
                     {products && products.map((product) => {
                       const activeStocks = product.stocks.filter((stock) => !stock.deleted);
 
@@ -570,7 +576,6 @@ const Dashboard = (props) => {
                         </tr>
                       )
                     })}
-
                   </tbody>
                 </Table>
               </Card>
@@ -583,7 +588,7 @@ const Dashboard = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Performance
                       </h6>
-                      <h2 className="mb-0">Sales By Barangay</h2>
+                      <h2 className="mb-0">Sales By Barangay {branch ?((barangay && Object.keys(barangay).length === 0) ?   <span className="text-danger text-sm">(No results)</span>: (barangay.orders && barangay.orders.length === 0) ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
                     </div>
                   </Row>
                 </CardHeader>
@@ -613,7 +618,7 @@ const Dashboard = (props) => {
 
             </Col>
           </Row>
-
+          {/* Employee Accepted orders and Rider Delivered orders */}
           <Row>
             <Col className="mb-5 mb-xl-4" xl="6">
               <Card className="shadow">
@@ -623,7 +628,8 @@ const Dashboard = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Performance
                       </h6>
-                      <h2 className="mb-0">Employee Performance</h2>
+                      <h2 className="mb-0">Employee Performance  {branch ? (performance && Object.keys(performance).length === 0 ?
+                      <span className="text-danger text-sm">(No results)</span>: (performance.employees && performance.employees.length === 0) ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
                     </div>
                   </Row>
                 </CardHeader>
@@ -647,7 +653,8 @@ const Dashboard = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Performance
                       </h6>
-                      <h2 className="mb-0">Rider Performance</h2>
+                      <h2 className="mb-0">Rider Performance { branch ? (performance && Object.keys(performance).length === 0 ?
+                      <span className="text-danger text-sm">(No results)</span>: (performance.riders && performance.riders.length === 0) ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
                     </div>
                   </Row>
                 </CardHeader>
@@ -674,7 +681,7 @@ const Dashboard = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Performance
                       </h6>
-                      <h2 className="mb-0">Total Sales By Branch</h2>
+                      <h2 className="mb-0">Total Sales By Branch {sales && sales.length === 0 && <span className="text-danger text-sm">(No results)</span>}</h2>
                     </div>
                   </Row>
                 </CardHeader>

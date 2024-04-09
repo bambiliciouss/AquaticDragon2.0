@@ -64,7 +64,7 @@ const Header = () => {
                         </CardTitle>
                         <span className="h2 font-weight-bold mb-0">
                           {users && !customerLoading &&
-                            users.filter((user) => user.role === "user").length > 0 ? users.filter((user) => user.role === "user").length : "Select a branch"}
+                            users.filter((user) => user.role === "user").length > 0 ? users.filter((user) => user.role === "user").length :<span className="text-danger">Select a branch</span>}
                         </span>
                       </div>
                       <Col className="col-auto">
@@ -96,7 +96,7 @@ const Header = () => {
                           {" "}
                           {staff && !staffLoading &&
                             staff.filter((user) => user.role === "employee")
-                              .length > 0 ? staff.filter((user) => user.role === "employee").length:"Select a branch"}
+                              .length > 0 ? staff.filter((user) => user.role === "employee").length:<span className="text-danger">Select a branch</span>}
                         </span>
                       </div>
                       <Col className="col-auto">
@@ -127,7 +127,7 @@ const Header = () => {
                         <span className="h2 font-weight-bold mb-0">
                           {staff &&!staffLoading &&
                             staff.filter((user) => user.role === "rider")
-                              .length > 0 ? staff.filter((user) => user.role === "rider").length:"Select a branch"}
+                              .length > 0 ? staff.filter((user) => user.role === "rider").length:<span className="text-danger">Select a branch</span>}
                         </span>
                       </div>
                       <Col className="col-auto">
