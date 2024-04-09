@@ -4,6 +4,7 @@ const ErrorHandler = require("../utils/errorHandler");
 const cloudinary = require("cloudinary");
 const mongoose = require("mongoose");
 const Product = require("../models/product");
+const StoreBarangay = require("../models/storebarangay");
 exports.newOrder = async (req, res, next) => {
   // console.log("order",req.body);
   const {
@@ -228,17 +229,17 @@ exports.getOrderTransactions = async (req, res, next) => {
         $match: {
           'selectedStore.store': new mongoose.Types.ObjectId(branch),
           $or: [
-            { containerStatus: {$regex: "Walk In", $options: "i"}, orderclaimingOption: {$regex: "Walk In", $options: "i"} },
-            { containerStatus: {$regex: "Walk In", $options: "i"}, orderclaimingOption: {$regex: "Deliver", $options: "i"} },
-            { containerStatus: {$regex:"Pick Up",$options: "i"}, orderclaimingOption: {$regex: "Walk In", $options: "i"} },
-            { containerStatus: {$regex:"Pick Up",$options: "i"}, orderclaimingOption: {$regex: "Deliver", $options: "i"} }
+            { containerStatus: { $regex: "Walk In", $options: "i" }, orderclaimingOption: { $regex: "Walk In", $options: "i" } },
+            { containerStatus: { $regex: "Walk In", $options: "i" }, orderclaimingOption: { $regex: "Deliver", $options: "i" } },
+            { containerStatus: { $regex: "Pick Up", $options: "i" }, orderclaimingOption: { $regex: "Walk In", $options: "i" } },
+            { containerStatus: { $regex: "Pick Up", $options: "i" }, orderclaimingOption: { $regex: "Deliver", $options: "i" } }
           ]
         }
       },
       {
         $group: {
           // _id: { containerStatus: "$containerStatus", orderclaimingOption: "$orderclaimingOption" },
-          _id: { $concat: [ "$containerStatus", " - ", "$orderclaimingOption" ]},
+          _id: { $concat: ["$containerStatus", " - ", "$orderclaimingOption"] },
           // orders: { $push: "$$ROOT" },
           count: { $sum: 1 }
         }
@@ -290,7 +291,7 @@ exports.getOrdersByGallonType = async (req, res, next) => {
               }
             },
             {
-              $lookup:{
+              $lookup: {
                 from: "typeofgallons",
                 localField: "typeName",
                 foreignField: "_id",
@@ -313,7 +314,7 @@ exports.getOrdersByGallonType = async (req, res, next) => {
       }
     ]);
 
-    res.json({orders});
+    res.json({ orders });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server Error" });
@@ -321,28 +322,56 @@ exports.getOrdersByGallonType = async (req, res, next) => {
 };
 
 exports.getOrderByBarangay = async (req, res, next) => {
-    try{
-      const branch = req.params.id;
-      const orders = await Order.aggregate([
-        {
-          $match: {
-            'selectedStore.store': new mongoose.Types.ObjectId(branch),
-            'deliveryAddress.barangay': { $exists: true}
-          }
-        },
-        {
-          $group: {
-            _id: "$deliveryAddress.barangay",
-            count: { $sum: 1 }
-          }
-        }
-      ])
-      res.status(200).json({
-        success: true,
-        orders
-      
-      })
-    }catch(error){
-        res.status(500).json({ message: "Internal Server Error", error: error.message });
+  try {
+    const branch = req.params.id;
+    
+    const storeBarangay = await StoreBarangay.find({
+      storebranch: branch,
+      deleted: false,
+    });
+  
+    let barangayCondition;
+
+    if (Array.isArray(storeBarangay)) {
+      barangayCondition = { $exists: true, $in: storeBarangay.map(barangay => barangay.barangay)};
+    } else {
+      barangayCondition = { $exists: true, $eq: storeBarangay.barangay };
     }
-}
+    const result = await Order.aggregate([
+      {
+        $match: {
+          'selectedStore.store': new mongoose.Types.ObjectId(branch),
+          'deliveryAddress.barangay': barangayCondition
+        }
+      },
+      {
+        $facet: {
+          orders: [
+            {
+              $group: {
+                _id: "$deliveryAddress.barangay",
+                count: { $sum: 1 }
+              }
+            }
+          ],
+          totalOrders: [
+            {
+              $group: {
+                _id: null,
+                count: { $sum: 1 }
+              }
+            }
+          ]
+        }
+      }
+    ]);
+    const totalOrders = result[0].totalOrders.length > 0 ? result[0].totalOrders[0].count : 0;
+    res.status(200).json({
+      success: true,
+      orders: result[0].orders,
+      totalOrders: totalOrders
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error", error: error.message });
+  }
+};
