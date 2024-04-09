@@ -50,7 +50,7 @@ import {
 import Header from "components/Headers/Header.js";
 
 import React from "react";
-import { useLocation, Route, Routes, Navigate } from "react-router-dom";
+import { useLocation, Link} from "react-router-dom";
 
 // core components
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
@@ -60,19 +60,21 @@ import MetaData from "components/layout/MetaData.js";
 
 
 // Default Admin Chart (All store sales)
-import { allStoreSalesAction, getSalesWalkin,getSalesOrderByBranch, getOrderTransactions, getOrderByGallonType, clearErrors } from "../../actions/adminAction";
+import { allProductList } from "actions/productActions.js";
+import { allStoreSalesAction, getSalesWalkin, getSalesOrderByBranch, getOrderTransactions, getOrderByGallonType, clearErrors } from "../../actions/adminAction";
 import { useDispatch, useSelector } from "react-redux";
 const Dashboard = (props) => {
   const [activeNav, setActiveNav] = useState(1);
   const [chartExample1Data, setChartExample1Data] = useState("data1");
   const dispatch = useDispatch();
   const { sales, loading, error } = useSelector((state) => state.adminStoreSales);
-  const {orders} = useSelector((state)=>state.adminSalesOrder)
-  const {transactions} = useSelector((state) => state.adminOrderTransaction);
+  const { orders } = useSelector((state) => state.adminSalesOrder)
+  const { transactions } = useSelector((state) => state.adminOrderTransaction);
   const { user } = useSelector((state) => state.auth)
   const { branch } = useSelector((state) => state.adminStoreBranch)
   const { sales: walkinSales } = useSelector((state) => state.adminSalesWalkin);
-  const {gallons} = useSelector((state) => state.adminOrderGallonType)
+  const { gallons } = useSelector((state) => state.adminOrderGallonType)
+  const { products } = useSelector((state) => state.allProducts);
   const [totalSales, setTotalSales] = useState(0)
   const [data, setData] = useState({
     labels: [],
@@ -117,11 +119,16 @@ const Dashboard = (props) => {
   let hue = Math.random() * 360;
   const goldenRatioConjugate = 0.618033988749895;
   function getRandomColor() {
-      hue += goldenRatioConjugate;
-      hue = hue % 1;
-      const h = Math.floor(hue*360)
-      return `hsl(${h},60%,60%)`
+    hue += goldenRatioConjugate;
+    hue = hue % 1;
+    const h = Math.floor(hue * 360)
+    return `hsl(${h},60%,60%)`
   }
+  useEffect(() => {
+    if (products) {
+      console.log("prodcuts: ", products)
+    }
+  }, [products])
   useEffect(() => {
     if (sales) {
       let salesData = {
@@ -137,7 +144,7 @@ const Dashboard = (props) => {
       }
       setData(salesData)
     }
-    if (transactions){
+    if (transactions) {
       let salesData = {
         labels: transactions.map((sale) => sale._id),
         datasets: [
@@ -151,7 +158,7 @@ const Dashboard = (props) => {
       }
       setData2(salesData)
     }
-    if (gallons && gallons.length > 0){
+    if (gallons && gallons.length > 0) {
       let salesData = {
         labels: gallons[0]["Refill"].map((sale) => sale.typeName),
         datasets: [
@@ -174,31 +181,35 @@ const Dashboard = (props) => {
             backgroundColor: gallons[0]["New Container"].map(() => getRandomColor()),
           },
         ],
-        
+
       }
       setData4(salesData4);
-      
+
     }
   }, [sales, transactions, gallons])
 
 
 
-  const getTotalSales = (order,walkin) => {
-    if (order.length > 0 && walkin.length > 0){
+  const getTotalSales = (order, walkin) => {
+    if (order.length > 0 && walkin.length > 0) {
       const totalSalesOrder = order.find((sale) => sale._id === branch).totalSales || 0;
       const totalSalesWalkin = walkin.find((sale) => sale._id === branch).totalSales || 0;
       setTotalSales(totalSalesOrder + totalSalesWalkin)
+      localStorage.setItem("totalSales", totalSalesOrder + totalSalesWalkin)
     }
   }
-  useEffect(()=>{
-    
-    if (branch){
-      getTotalSales(orders,walkinSales)
+  useEffect(() => {
+
+    if (branch) {
+      getTotalSales(orders, walkinSales)
       dispatch(getOrderTransactions(branch));
+      dispatch(allProductList(branch));
       dispatch(getOrderByGallonType(branch));
     }
-  },[sales, walkinSales, branch])
+    
+  }, [sales, walkinSales, branch])
   useEffect(() => {
+
     dispatch(allStoreSalesAction(user._id));
     dispatch(getSalesWalkin());
     dispatch(getSalesOrderByBranch(user._id));
@@ -259,7 +270,7 @@ const Dashboard = (props) => {
                       <CardTitle
                         tag={sales && branch && sales.find((sale) => sale._id === branch) ? "h1" : "h3"}
                         className="text-uppercase text-primary mb-0 font-weight-bolder">
-                        {totalSales ? `₱${totalSales}` : "Select a branch"}
+                        {totalSales ? `₱${totalSales}` : localStorage.getItem("totalSales") ? `₱${localStorage.getItem("totalSales")}` : "Select a branch"}
                       </CardTitle>
 
                     </Col>
@@ -282,8 +293,8 @@ const Dashboard = (props) => {
 
                     </div>
                     <Col className="col-auto">
-                    <CardTitle
-                        tag={orders && branch && orders .find((sale) => sale._id === branch) ? "h1" : "h3"}
+                      <CardTitle
+                        tag={orders && branch && orders.find((sale) => sale._id === branch) ? "h1" : "h3"}
                         className="text-uppercase text-primary mb-0 font-weight-bolder">
                         {orders && branch && orders.find((sale) => sale._id === branch) ? `₱${orders.find((sale) => sale._id === branch).totalSales}` : "Select a branch"}
                       </CardTitle>
@@ -397,7 +408,7 @@ const Dashboard = (props) => {
             </Col>
           </Row>
           <Row>
-          <Col className="mb-5 mb-xl-4" xl="4">
+            <Col className="mb-5 mb-xl-4" xl="4">
               <Card className="shadow">
                 <CardHeader className="border-0">
                   <Row className="align-items-center">
@@ -405,13 +416,14 @@ const Dashboard = (props) => {
                       <h3 className="mb-0">Product Inventory</h3>
                     </div>
                     <div className="col text-right">
+                      <Link to="/admin/product">
                       <Button
                         color="primary"
                         href="#pablo"
-                        onClick={(e) => e.preventDefault()}
                         size="sm">
                         See all
                       </Button>
+                      </Link>
                     </div>
                   </Row>
                 </CardHeader>
@@ -420,90 +432,30 @@ const Dashboard = (props) => {
                     <tr>
                       <th scope="col">Product</th>
                       <th scope="col">Stocks</th>
-                      <th scope="col" />
+                      
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <th scope="row">Facebook</th>
-                      <td>1,480</td>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <span className="mr-2">60%</span>
-                          <div>
-                            <Progress
-                              max="100"
-                              value="60"
-                              barClassName="bg-gradient-danger"
-                            />
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">Facebook</th>
-                      <td>5,480</td>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <span className="mr-2">70%</span>
-                          <div>
-                            <Progress
-                              max="100"
-                              value="70"
-                              barClassName="bg-gradient-success"
-                            />
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">Google</th>
-                      <td>4,807</td>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <span className="mr-2">80%</span>
-                          <div>
-                            <Progress max="100" value="80" />
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">Instagram</th>
-                      <td>3,678</td>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <span className="mr-2">75%</span>
-                          <div>
-                            <Progress
-                              max="100"
-                              value="75"
-                              barClassName="bg-gradient-info"
-                            />
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">twitter</th>
-                      <td>2,645</td>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <span className="mr-2">30%</span>
-                          <div>
-                            <Progress
-                              max="100"
-                              value="30"
-                              barClassName="bg-gradient-warning"
-                            />
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
+                    {products && products.map((product) => {
+                      const activeStocks = product.stocks.filter((stock) => !stock.deleted);
+
+                      const totalQuantity = activeStocks.reduce(
+                        (acc, stock) => acc + stock.quantity,
+                        0
+                      );
+                      return (
+                        <tr>
+                          <th>{product.typesgallon.typeofGallon}</th>
+                          <td>{totalQuantity}</td>
+
+                        </tr>
+                      )
+                    })}
+
                   </tbody>
                 </Table>
               </Card>
-            </Col> 
+            </Col>
           </Row>
           <Row>
             <Col className="mb-5 mb-xl-4" xl="12">
