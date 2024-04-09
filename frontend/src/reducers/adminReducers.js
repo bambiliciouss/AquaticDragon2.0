@@ -27,6 +27,10 @@ import {
     ALL_ORDER_BARANGAY_SUCCESS,
     ALL_ORDER_BARANGAY_FAIL,
 
+    STAFF_PERFORMANCE_REQUEST,
+    STAFF_PERFORMANCE_SUCCESS,
+    STAFF_PERFORMANCE_FAIL,
+
     CLEAR_ERRORS,
 } from '../constants/adminConstants';
 
@@ -259,6 +263,33 @@ export const adminOrderGallonTypeReducer = (state = { gallons: [] }, action) => 
                 gallons: action.payload,
             };
         case ALL_ORDER_GALLON_TYPE_FAIL:
+            return {
+                loading: false,
+                error: action.payload,
+            };
+        case CLEAR_ERRORS:
+            return {
+                ...state,
+                error: null,
+            };
+        default:
+            return state;
+    }
+}
+
+export const adminStaffPerformanceReducer = (state = { performance: [] }, action) => {
+    switch(action.type){
+        case STAFF_PERFORMANCE_REQUEST:
+            return {
+                loading: true,
+                performance: [],
+            };
+        case STAFF_PERFORMANCE_SUCCESS:
+            return {
+                loading: false,
+                performance: action.payload,
+            };
+        case STAFF_PERFORMANCE_FAIL:
             return {
                 loading: false,
                 error: action.payload,
