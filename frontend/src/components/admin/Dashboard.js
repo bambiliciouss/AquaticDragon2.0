@@ -15,7 +15,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 // node.js library that concatenates classes (strings)
 import classnames from "classnames";
 // javascipt plugin for creating charts
@@ -61,11 +61,12 @@ import MetaData from "components/layout/MetaData.js";
 
 // Default Admin Chart (All store sales)
 import { allProductList } from "actions/productActions.js"; // Action for product inventory
-import { allStoreSalesAction, getSalesWalkin, getSalesOrderByBranch, getOrderTransactions, getOrderByGallonType, clearErrors } from "../../actions/adminAction"; // Actions for sales, walkin sales, order sales, order transactions, order gallon type
+import { allStoreSalesAction, getSalesOrderByBarangay, getSalesWalkin, getSalesOrderByBranch, getOrderTransactions, getOrderByGallonType, clearErrors } from "../../actions/adminAction"; // Actions for sales, walkin sales, order sales, order transactions, order gallon type, barangay sales
 import { useDispatch, useSelector } from "react-redux";
 const Dashboard = (props) => {
 
   const dispatch = useDispatch();
+
 
   const { sales, error } = useSelector((state) => state.adminStoreSales); // Get the sales of all stores
   const { orders } = useSelector((state) => state.adminSalesOrder) // Get the sales of all online orders
@@ -75,8 +76,9 @@ const Dashboard = (props) => {
   const { sales: walkinSales } = useSelector((state) => state.adminSalesWalkin); // Get the sales of all walk in orders
   const { gallons } = useSelector((state) => state.adminOrderGallonType) // Get the gallon type of all orders
   const { products } = useSelector((state) => state.allProducts); // Get the inventory of all products
-
+  const { orders: barangay } = useSelector((state) => state.adminSalesBarangay); // Get the sales of all barangays
   const [totalSales, setTotalSales] = useState(0)
+  const [colors, setColors] = useState([])
   const [data, setData] = useState({
     labels: [],
     datasets: [
@@ -118,6 +120,17 @@ const Dashboard = (props) => {
     ],
   })
 
+  const [data5, setData5] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "Sales",
+        data: [],
+
+      },
+    ],
+  })
+  const [options, setOptions] = useState({})
   // Random color generator from the same hue
   let hue = Math.random() * 360;
   const goldenRatioConjugate = 0.618033988749895;
@@ -127,7 +140,7 @@ const Dashboard = (props) => {
     const h = Math.floor(hue * 360)
     return `hsl(${h},60%,60%)`
   }
-  
+
   // Change the data of the chart depending on the sales, transactions, gallons
   useEffect(() => {
     if (sales) {
@@ -152,7 +165,7 @@ const Dashboard = (props) => {
             label: "Sales",
             data: transactions.map((sale) => sale.count),
             maxBarThickness: 30,
-            backgroundColor: transactions.map(() => getRandomColor()), 
+            backgroundColor: transactions.map(() => getRandomColor()),
           },
         ],
       }
@@ -166,7 +179,7 @@ const Dashboard = (props) => {
             label: "Sales",
             data: gallons[0]["Refill"].map((sale) => sale.count),
             maxBarThickness: 30,
-            backgroundColor: gallons.map(() => getRandomColor()), 
+            backgroundColor: gallons.map(() => getRandomColor()),
           },
         ],
       }
@@ -186,8 +199,40 @@ const Dashboard = (props) => {
       setData4(salesData4);
 
     }
-  }, [sales, transactions, gallons])
+    if (barangay && barangay.orders && barangay.orders.length > 0) {
+      let color = barangay.orders.map(() => getRandomColor());
+      setColors(color);
+      let salesData = {
+        labels: barangay.orders.map((sale) => sale._id),
+        datasets: [
+          {
+            label: "Sales",
+            data: barangay.orders.map((sale) => sale.count),
+            backgroundColor: color,
+            hoverBackgroundColor: color,
+          },
+        ],
+      }
+      let options = {
+        tooltips: {
+          enabled: true,
+          mode: 'single',
+          callbacks: {
+            label: function (tooltipItems, data) {
+              let label = data.labels[tooltipItems.index];
+              let value = data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index];
+              return label + ': ' + value;
+            }
+          }
+        }
+      };
+      setData5(salesData);
+      setOptions(options);
+      // console.log("barangay: ",barangay.orders)
 
+    }
+  }, [sales, transactions, gallons, barangay])
+  
 
   // Function to calculate the total sales of the selected branch
   const getTotalSales = (order, walkin) => {
@@ -214,6 +259,9 @@ const Dashboard = (props) => {
 
       // Get the gallon type of the selected branch (Refill or New Container)
       dispatch(getOrderByGallonType(branch));
+
+      // Get the sales of all barangays of the selected branch
+      dispatch(getSalesOrderByBarangay(branch));
     }
 
   }, [sales, walkinSales, branch])
@@ -268,7 +316,7 @@ const Dashboard = (props) => {
           <Row>
             <Col className="mb-5 mb-xl-4" lg="6" xl="4">
 
-              <Card className="card-stats mb-4 mb-xl-0">
+              <Card className="shadow card-stats mb-4 mb-xl-0">
                 <CardBody>
                   <Row className="align-items-center">
                     <div className="col">
@@ -294,7 +342,7 @@ const Dashboard = (props) => {
             </Col>
             <Col className="mb-5 mb-xl-4" lg="6" xl="4">
 
-              <Card className="card-stats mb-4 mb-xl-0">
+              <Card className="shadow card-stats mb-4 mb-xl-0">
                 <CardBody>
                   <Row className="align-items-center">
                     <div className="col">
@@ -320,7 +368,7 @@ const Dashboard = (props) => {
             </Col>
             <Col className="mb-5 mb-xl-4" lg="6" xl="4">
 
-              <Card className="card-stats mb-4 mb-xl-0">
+              <Card className="shadow card-stats mb-4 mb-xl-0">
                 <CardBody>
                   <Row className="align-items-center">
                     <div className="col">
@@ -425,11 +473,14 @@ const Dashboard = (props) => {
           {/* Product Inventory, Barangays */}
           <Row>
             <Col className="mb-5 mb-xl-4" xl="6">
-              <Card className="shadow">
+              <Card className="shadow h-100">
                 <CardHeader className="border-0">
                   <Row className="align-items-center">
                     <div className="col">
-                      <h3 className="mb-0">Product Inventory</h3>
+                    <h6 className="text-uppercase text-muted ls-1 mb-1">
+                        Inventory
+                      </h6>
+                      <h3 className="mb-0">Product Stock</h3>
                     </div>
                     <div className="col text-right">
                       <Link to="/admin/product">
@@ -473,6 +524,40 @@ const Dashboard = (props) => {
               </Card>
             </Col>
             <Col className="mb-5 mb-xl-4" xl="6">
+              <Card className="shadow">
+                <CardHeader className="bg-transparent">
+                  <Row className="align-items-center">
+                    <div className="col">
+                      <h6 className="text-uppercase text-muted ls-1 mb-1">
+                        Performance
+                      </h6>
+                      <h2 className="mb-0">Sales By Barangay</h2>
+                    </div>
+                  </Row>
+                </CardHeader>
+                <CardBody>
+                  <div className="d-flex align-items-center justify-content-center">
+                    <div className="chart">
+                      <Pie data={data5} options={options}/>
+
+                    </div>
+                    <div className="mt-5">
+                      {barangay && barangay.orders && barangay.orders.map((item, index) => (
+                        <div key={index} className="w-100 px-4">
+                          <div className="d-flex w-100 justify-content-center align-items-center">
+                            <div className="mr-2 block mb-3 rounded-circle" style={{ width: '10px', height: '10px', backgroundColor: `${colors[index]}` }}></div>
+                            <p className="d-flex w-100 justify-content-between text-sm font-medium text-black">
+                              <span> {item._id}</span>
+                              <span className="ml-3"> {((item.count/barangay.totalOrders) * 100).toFixed(2)}%</span>
+                              <span className="ml-3">({item.count}) </span>
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </CardBody>
+              </Card>
 
             </Col>
           </Row>
