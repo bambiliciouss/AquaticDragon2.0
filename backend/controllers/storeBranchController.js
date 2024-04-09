@@ -226,11 +226,11 @@ exports.AllStoreBranchUser = async (req, res, next) => {
 };
 
 exports.getAdminBranches = async (req, res, next) => {
-  try{
+  try {
     const userID = req.params.id
-    const branches = await StoreBranch.find({user: userID, deleted: false})
-    if (!branches){
-      return res.status(404).json({success: false, message: "Branches not found"})
+    const branches = await StoreBranch.find({ user: userID, deleted: false })
+    if (!branches) {
+      return res.status(404).json({ success: false, message: "Branches not found" })
     }
     res.status(200).json({
       success: true,
@@ -238,17 +238,17 @@ exports.getAdminBranches = async (req, res, next) => {
     })
 
 
-  }catch(error){
+  } catch (error) {
 
   }
 }
 
 
-exports.getSalesByBranch = async (req, res) => {
+exports.getSalesOrderByBranch = async (req, res) => {
   try {
     const branches = await StoreBranch.find({ user: req.params.id });
     const branchIds = branches.map((branch)=>branch._id);
-    
+
     const salesByBranch = await Order.aggregate([
       {
         $match: {
@@ -275,6 +275,77 @@ exports.getSalesByBranch = async (req, res) => {
       {
         $project: {
           _id:1,
+          branch: '$store.branch',
+          totalSales: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json(salesByBranch);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getSalesByBranch = async (req, res) => {
+  try {
+    const branches = await StoreBranch.find({ user: req.params.id });
+    const branchIds = branches.map((branch) => branch._id);
+
+    const salesByBranch = await Order.aggregate([
+      {
+        $match: {
+          'selectedStore.store': { $in: branchIds },
+        },
+      },
+      {
+        $group: {
+          _id: '$selectedStore.store',
+          totalSales: { $sum: '$totalPrice' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'storebranches', // replace with the actual name of your store branches collection
+          localField: '_id',
+          foreignField: '_id',
+          as: 'store',
+        },
+      },
+      {
+        $unwind: '$store',
+      },
+      {
+        $lookup: {
+          from: 'othergallons', // replace with the actual name of your OtherGallon collection
+          localField: '_id',
+          foreignField: 'storebranch',
+          as: 'otherGallons',
+        },
+      },
+      {
+        $addFields: {
+          totalWalkInSales: {
+            $sum: {
+              $map: {
+                input: "$otherGallons",
+                as: "gallon",
+                in: {
+                  $multiply: ["$$gallon.price", "$$gallon.quantity"],
+                },
+              }
+            }
+          },
+        },
+      },
+      {
+        $addFields: {
+          totalSales: { $add: ["$totalSales", "$totalWalkInSales"] },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
           branch: '$store.branch',
           totalSales: 1,
         },

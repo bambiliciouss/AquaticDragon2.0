@@ -10,7 +10,8 @@ const {
   AdminAllStoreBranch,
   AllStoreBranchUser,
   getAdminBranches,
-  getSalesByBranch
+  getSalesByBranch,
+  getSalesOrderByBranch
 } = require("../controllers/storeBranchController");
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
@@ -57,6 +58,7 @@ router.put(
   updateStoreBranch
 );
 
-router.get('/admin/all/store/branches/:id', getAdminBranches)
-router.get('/admin/all/store/sales/:id', getSalesByBranch)
+router.get('/admin/all/store/branches/:id', getAdminBranches);
+router.get('/admin/all/store/sales/:id', getSalesByBranch);
+router.get('/admin/all/sales/order/:id', getSalesOrderByBranch)
 module.exports = router;
