@@ -42,7 +42,7 @@ const AdminNavbar = (props) => {
   const { user, loading } = useSelector((state) => state.auth);
   const logoutHandler = () => {
     dispatch(logout());
-    localStorage.removeItem("branch");
+    localStorage.clear();
     swal("Logout Sucessfully", "", "success");
   };
 
