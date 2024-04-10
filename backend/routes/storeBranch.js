@@ -8,8 +8,7 @@ const {
   GetStoreDetails,
   updateStoreBranch,
   AdminAllStoreBranch,
-  AllStoreBranchUser
-
+  AllStoreBranchUser,
 } = require("../controllers/storeBranchController");
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
@@ -35,17 +34,12 @@ router.get(
   AdminAllStoreBranch
 );
 
-
-router.get(
-  "/available/store",
-  isAuthenticatedUser,
-  AllStoreBranchUser
-);
+router.get("/available/store", isAuthenticatedUser, AllStoreBranchUser);
 
 router.get(
   "/admin/store/:id",
   isAuthenticatedUser,
-  authorizeRoles("admin"),
+  authorizeRoles("admin", "employee", "rider"),
   GetStoreDetails
 );
 

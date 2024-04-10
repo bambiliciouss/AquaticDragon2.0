@@ -1,4 +1,5 @@
 const Order = require("../models/order");
+const User = require("../models/user");
 const StoreBranch = require("../models/storeBranch");
 const ErrorHandler = require("../utils/errorHandler");
 const cloudinary = require("cloudinary");
@@ -169,7 +170,6 @@ exports.allOrdersAdmin = async (req, res, next) => {
 
     const storeBranchIDs = storeBranch.map((branch) => branch._id);
 
-    // // Get all the orders from the admin's branches only
     const orders = await Order.find({
       "selectedStore.store": storeBranchIDs,
     }).populate("customer", "fname lname");
@@ -217,5 +217,82 @@ exports.getSingleOrder = async (req, res, next) => {
     res
       .status(500)
       .json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
+exports.allOrdersEmployee = async (req, res, next) => {
+  try {
+    const employee = await User.findOne({
+      _id: req.user.id,
+      deleted: false,
+      role: "employee",
+    });
+
+    if (!employee) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Employee not found" });
+    }
+
+    const storeBranchID = employee.storebranch;
+
+    const orders = await Order.find({
+      "selectedStore.store": storeBranchID,
+    }).populate("customer", "fname lname");
+
+    const orderCount = orders.length;
+
+    res.status(200).json({
+      success: true,
+      orderCount: orderCount,
+      orders: orders,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+
+exports.allOrdersRider = async (req, res, next) => {
+  try {
+    const rider = await User.findOne({
+      _id: req.user.id,
+      deleted: false,
+      role: "rider",
+    });
+
+    if (!rider) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Rider not found" });
+    }
+
+    const storeBranchID = rider.storebranch;
+
+    const orders = await Order.find({
+      "selectedStore.store": storeBranchID,
+      orderStatus: {
+        $elemMatch: {
+          staff: req.user.id,
+        },
+      },
+    }).populate("customer", "fname lname");
+
+    const orderCount = orders.length;
+
+    res.status(200).json({
+      success: true,
+      orderCount: orderCount,
+      orders: orders,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
   }
 };

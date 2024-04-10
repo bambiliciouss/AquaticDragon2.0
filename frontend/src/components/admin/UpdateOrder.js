@@ -141,33 +141,41 @@ const UpdateOrderDetails = () => {
                           <Col xs="8">
                             <h3 className="mb-0">Order Details</h3>
                           </Col>
-                          {user && user.role === "admin" && (
-                            <Col md="4">
-                              <Button
-                                block
-                                className="mb-3"
-                                color="primary"
-                                type="button"
-                                onClick={toggle}>
-                                Update Order Status{" "}
-                                {orderStatus && orderStatus.orderLevel}
-                              </Button>
+                          {user &&
+                            (user.role === "admin" ||
+                              user.role === "employee" ||
+                              user.role === "rider") && (
+                              <Col md="4">
+                                <Button
+                                  block
+                                  className="mb-3"
+                                  color="primary"
+                                  type="button"
+                                  onClick={toggle}>
+                                  Update Order Status{" "}
+                                  {orderStatus && orderStatus.orderLevel}
+                                </Button>
+                              </Col>
+                            )}
 
-                              <Modal
-                                className="modal-dialog-centered"
-                                isOpen={modal}
-                                toggle={toggle}>
-                                <ModalHeader toggle={toggle}>
-                                  Update Status
-                                </ModalHeader>
-                                <ModalBody>
-                                  <FormGroup>
-                                    <InputGroup className="input-group-alternative mb-3">
-                                      <InputGroupAddon addonType="prepend">
-                                        <InputGroupText>
-                                          <i className="ni ni-circle-08" />
-                                        </InputGroupText>
-                                      </InputGroupAddon>
+                          <Modal
+                            className="modal-dialog-centered"
+                            isOpen={modal}
+                            toggle={toggle}>
+                            <ModalHeader toggle={toggle}>
+                              Update Status
+                            </ModalHeader>
+                            <ModalBody>
+                              <FormGroup>
+                                <InputGroup className="input-group-alternative mb-3">
+                                  <InputGroupAddon addonType="prepend">
+                                    <InputGroupText>
+                                      <i className="ni ni-circle-08" />
+                                    </InputGroupText>
+                                  </InputGroupAddon>
+                                  {user &&
+                                    (user.role === "admin" ||
+                                      user.role === "employee") && (
                                       <select
                                         className="form-control"
                                         name="orderStatus"
@@ -183,79 +191,101 @@ const UpdateOrderDetails = () => {
                                         <option value="" disabled>
                                           Select Status
                                         </option>
-                                        <option value="Order Placed">
+                                        {/* <option value="Order Placed">
                                           Order Placed
-                                        </option>
+                                        </option> */}
                                         <option value="Order Accepted">
                                           Order Accepted
                                         </option>
                                         <option value="Container for pick up">
                                           Container for pick up
                                         </option>
-                                        <option value="Container has been picked up">
+
+                                        {/* <option value="Container has been picked up">
                                           Container has been picked up
-                                        </option>
+                                        </option> */}
+
                                         <option value="Container is at the Store">
                                           Container is at the Store
                                         </option>
                                         <option value="Out for Delivery">
                                           Out for Delivery
                                         </option>
-                                        <option value="Delivered">
+                                        {/* <option value="Delivered">
                                           Delivered
-                                        </option>
+                                        </option> */}
                                         <option value="Rejected">
                                           Rejected
                                         </option>
                                       </select>
-                                    </InputGroup>
-                                  </FormGroup>
-                                  {(orderLevelup === "Container for pick up" ||
-                                    orderLevelup === "Out for Delivery") && (
-                                    <FormGroup>
-                                      <label className="form-control-label">
-                                        Assign a Rider
-                                      </label>
-                                      <select
-                                        className="form-control"
-                                        value={assignedRider}
-                                        onChange={(e) =>
-                                          setAssignedRider(e.target.value)
-                                        }>
-                                        <option value="">Select Rider</option>
-                                        {users.map((item) => (
-                                          <option
-                                            key={item._id}
-                                            value={item._id}>
-                                            {item.fname} {item.lname}
-                                          </option>
-                                        ))}
-                                      </select>
-                                    </FormGroup>
+                                    )}
+
+                                  {user && user.role === "rider" && (
+                                    <select
+                                      className="form-control"
+                                      name="orderStatus"
+                                      value={orderLevelup}
+                                      onChange={(e) =>
+                                        setOrderLevel(e.target.value)
+                                      }>
+                                      <option value="" disabled>
+                                        Select Status
+                                      </option>
+
+                                      <option value="Container has been picked up">
+                                        Container has been picked up
+                                      </option>
+
+                                      <option value="Delivered">
+                                        Delivered
+                                      </option>
+                                    </select>
                                   )}
-                                </ModalBody>
-                                <ModalFooter>
-                                  <Button
-                                    color="primary"
-                                    type="submit"
-                                    onClick={
-                                      () =>
-                                        orderLevelup ===
-                                          "Container for pick up" ||
-                                        orderLevelup === "Out for Delivery"
-                                          ? assignHandler(order._id) // Function for assigning
-                                          : updateOrderHandler(order._id) // Function for updating
+                                </InputGroup>
+                              </FormGroup>
+                              {(orderLevelup === "Container for pick up" ||
+                                orderLevelup === "Out for Delivery") && (
+                                <FormGroup>
+                                  <label className="form-control-label">
+                                    Assign a Rider
+                                  </label>
+                                  <select
+                                    className="form-control"
+                                    value={assignedRider}
+                                    onChange={(e) =>
+                                      setAssignedRider(e.target.value)
                                     }>
-                                    {orderLevelup === "Container for pick up" ||
+                                    <option value="">Select Rider</option>
+                                    {users.map((item) => (
+                                      <option key={item._id} value={item._id}>
+                                        {item.fname} {item.lname}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </FormGroup>
+                              )}
+                            </ModalBody>
+                            <ModalFooter>
+                              <Button
+                                color="primary"
+                                type="submit"
+                                onClick={
+                                  () =>
+                                    orderLevelup === "Container for pick up" ||
                                     orderLevelup === "Out for Delivery"
-                                      ? "Assign"
-                                      : "Update"}
-                                  </Button>
-                                  <Button color="secondary" onClick={toggle}>
-                                    Back
-                                  </Button>
-                                </ModalFooter>
-                                {/* <ModalFooter>
+                                      ? assignHandler(order._id) // Function for assigning
+                                      : updateOrderHandler(order._id) // Function for updating
+                                }>
+                                {orderLevelup === "Container for pick up" ||
+                                orderLevelup === "Out for Delivery"
+                                  ? "Assign"
+                                  : "Update"}
+                              </Button>
+                              <Button color="secondary" onClick={toggle}>
+                                Back
+                              </Button>
+                            </ModalFooter>
+                            {/* <ModalFooter>
                                   <Button
                                     color="primary"
                                     type="submit"
@@ -268,13 +298,14 @@ const UpdateOrderDetails = () => {
                                     Back
                                   </Button>
                                 </ModalFooter> */}
-                              </Modal>
-                            </Col>
-                          )}
+                          </Modal>
                         </Row>
                       </CardHeader>
                       <CardBody>
-                        {user && user.role === "admin" && (
+                      {user &&
+                            (user.role === "admin" ||
+                              user.role === "employee" ||
+                              user.role === "rider") && (
                           <Row>
                             <Col sm="12">
                               <Card body>
@@ -285,12 +316,12 @@ const UpdateOrderDetails = () => {
                                   {customer && customer.fname}{" "}
                                   {customer && customer.lname}
                                 </CardText>
-                                <CardText>
+                                {/* <CardText>
                                   <span style={{ fontWeight: "bold" }}>
                                     Email:
                                   </span>{" "}
                                   {customer && customer.email}
-                                </CardText>
+                                </CardText> */}
                               </Card>
                             </Col>
                           </Row>

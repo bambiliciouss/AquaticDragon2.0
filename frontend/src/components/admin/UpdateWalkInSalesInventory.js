@@ -96,12 +96,12 @@ const UpdateWalkInSalesInventory = () => {
     setSelectedGallonType(type);
 
     switch (type) {
-      case "PETBottles":
-        setPrice(5);
-        break;
-      case "7Liters":
-        setPrice(15);
-        break;
+      // case "PETBottles":
+      //   setPrice(5);
+      //   break;
+      // case "7Liters":
+      //   setPrice(15);
+      //   break;
       case "Others":
         setPrice(0);
         break;
@@ -196,32 +196,9 @@ const UpdateWalkInSalesInventory = () => {
                                         style={{ marginBottom: "20px" }}></div>
                                     </>
                                   ))}
+                                </div>
+                                <div style={{ marginBottom: "20px" }}></div>
 
-                                  <Button
-                                    block
-                                    color={isActiveButton("PETBottles")}
-                                    size="lg"
-                                    onClick={() =>
-                                      handleGallonTypeClick("PETBottles")
-                                    }
-                                    className="mr-2 mb-2">
-                                    PET Bottles
-                                  </Button>
-                                </div>
-                                <div style={{ marginBottom: "20px" }}></div>
-                                <div>
-                                  <Button
-                                    block
-                                    color={isActiveButton("7Liters")}
-                                    size="lg"
-                                    onClick={() =>
-                                      handleGallonTypeClick("7Liters")
-                                    }
-                                    className="mr-2 mb-2">
-                                    7 Liters
-                                  </Button>
-                                </div>
-                                <div style={{ marginBottom: "20px" }}></div>
                                 <div>
                                   <Button
                                     block

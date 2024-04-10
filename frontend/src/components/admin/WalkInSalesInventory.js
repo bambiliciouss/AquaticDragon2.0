@@ -264,8 +264,8 @@ const WalkInSalesInventory = () => {
                                 Select Type
                               </label>
 
-                              {typeofGallon.map((typeofGallons) => (
-                                <>
+                              {typeofGallon.map((typeofGallons, index) => (
+                                <Fragment key={index}>
                                   <div>
                                     <Button
                                       block
@@ -286,7 +286,7 @@ const WalkInSalesInventory = () => {
                                     </Button>
                                   </div>
                                   <div style={{ marginBottom: "20px" }}></div>
-                                </>
+                                </Fragment>
                               ))}
 
                               

@@ -158,3 +158,40 @@ export const updateOrderwithRider = (id, orderData) => async (dispatch) => {
     });
   }
 };
+
+
+export const allOrdersEmployee = () => async (dispatch) => {
+  try {
+    dispatch({ type: ALL_ORDERS_REQUEST });
+    const { data } = await axios.get(`/api/v1/all/employee/orders/`);
+    console.log(data)
+   
+    dispatch({
+      type: ALL_ORDERS_SUCCESS,
+      payload: data.orders,
+    });
+  } catch (error) {
+    dispatch({
+      type: ALL_ORDERS_FAIL,
+      payload: error.response.data.message,
+    });
+  }
+};
+
+export const allOrdersRider = () => async (dispatch) => {
+  try {
+    dispatch({ type: ALL_ORDERS_REQUEST });
+    const { data } = await axios.get(`/api/v1/all/rider/orders/`);
+    console.log(data)
+   
+    dispatch({
+      type: ALL_ORDERS_SUCCESS,
+      payload: data.orders,
+    });
+  } catch (error) {
+    dispatch({
+      type: ALL_ORDERS_FAIL,
+      payload: error.response.data.message,
+    });
+  }
+};

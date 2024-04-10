@@ -83,6 +83,9 @@ import StoreBarangayList from "components/admin/StoreBarangayList";
 
 import AdminProcessing from "components/admin/AdminProcessing";
 
+import EmployeeOrderList from "components/employee/Orderlist";
+import RiderOrderList from "components/rider/RiderOrderlist";
+
 
 
 import store from "./store";
@@ -200,6 +203,9 @@ function App() {
         <Route path="/superadmin/pendinglist" element={<ProtectedRoute><PendingAdminList /></ProtectedRoute>} exact="true" />
         <Route path="/superadmin/admin/details/:id" element={<ProtectedRoute><PendingAdminDetails /></ProtectedRoute>} exact="true" />
         <Route path="/superadmin/adminlist" element={<ProtectedRoute><AdminList /></ProtectedRoute>} exact="true" />
+
+         <Route path="/employee/orderlist" element={<ProtectedRoute><EmployeeOrderList /></ProtectedRoute>} exact="true" /> 
+         <Route path="/rider/orderlist" element={<ProtectedRoute><RiderOrderList /></ProtectedRoute>} exact="true" /> 
 
       </Routes>
     </>

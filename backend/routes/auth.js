@@ -125,7 +125,7 @@ router.get(
 router.get(
   "/admin/store/rider/:id",
   isAuthenticatedUser,
-  authorizeRoles("admin"),
+  authorizeRoles("admin", "employee"),
   AllStoreRider
 );
 router.get(

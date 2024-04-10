@@ -167,12 +167,15 @@ const AdminNavbar = () => {
                         <i className="now-ui-icons users_single-02"></i>
                         My orders
                       </DropdownItem>
-                      {user && user.role === "admin" && (
-                        <DropdownItem href="/dashboard">
-                          <i className="now-ui-icons business_chart-bar-32"></i>
-                          Dashboard
-                        </DropdownItem>
-                      )}
+                      {user &&
+                        (user.role === "rider" ||
+                          user.role === "employee" ||
+                          user.role === "admin") && (
+                          <DropdownItem href="/dashboard">
+                            <i className="now-ui-icons business_chart-bar-32"></i>
+                            Dashboard
+                          </DropdownItem>
+                        )}
                       {/* 
                       <DropdownItem href="/gallon/order">
                         <i className="now-ui-icons business_chart-bar-32"></i>

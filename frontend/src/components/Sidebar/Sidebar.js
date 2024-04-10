@@ -16,7 +16,7 @@
 
 */
 /*eslint-disable*/
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink as NavLinkRRD, Link } from "react-router-dom";
 // nodejs library to set properties for components
 import { PropTypes } from "prop-types";
@@ -51,11 +51,15 @@ import {
   Row,
   Col,
 } from "reactstrap";
-import { useSelector } from "react-redux";
+
+import { useDispatch, useSelector } from "react-redux";
+import { getStoreDetails } from "actions/storebranchActions";
 var ps;
 
 const Sidebar = (props) => {
+  const dispatch = useDispatch();
   const { user, loading } = useSelector((state) => state.auth);
+  const { storeBranch } = useSelector((state) => state.storeDetails);
   const [collapseOpen, setCollapseOpen] = useState();
   const activeRoute = (routeName) => {
     return props.location.pathname.indexOf(routeName) > -1 ? "active" : "";
@@ -81,6 +85,12 @@ const Sidebar = (props) => {
     };
   }
 
+  useEffect(() => {
+    dispatch(getStoreDetails(user.storebranch));
+    console.log(user.storebranch);
+   
+  }, [dispatch]);
+
   return (
     <Navbar
       className="navbar-vertical fixed-left navbar-light bg-white"
@@ -98,14 +108,16 @@ const Sidebar = (props) => {
         {/* Brand */}
         {logo ? (
           <NavbarBrand className="pt-0" {...navbarBrandProps}>
-            {/* <img
+            <img
               alt={logo.imgAlt}
               className="navbar-brand-img"
               src={logo.imgSrc}
               style={{ width: "200px", height: "300px" }}
-            /> */}
-
-            <br />
+            />
+            <br />{" "}
+            {user && (user.role === "rider" || user.role === "employee") && (
+              <h3 className="text-overflow m-0">{`${storeBranch.branch}`}</h3>
+            )}
             <h3
               className="text-overflow m-0"
               style={{ textTransform: "uppercase" }}>
@@ -300,20 +312,37 @@ const Sidebar = (props) => {
             <>
               <Nav navbar>
                 <NavItem>
-                  <NavLink href="/superadmin/dashboard" onClick={closeCollapse}>
+                  <NavLink href="#" onClick={closeCollapse}>
                     <i className="ni ni-chart-bar-32 text-pink" /> Dashboard
                   </NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink href="/superadmin/userlist" onClick={closeCollapse}>
+                  <NavLink href="/employee/orderlist" onClick={closeCollapse}>
                     <i className="ni ni-single-02 text-info" /> Orders
                   </NavLink>
                 </NavItem>
                 <NavItem>
                   <NavLink
-                    href="/superadmin/pendinglist"
+                    href={`/admin/POS/inventory/${user.storebranch}`}
                     onClick={closeCollapse}>
                     <i className="ni ni-badge text-blue" /> Walk In Refill
+                  </NavLink>
+                </NavItem>
+              </Nav>
+            </>
+          )}
+
+          {user && user.role === "rider" && (
+            <>
+              <Nav navbar>
+                <NavItem>
+                  <NavLink href="#" onClick={closeCollapse}>
+                    <i className="ni ni-chart-bar-32 text-pink" /> Dashboard
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink href="/rider/orderlist" onClick={closeCollapse}>
+                    <i className="ni ni-single-02 text-info" /> Orders
                   </NavLink>
                 </NavItem>
               </Nav>

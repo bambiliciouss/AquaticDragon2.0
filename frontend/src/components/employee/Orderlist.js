@@ -15,11 +15,7 @@ import AdminFooter from "components/Footers/AdminFooter.js";
 import QRCode from "react-qr-code";
 import { DELETE_GALLON_RESET } from "../../constants/gallonConstants";
 import swal from "sweetalert";
-import {
-  allOrders,
-  allOrdersAdmin,
-  clearErrors,
-} from "../../actions/orderActions";
+import { allOrdersEmployee, clearErrors } from "../../actions/orderActions";
 import Loader from "components/layout/Loader";
 import {
   Button,
@@ -36,45 +32,25 @@ import {
   Col,
   Badge,
 } from "reactstrap";
-import {
-  allAdminStoreBranch,
-  deleteStoreBranch,
-} from "actions/storebranchActions";
-const OrderList = () => {
+
+const EmployeeOrderList = () => {
   const dispatch = useDispatch();
 
   let navigate = useNavigate();
 
-  const { loading, error, orders } = useSelector((state) => state.allOrders);
-  const { storeBranch } = useSelector((state) => state.allStoreBranch);
-  const [activeStoreBranch, setActiveStoreBranch] = useState(null);
+  const { loading, error, orders } = useSelector((state) => state.allOrdersStaff);
 
   useEffect(() => {
-    dispatch(allOrdersAdmin());
-    dispatch(allAdminStoreBranch());
-
+    dispatch(allOrdersEmployee());
     if (error) {
       dispatch(clearErrors());
     }
-  }, [dispatch, error, activeStoreBranch]);
+    console.log("Employee Orders", orders);
+  }, [dispatch, error]);
 
   const setOrders = () => {
-    const sortedOrders = orders
-      .filter(
-        (order) =>
-          !activeStoreBranch ||
-          order.selectedStore.store === activeStoreBranch._id
-      )
-      .sort((a, b) => {
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      });
-    const data = {
+    let data = {
       columns: [
-        // {
-        //   label: "Order ID",
-        //   field: "id",
-        //   sort: "asc",
-        // },
         {
           label: "Customer",
           field: "customer",
@@ -104,14 +80,16 @@ const OrderList = () => {
       rows: [],
     };
 
+    if (!orders) {
+      return data; // Return initial empty data
+    }
+
+    const sortedOrders = orders.sort((a, b) => {
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+
     sortedOrders.forEach((order) => {
-      // Find the latest order status
-      const latestOrderStatus = order.orderStatus.reduce((latest, status) => {
-        if (!latest.datedAt || status.datedAt > latest.datedAt) {
-          return status;
-        }
-        return latest;
-      }, {});
+      const latestOrderStatus = order.orderStatus[order.orderStatus.length - 1];
 
       let statusBadgeColor = "";
       switch (latestOrderStatus.orderLevel) {
@@ -142,7 +120,7 @@ const OrderList = () => {
       }
 
       data.rows.push({
-        // id: order._id,
+        customer: `${order.customer.fname} ${order.customer.lname}`,
         numOfItems: order.orderItems.length + order.orderProducts.length,
         amount: `₱${order.totalPrice}`,
         status: (
@@ -150,7 +128,6 @@ const OrderList = () => {
             {latestOrderStatus.orderLevel || "N/A"}
           </Badge>
         ),
-        customer: `${order.customer.fname} ${order.customer.lname}`,
         actions: (
           <Link to={`/update/order/${order._id}`} className="btn btn-info">
             <i className="fa fa-eye"></i>
@@ -160,18 +137,6 @@ const OrderList = () => {
     });
 
     return data;
-  };
-  const [activeButton, setActiveButton] = useState(null);
-  const handleButtonClick = (storeId) => {
-    // Handle button click logic, e.g., setting the active store branch
-    setActiveStoreBranch(storeBranch.find((branch) => branch._id === storeId));
-    setActiveButton(storeId);
-  };
-
-  const allordersButton = () => {
-    setActiveStoreBranch(null);
-    setActiveButton(null);
-    // dispatch(allOrdersAdmin());
   };
 
   return (
@@ -194,24 +159,6 @@ const OrderList = () => {
                 <Col xs="8">
                   <h3 className="mb-0">List of Order(s)</h3>
                 </Col>
-              </Row>
-
-              <Row className="align-items-center">
-                <Button onClick={() => allordersButton()}>
-                  <h3 className="mb-0">All Orders</h3>
-                </Button>
-                {storeBranch.map((storeBranches) => (
-                  <Button
-                    key={storeBranches._id} // Assuming storeBranches has a unique identifier like _id
-                    id={`button-${storeBranches._id}`} // Unique id for each button
-                    className={
-                      activeButton === storeBranches._id ? "active" : ""
-                    }
-                    onClick={() => handleButtonClick(storeBranches._id)} // Replace with your click handler
-                  >
-                    <h3 className="mb-0">{storeBranches.branch}</h3>
-                  </Button>
-                ))}
               </Row>
             </CardHeader>
             <CardBody style={{ overflowX: "auto" }}>
@@ -238,4 +185,4 @@ const OrderList = () => {
   );
 };
 
-export default OrderList;
+export default EmployeeOrderList;
