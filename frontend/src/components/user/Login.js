@@ -29,6 +29,9 @@ import Loader from "../layout/Loader";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import swal from "sweetalert";
+
+//import socket connection
+import socket from "../../socket";
 const Login = () => {
   let navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -58,6 +61,7 @@ const Login = () => {
 
       if (user && user.role === "admin") {
         navigate("/dashboard");
+        socket.emit("login", {adminId: user._id})
       } else if (
         user &&
         user.verified &&
