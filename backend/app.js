@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const cors = require('cors');
 const cookieParser = require("cookie-parser");
 const auth = require("./routes/auth");
 const gallon = require("./routes/gallon");
@@ -21,7 +22,7 @@ app.use(cookieParser());
 // app.use(express.urlencoded({ extended: true }));
 app.use(express.json({ limit: "100mb" }));
 app.use(express.urlencoded({ limit: "100mb", extended: true }));
-
+app.use(cors());
 app.use("/api/v1", auth);
 app.use("/api/v1", gallon);
 app.use("/api/v1", storeBranch);
