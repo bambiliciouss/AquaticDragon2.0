@@ -86,6 +86,7 @@ import AdminProcessing from "components/admin/AdminProcessing";
 import store from "./store";
 import { loadUser } from "./actions/userActions";
 import { useEffect } from "react";
+import Notification from "components/notification/Notification";
 
 function App() {
   useEffect(() => {
@@ -94,6 +95,7 @@ function App() {
   return (
     <>
       <Routes>
+        <Route path="/notification" element={<Notification/>}/>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} exact="true" />
         <Route path="/register" element={<Register />} exact="true" />
