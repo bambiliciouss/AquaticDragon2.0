@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearCart } from "../../actions/cartActions";
 import { createOrder, clearErrors } from "../../actions/orderActions";
 import CheckoutSteps from "./CheckoutSteps";
+import socket from "../../socket";
 const OrderSummary = () => {
   const dispatch = useDispatch();
   let navigate = useNavigate();
@@ -113,6 +114,7 @@ const OrderSummary = () => {
     // };
 
     dispatch(createOrder(order));
+    socket.emit("newOrder", {message: `New Order Placed: ${order.selectedStore.branchNo}`, branch: order.selectedStore.store});
     console.log(order);
 
     dispatch(clearCart());
