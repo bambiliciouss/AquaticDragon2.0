@@ -22,6 +22,12 @@ import classnames from "classnames";
 import Chart from "chart.js";
 // react plugin used to create charts
 import { Line, Bar, Pie } from "react-chartjs-2";
+
+//import socket connection
+import socket from '../../socket'
+
+//import toast from react-toastify
+import {toast} from 'react-toastify'
 // reactstrap components
 import {
   Button,
@@ -349,10 +355,21 @@ const Dashboard = (props) => {
   }, [location]);
 
   useEffect(() => {
-    if (barangay) {
-      console.log("Barangay: ", barangay);
+    // Listen for 'notification' event from server
+    if (user.role === 'admin'){
+      socket.emit('login', {adminId: user._id})
     }
-  }, [barangay])
+    socket.off("newOrder");
+    socket.on("newOrder", (message) => {
+      
+        console.log('Received notification from dashboard:', message);
+        
+        
+        toast.success(message)
+    });
+
+   
+}, []);
   return (
     <>
       <MetaData title={"Dashboard"} />
