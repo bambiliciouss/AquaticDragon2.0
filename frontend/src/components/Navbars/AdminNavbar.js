@@ -37,12 +37,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../actions/userActions";
 import swal from "sweetalert";
 import DropdownComponent from "components/button/Dropdown";
+import socket from '../../socket'
 const AdminNavbar = (props) => {
   const dispatch = useDispatch();
   const { user, loading } = useSelector((state) => state.auth);
   const logoutHandler = () => {
     dispatch(logout());
     localStorage.clear();
+    socket.disconnect();
     swal("Logout Sucessfully", "", "success");
   };
 
