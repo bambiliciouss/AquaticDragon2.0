@@ -38,6 +38,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../actions/userActions";
 import { useNavigate } from "react-router-dom";
 import swal from "sweetalert";
+import socket from '../../socket'
 const AdminNavbar = () => {
   const { user, loading } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.cart);
@@ -47,6 +48,8 @@ const AdminNavbar = () => {
 
   const logoutHandler = () => {
     dispatch(logout());
+    localStorage.clear();
+    socket.disconnect();
     swal("Logout Sucessfully", "", "success");
   };
 
