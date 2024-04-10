@@ -18,10 +18,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-
+import 'react-toastify/dist/ReactToastify.css';
 import "assets/plugins/nucleo/css/nucleo.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "assets/scss/argon-dashboard-react.scss";
+
 
 
 
@@ -35,7 +36,7 @@ root.render(
   <Provider store={store}>
     <BrowserRouter>
       <App />
-      <ToastContainer />
+      <ToastContainer position="top-right"/>
     </BrowserRouter>
   </Provider>
 );
