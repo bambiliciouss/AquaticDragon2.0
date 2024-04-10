@@ -1,25 +1,33 @@
 import React, {useEffect, useState} from 'react'
-import io from 'socket.io-client'
-import swal from 'sweetalert'
-const socket = io.connect('http://localhost:4000')
 
+import swal from 'sweetalert'
+import socket from '../../socket'
+import {toast} from 'react-toastify'
+import {useDispatch, useSelector} from 'react-redux'
+import { allStoreSalesAction } from 'actions/adminAction'
 const Notification = () => {
+    const dispatch = useDispatch();
+    const {user} = useSelector((state) => state.auth);
+    const { sales } = useSelector((state) => state.adminStoreSales);
+    useEffect(()=>{
+        dispatch(allStoreSalesAction(user._id));
+    },[dispatch])
     useEffect(() => {
+        
         // Listen for 'notification' event from server
-        socket.on('notification', (message) => {
+        socket.on("newOrder", (message) => {
+           
             console.log('Received notification:', message);
             // Handle the notification (e.g., show it to the user)
-            swal("New Notification", message, "info")
+            // swal("New Order Placed", message, "info")
+            toast.success(message)
         });
 
-        // Clean up the socket connection when the component unmounts
-        return () => {
-            socket.disconnect();
-        };
-    }, []);
+       
+    }, [sales]);
     const sendNotification = () => {
         // Emit 'notification' event to server
-        socket.emit('notification', 'Hello, everyone!');
+        socket.emit('newOrder', 'Hello, everyone!');
     };
 
     return (
