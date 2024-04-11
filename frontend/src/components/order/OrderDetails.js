@@ -64,11 +64,11 @@ const OrderDetails = () => {
     dispatch(getOrderDetails(id));
 
     if (error) {
-      alert.error(error);
+      console.log(error);
 
       dispatch(clearErrors());
     }
-  }, [dispatch, alert, error, id]);
+  }, [dispatch, error, id]);
 
   const updateOrderHandler = (id) => {
     const formData = new FormData();
