@@ -27,7 +27,7 @@ import { Line, Bar, Pie } from "react-chartjs-2";
 import socket from '../../socket'
 
 //import toast from react-toastify
-import {toast} from 'react-toastify'
+import { toast } from 'react-toastify'
 // reactstrap components
 import {
   Button,
@@ -349,27 +349,24 @@ const Dashboard = (props) => {
 
   const location = useLocation();
 
+
   useEffect(() => {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
+
   }, [location]);
+
 
   useEffect(() => {
     // Listen for 'notification' event from server
-    if (user.role === 'admin'){
-      socket.emit('login', {adminId: user._id})
+    if (user.role === 'admin') {
+      socket.emit('login', { adminId: user._id })
     }
-    socket.off("newOrder");
-    socket.on("newOrder", (message) => {
-      
-        console.log('Received notification from dashboard:', message);
-        
-        
-        toast.success(message)
-    });
 
+    
    
-}, []);
+  }, [])
+
   return (
     <>
       <MetaData title={"Dashboard"} />
@@ -605,7 +602,7 @@ const Dashboard = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Performance
                       </h6>
-                      <h2 className="mb-0">Sales By Barangay {branch ?((barangay && Object.keys(barangay).length === 0) ?   <span className="text-danger text-sm">(No results)</span>: (barangay.orders && barangay.orders.length === 0) ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
+                      <h2 className="mb-0">Sales By Barangay {branch ? ((barangay && Object.keys(barangay).length === 0) ? <span className="text-danger text-sm">(No results)</span> : (barangay.orders && barangay.orders.length === 0) ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
                     </div>
                   </Row>
                 </CardHeader>
@@ -646,7 +643,7 @@ const Dashboard = (props) => {
                         Performance
                       </h6>
                       <h2 className="mb-0">Employee Performance  {branch ? (performance && Object.keys(performance).length === 0 ?
-                      <span className="text-danger text-sm">(No results)</span>: (performance.employees && performance.employees.length === 0) ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
+                        <span className="text-danger text-sm">(No results)</span> : (performance.employees && performance.employees.length === 0) ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
                     </div>
                   </Row>
                 </CardHeader>
@@ -670,8 +667,8 @@ const Dashboard = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Performance
                       </h6>
-                      <h2 className="mb-0">Rider Performance { branch ? (performance && Object.keys(performance).length === 0 ?
-                      <span className="text-danger text-sm">(No results)</span>: (performance.riders && performance.riders.length === 0) ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
+                      <h2 className="mb-0">Rider Performance {branch ? (performance && Object.keys(performance).length === 0 ?
+                        <span className="text-danger text-sm">(No results)</span> : (performance.riders && performance.riders.length === 0) ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
                     </div>
                   </Row>
                 </CardHeader>
