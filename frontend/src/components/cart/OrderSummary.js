@@ -112,17 +112,21 @@ const OrderSummary = () => {
     //   id: "pi_1DpdYh2eZvKYlo2CYIynhU32",
     //   status: "succeeded",
     // };
-
-    dispatch(createOrder(order));
-    socket.emit("newOrder", {message: `New Order Placed: ${order.selectedStore.branchNo}`, branch: order.selectedStore.store});
-    console.log(order);
-
-    dispatch(clearCart());
-    sessionStorage.clear();
-    localStorage.clear();
-
-    navigate("/orders/me");
-    window.location.reload();
+    try{
+      await dispatch(createOrder(order));
+      // socket.emit("newOrder", {message: `New Order Placed: `, branch: order.selectedStore.store, title: `${order.selectedStore.branchNo}`, order: order});
+      console.log("order", order);
+  
+      await dispatch(clearCart());
+      sessionStorage.clear();
+      localStorage.clear();
+  
+      navigate("/orders/me");
+      window.location.reload();
+    }catch(error){
+      console.log(error);
+    }
+    
   };
   return (
     <>
