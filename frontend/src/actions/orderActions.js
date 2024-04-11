@@ -17,7 +17,7 @@ import {
   UPDATE_ORDER_REQUEST,
   UPDATE_ORDER_FAIL,
 } from "../constants/orderConstants";
-
+import socket from '../socket'
 export const createOrder = (order) => async (dispatch, getState) => {
   console.log("actions order", order);
   try {
@@ -32,11 +32,13 @@ export const createOrder = (order) => async (dispatch, getState) => {
       type: CREATE_ORDER_SUCCESS,
       payload: data,
     });
+    socket.emit("newOrder", {message: `New Order Placed`, branch: data.order.selectedStore.store, title: `${data.order.selectedStore.branchNo}`, order: data.order});
   } catch (error) {
     dispatch({
       type: CREATE_ORDER_FAIL,
       payload: error.response.data.message,
     });
+    console.log(error)
   }
 };
 
