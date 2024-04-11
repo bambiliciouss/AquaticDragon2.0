@@ -22,6 +22,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import "assets/plugins/nucleo/css/nucleo.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "assets/scss/argon-dashboard-react.scss";
+import { config } from '@fortawesome/fontawesome-svg-core'
+import '@fortawesome/fontawesome-svg-core/styles.css'
 
 
 
@@ -31,12 +33,12 @@ import { Provider } from "react-redux";
 import store from "./store";
 import { ToastContainer } from "react-toastify";
 const root = ReactDOM.createRoot(document.getElementById("root"));
-
+config.autoAddCss = false
 root.render(
   <Provider store={store}>
     <BrowserRouter>
       <App />
-      <ToastContainer position="top-right"/>
+      <ToastContainer position="bottom-right"/>
     </BrowserRouter>
   </Provider>
 );
