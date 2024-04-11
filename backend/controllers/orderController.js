@@ -51,24 +51,24 @@ exports.newOrder = async (req, res, next) => {
       await productss.save();
     }
   }
-  if (orderProducts && orderProducts.length > 0) {
-    for (const orderProduct of orderProducts) {
-      const { productId, quantity } = orderProduct;
+  // if (orderProducts && orderProducts.length > 0) {
+  //   for (const orderProduct of orderProducts) {
+  //     const { productId, quantity } = orderProduct;
 
-      const product = await Product.findById(productId);
-      if (!product) {
-        return res.status(404).json({ error: "Product not found" });
-      }
+  //     const product = await Product.findById(productId);
+  //     if (!product) {
+  //       return res.status(404).json({ error: "Product not found" });
+  //     }
 
-      // Update the stock of the product
-      product.stocks.push({
-        quantity: -quantity, // subtracting quantity from stock
-        datedAt: new Date(),
-      });
+  //     // Update the stock of the product
+  //     product.stocks.push({
+  //       quantity: -quantity, // subtracting quantity from stock
+  //       datedAt: new Date(),
+  //     });
 
-      await product.save();
-    }
-  }
+  //     await product.save();
+  //   }
+  // }
 
   res.status(200).json({
     success: true,
