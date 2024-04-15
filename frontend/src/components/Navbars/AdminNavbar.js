@@ -54,52 +54,54 @@ const AdminNavbar = (props) => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  
-  const hasRun = useRef(true);
+
+  const hasRun = useRef(false);
   const newOrderNotif = useRef(false);
   const [orderCount, setOrderCount] = useState(0);
-  
+
   useEffect(() => {
-    socket.emit('login', {adminId: user._id})
+    socket.emit('login', { adminId: user._id })
     socket.off('notification');
-    socket.on('notification', (data)=>{
-      console.log('notification', data)
-       // Broadcast the received message to all connected clients
+    socket.on('notification', (data) => {
       
-      //  console.log('Received notification:', message);
+
+      // Broadcast the received message to all connected clients
+
+
       setNotifications([])
       setUnreadCount(0);
-       data.forEach((item, index) => {
+      data.forEach((item, index) => {
         const refill = item.orders.orderItems.length;
-        
+
         const newItem = item.orders.orderProducts.length;
-    
+
         const fullMessage = `${refill} refill, ${newItem} new container`;
-    
+
         setNotifications(prevNotifications => [...prevNotifications, { message: fullMessage, title: item.title, notificationId: item._id, order: item.orders._id }]);
         setUnreadCount(prevCount => prevCount + 1);
-       
+
       });
-      
-      if (data.length > 0 ) {
+
+      if (data.length > 0) {
         setOrderCount(data.length);
-    
+
       }
     })
   }, [])
 
-  useEffect(()=>{
-    if (orderCount){
+  useEffect(() => {
+    if (orderCount) {
       toast.success(`You have ${orderCount} new order(s)`)
+
     }
-  },[orderCount])
- 
+  }, [orderCount])
+
 
   const toggleDropdown = () => {
-    
+
     setUnreadCount(0); // Reset unread count when dropdown is opened
   };
-  console.log(notifications);
+  
   return (
     <>
       {user ? (
@@ -123,9 +125,9 @@ const AdminNavbar = (props) => {
               </FormGroup>
             </Form> */}
             <Nav className="align-items-center d-none d-md-flex" navbar>
-            <NotificationBell notifications={notifications} unreadCount={unreadCount} toggleDropdown={toggleDropdown}/>
+              <NotificationBell notifications={notifications} unreadCount={unreadCount} toggleDropdown={toggleDropdown} />
               <DropdownComponent />
-              
+
               <UncontrolledDropdown nav>
                 <DropdownToggle className="pr-0" nav>
                   <Media className="align-items-center">
