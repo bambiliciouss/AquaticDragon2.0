@@ -147,7 +147,7 @@ export const getStoreDetails = (id) => async (dispatch) => {
     const { data } = await axios.get(`/api/v1/admin/store/${id}`, config);
 
     // Log user details
-    console.log("STOREDETAILS", data.storeBranch);
+    // console.log("STOREDETAILS", data.storeBranch);
 
     dispatch({
       type: STOREBRANCH_DETAILS_SUCCESS,
