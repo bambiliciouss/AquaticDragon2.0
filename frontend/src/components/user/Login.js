@@ -65,12 +65,8 @@ const Login = () => {
       } else if (user && user.role === "superadmin") {
         navigate("/superadmin/dashboard");
       } else if (user && user.role === "employee") {
-        navigate("/dashboard");
-      } else if (user && user.role === "superadmin") {
-        navigate("/superadmin/dashboard");
-      } else if (user && user.role === "employee") {
-        navigate("/dashboard");
-      } else if (
+        navigate("/employee/orderlist");
+      }  else if (
         user &&
         user.verified &&
         user &&
