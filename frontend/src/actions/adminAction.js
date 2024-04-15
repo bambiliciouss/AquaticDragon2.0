@@ -38,6 +38,17 @@ import {
     STAFF_PERFORMANCE_SUCCESS,  
     STAFF_PERFORMANCE_FAIL,
 
+    CURRENT_STORE_SALES_REQUEST,
+    CURRENT_STORE_SALES_SUCCESS,
+    CURRENT_STORE_SALES_FAIL,
+
+    EMPLOYEE_BRANCH_REQUEST,
+    EMPLOYEE_BRANCH_SUCCESS,
+    EMPLOYEE_BRANCH_FAIL,
+
+    EMPLOYEE_ORDER_SALES_REQUEST,
+    EMPLOYEE_ORDER_SALES_SUCCESS,
+    EMPLOYEE_ORDER_SALES_FAIL,
     CLEAR_ERRORS,
 } from "../constants/adminConstants";
 import axios from 'axios'
@@ -70,6 +81,23 @@ export const getSalesOrderByBranch = (id) => async (dispatch) => {
     } catch (error) {
         dispatch({
             type: SALES_ORDER_FAIL,
+            payload: error.response
+                ? error.response.data.message
+                : "Unknown error occurred",
+        });
+    }
+}
+export const getSalesOrderByBranchEmployee = (id) => async (dispatch) => {
+    try {
+        dispatch({ type: EMPLOYEE_ORDER_SALES_REQUEST });
+        const { data } = await axios.get(`/api/v1/employee/all/sales/order/${id}`);
+        dispatch({
+            type: EMPLOYEE_ORDER_SALES_SUCCESS,
+            payload: data,
+        });
+    } catch (error) {
+        dispatch({
+            type: EMPLOYEE_ORDER_SALES_FAIL,
             payload: error.response
                 ? error.response.data.message
                 : "Unknown error occurred",
@@ -157,13 +185,13 @@ export const getSalesWalkin = () => async (dispatch)=>{
     }
 }
 
-export const getOrderTransactions = (id) => async (dispatch) => {
+export const getOrderTransactions = (id,filter='') => async (dispatch) => {
     try {
         dispatch({ type: ALL_ORDER_TRANSACTIONS_REQUEST });
-        const { data } = await axios.get(`/api/v1/admin/all/orders/${id}`);
+        const { data } = await axios.get(`/api/v1/admin/all/orders/${id}/?filter=${filter}`);
         dispatch({
             type: ALL_ORDER_TRANSACTIONS_SUCCESS,
-            payload: data.transactions,
+            payload: data,
         });
     } catch (error) {
         dispatch({
@@ -175,13 +203,13 @@ export const getOrderTransactions = (id) => async (dispatch) => {
     }
 }
 
-export const getOrderByGallonType = (id) => async (dispatch) => {
+export const getOrderByGallonType = (id, filter='') => async (dispatch) => {
     try {
         dispatch({ type: ALL_ORDER_GALLON_TYPE_REQUEST });
-        const { data } = await axios.get(`/api/v1/admin/orders/byGallon/${id}`);
+        const { data } = await axios.get(`/api/v1/admin/orders/byGallon/${id}/?filter=${filter}`);
         dispatch({
             type: ALL_ORDER_GALLON_TYPE_SUCCESS,
-            payload: data.orders,
+            payload: data,
         });
     } catch (error) {
         dispatch({
@@ -193,10 +221,10 @@ export const getOrderByGallonType = (id) => async (dispatch) => {
     }
 }
 
-export const getStaffPerformance = (id) => async (dispatch) => {
+export const getStaffPerformance = (id, month='1', year='2024') => async (dispatch) => {
     try {
         dispatch({ type: STAFF_PERFORMANCE_REQUEST });
-        const { data } = await axios.get(`/api/v1/admin/orders/staff/${id}`);
+        const { data } = await axios.get(`/api/v1/admin/orders/staff/${id}/?month=${month}&year=${year}`);
         dispatch({
             type: STAFF_PERFORMANCE_SUCCESS,
             payload: data,
@@ -204,6 +232,42 @@ export const getStaffPerformance = (id) => async (dispatch) => {
     } catch (error) {
         dispatch({
             type: STAFF_PERFORMANCE_FAIL,
+            payload: error.response
+                ? error.response.data.message
+                : "Unknown error occurred",
+        });
+    }
+}
+
+export const getCurrentBranchSales = (id, filter="month") => async (dispatch) => {
+    try {
+        dispatch({ type: CURRENT_STORE_SALES_REQUEST });
+        const { data } = await axios.get(`/api/v1/admin/store/sales/${id}/?filter=${filter}`);
+        dispatch({
+            type: CURRENT_STORE_SALES_SUCCESS,
+            payload: data,
+        });
+    } catch (error) {
+        dispatch({
+            type: CURRENT_STORE_SALES_FAIL,
+            payload: error.response
+                ? error.response.data.message
+                : "Unknown error occurred",
+        });
+    }
+}
+
+export const getEmployeeBranch = (id) => async (dispatch) => {
+    try {
+        dispatch({ type: EMPLOYEE_BRANCH_REQUEST });
+        const { data } = await axios.get(`/api/v1/employee/branch/${id}`);
+        dispatch({
+            type: EMPLOYEE_BRANCH_SUCCESS,
+            payload: data,
+        });
+    } catch (error) {
+        dispatch({
+            type: EMPLOYEE_BRANCH_FAIL,
             payload: error.response
                 ? error.response.data.message
                 : "Unknown error occurred",
