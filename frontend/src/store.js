@@ -122,6 +122,8 @@ import {
   adminSalesOrderReducer,
   adminSalesBarangayReducer,
   adminStaffPerformanceReducer,
+  adminCurrentBranchSalesReducer,
+  employeeOrderSalesReducer
 } from "reducers/adminReducers";
 
 
@@ -132,6 +134,7 @@ import {
   adminApprovalReducer,
   allAdminSAReducer,
 } from "reducers/superadminReducers";
+import { employeeBranchReducer } from "reducers/adminReducers";
 
 const reducers = combineReducers({
   adminStoreSales: allStoreSalesReducer,
@@ -144,8 +147,10 @@ const reducers = combineReducers({
   adminOrderGallonType: adminOrderGallonTypeReducer,
   adminSalesBarangay: adminSalesBarangayReducer,
   adminStaffPerformance: adminStaffPerformanceReducer,
+  adminCurrentBranchSales: adminCurrentBranchSalesReducer, 
+  employeeBranch: employeeBranchReducer,
+  employeeOrderSales: employeeOrderSalesReducer,
 
-  
   auth: authReducer,
   user: userReducer,
   forgotPassword: forgotPasswordReducer,
