@@ -113,7 +113,7 @@ router.get(
 router.get(
   "/admin/store/users",
   isAuthenticatedUser,
-  authorizeRoles("admin"),
+  authorizeRoles("admin", "employee"),
   AllStoreUsers
 );
 
