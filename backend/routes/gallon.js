@@ -31,7 +31,7 @@ router.put(
 router.route("/my-gallons").get(isAuthenticatedUser, myGallons);
 router
   .route("/admin/gallons")
-  .get(isAuthenticatedUser, authorizeRoles("admin"), AllGallons);
+  .get(isAuthenticatedUser,  authorizeRoles("admin", "employee", "rider"), AllGallons);
 router
   .route("/delete/my-gallon/:id")
   .delete(isAuthenticatedUser, deleteMyGallon);
