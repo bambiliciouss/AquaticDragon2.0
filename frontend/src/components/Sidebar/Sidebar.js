@@ -87,7 +87,8 @@ const Sidebar = (props) => {
 
   useEffect(() => {
     dispatch(getStoreDetails(user.storebranch));
-    console.log(user.storebranch);
+    
+    // console.log(user.storebranch);
    
   }, [dispatch]);
 
@@ -311,11 +312,7 @@ const Sidebar = (props) => {
           {user && user.role === "employee" && (
             <>
               <Nav navbar>
-                <NavItem>
-                  <NavLink href="#" onClick={closeCollapse}>
-                    <i className="ni ni-chart-bar-32 text-pink" /> Dashboard
-                  </NavLink>
-                </NavItem>
+               
                 <NavItem>
                   <NavLink href="/employee/orderlist" onClick={closeCollapse}>
                     <i className="ni ni-single-02 text-info" /> Orders
@@ -335,11 +332,7 @@ const Sidebar = (props) => {
           {user && user.role === "rider" && (
             <>
               <Nav navbar>
-                <NavItem>
-                  <NavLink href="#" onClick={closeCollapse}>
-                    <i className="ni ni-chart-bar-32 text-pink" /> Dashboard
-                  </NavLink>
-                </NavItem>
+                
                 <NavItem>
                   <NavLink href="/rider/orderlist" onClick={closeCollapse}>
                     <i className="ni ni-single-02 text-info" /> Orders
