@@ -31,6 +31,18 @@ import {
     STAFF_PERFORMANCE_SUCCESS,
     STAFF_PERFORMANCE_FAIL,
 
+    CURRENT_STORE_SALES_REQUEST,
+    CURRENT_STORE_SALES_SUCCESS,
+    CURRENT_STORE_SALES_FAIL,
+    
+    EMPLOYEE_BRANCH_REQUEST,
+    EMPLOYEE_BRANCH_SUCCESS,
+    EMPLOYEE_BRANCH_FAIL,
+
+    EMPLOYEE_ORDER_SALES_REQUEST,
+    EMPLOYEE_ORDER_SALES_SUCCESS,
+    EMPLOYEE_ORDER_SALES_FAIL,
+    
     CLEAR_ERRORS,
 } from '../constants/adminConstants';
 
@@ -223,12 +235,12 @@ export const adminSalesBarangayReducer = (state = { orders: {} }, action) => {
     }
 }
 
-export const adminOrderTransactionsReducer = (state = { transactions: [] }, action) => {
+export const adminOrderTransactionsReducer = (state = { transactions: {} }, action) => {
     switch(action.type){
         case ALL_ORDER_TRANSACTIONS_REQUEST:
             return {
                 loading: true,
-                transactions: [],
+                transactions: {},
             };
         case ALL_ORDER_TRANSACTIONS_SUCCESS:
             return {
@@ -250,12 +262,12 @@ export const adminOrderTransactionsReducer = (state = { transactions: [] }, acti
     }
 }
 
-export const adminOrderGallonTypeReducer = (state = { gallons: [] }, action) => {
+export const adminOrderGallonTypeReducer = (state = { gallons: {} }, action) => {
     switch(action.type){
         case ALL_ORDER_GALLON_TYPE_REQUEST:
             return {
                 loading: true,
-                gallons: [],
+                gallons: {},
             };
         case ALL_ORDER_GALLON_TYPE_SUCCESS:
             return {
@@ -290,6 +302,87 @@ export const adminStaffPerformanceReducer = (state = { performance: [] }, action
                 performance: action.payload,
             };
         case STAFF_PERFORMANCE_FAIL:
+            return {
+                loading: false,
+                error: action.payload,
+            };
+        case CLEAR_ERRORS:
+            return {
+                ...state,
+                error: null,
+            };
+        default:
+            return state;
+    }
+}
+
+export const adminCurrentBranchSalesReducer = (state = { sales: [] }, action) => {
+    switch(action.type){
+        case CURRENT_STORE_SALES_REQUEST:
+            return {
+                loading: true,
+                sales: [],
+            };
+        case CURRENT_STORE_SALES_SUCCESS:
+            return {
+                loading: false,
+                sales: action.payload,
+            };
+        case CURRENT_STORE_SALES_FAIL:
+            return {
+                loading: false,
+                error: action.payload,
+            };
+        case CLEAR_ERRORS:
+            return {
+                ...state,
+                error: null,
+            };
+        default:
+            return state;
+    }
+}
+
+export const employeeBranchReducer = (state = { branches: {} }, action) => {
+    switch(action.type){
+        case EMPLOYEE_BRANCH_REQUEST:
+            return {
+                loading: true,
+                branches: {},
+            };
+        case EMPLOYEE_BRANCH_SUCCESS:
+            return {
+                loading: false,
+                branches: action.payload,
+            };
+        case EMPLOYEE_BRANCH_FAIL:
+            return {
+                loading: false,
+                error: action.payload,
+            };
+        case CLEAR_ERRORS:
+            return {
+                ...state,
+                error: null,
+            };
+        default:
+            return state;
+    }
+}
+
+export const employeeOrderSalesReducer = (state = { orders: [] }, action) => {
+    switch(action.type){
+        case EMPLOYEE_ORDER_SALES_REQUEST:
+            return {
+                loading: true,
+                orders: [],
+            };
+        case EMPLOYEE_ORDER_SALES_SUCCESS:
+            return {
+                loading: false,
+                orders: action.payload,
+            };
+        case EMPLOYEE_ORDER_SALES_FAIL:
             return {
                 loading: false,
                 error: action.payload,
