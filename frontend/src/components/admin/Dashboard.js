@@ -15,6 +15,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
+
 import { useState, useEffect, useRef } from "react";
 // node.js library that concatenates classes (strings)
 import classnames from "classnames";
@@ -43,6 +44,8 @@ import {
   Row,
   Col,
   CardTitle,
+  CardDeck,
+  CardFooter
 } from "reactstrap";
 
 // core components
@@ -54,6 +57,7 @@ import {
 } from "../variables/charts.js";
 
 import Header from "components/Headers/Header.js";
+import Dropdown from 'react-bootstrap/Dropdown';
 
 import React from "react";
 import { useLocation, Link } from "react-router-dom";
@@ -67,7 +71,9 @@ import MetaData from "components/layout/MetaData.js";
 
 // Default Admin Chart (All store sales)
 import { allProductList } from "actions/productActions.js"; // Action for product inventory
-import { allStoreSalesAction, getSalesOrderByBarangay, getSalesWalkin, getSalesOrderByBranch, getOrderTransactions, getOrderByGallonType, getStaffPerformance, clearErrors } from "../../actions/adminAction"; // Actions for sales, walkin sales, order sales, order transactions, order gallon type, barangay sales, staff performance
+import { allStoreSalesAction, getSalesOrderByBarangay, getSalesWalkin, getSalesOrderByBranch, getOrderTransactions, getOrderByGallonType, getStaffPerformance, clearErrors, getCurrentBranchSales } from "../../actions/adminAction"; // Actions for sales, walkin sales, order sales, order transactions, order gallon type, barangay sales, staff performance
+
+import { allAdminBranches } from 'actions/storebranchActions'
 import { useDispatch, useSelector } from "react-redux";
 const Dashboard = (props) => {
 
@@ -84,8 +90,49 @@ const Dashboard = (props) => {
   const { products } = useSelector((state) => state.allProducts); // Get the inventory of all products
   const { orders: barangay } = useSelector((state) => state.adminSalesBarangay); // Get the sales of all barangays
   const { performance } = useSelector((state) => state.adminStaffPerformance); // Get the performance of all employees
+  const { sales: currentSalesBranch } = useSelector(state => state.adminCurrentBranchSales); // Get the total sales of selected branch
+  const { storeBranch } = useSelector((state) => state.allStoreBranch); //get all store branches of admin
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]; // Array of months
+  const currentYear = new Date().getFullYear();
+  let years = [];
+  for (let year = 2024; year <= currentYear; year++) {
+    years.push(year);
+  }
+  const [selectedYear, setSelectedYear] = useState(currentYear); // Selected year (number)
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());  // Selected month (number)
+  const [monthName, setMonthName] = useState(months[selectedMonth]); // Selected month name (String)
+  const [startDate, setStartDate] = useState(new Date());
+
+  const [branch2, setBranch2] = useState(""); // Selected branch
   const [totalSales, setTotalSales] = useState(0)
   const [colors, setColors] = useState([])
+  //Filter states
+  const [filter1, setFilter1] = useState("daily");
+  const [activeNav, setActiveNav] = useState(1);
+  const toggleNavs = (e, index) => {
+    e.preventDefault();
+    setActiveNav(index);
+    setFilter1(index === 1 ? "daily" : index === 2 ? "weekly" : index === 3 ? "monthly" : "yearly")
+  }
+
+  const [filter2, setFilter2] = useState("daily");
+  const [activeNav2, setActiveNav2] = useState(1);
+  const toggleNavs2 = (e, index) => {
+    e.preventDefault();
+    setActiveNav2(index);
+    setFilter2(index === 1 ? "daily" : index === 2 ? "weekly" : index === 3 ? "monthly" : "yearly")
+  }
+
+  const [filter3, setFilter3] = useState("today");
+  const [activeNav3, setActiveNav3] = useState(1);
+  const toggleNavs3 = (e, index) => {
+    e.preventDefault();
+    setActiveNav3(index);
+    setFilter3(index === 1 ? "today" : index === 2 ? "week" : index === 3 ? "month" : "year")
+  }
+
+
+
   const [data, setData] = useState({
     labels: [],
     datasets: [
@@ -126,7 +173,6 @@ const Dashboard = (props) => {
       },
     ],
   })
-
   const [data5, setData5] = useState({
     labels: [],
     datasets: [
@@ -157,7 +203,67 @@ const Dashboard = (props) => {
       },
     ],
   })
+  const [data8, setData8] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "Sales",
+        data: [],
+
+      },
+    ],
+  })
   const [options, setOptions] = useState({})
+  const options2 = {
+    scales: {
+      yAxes: [
+        {
+          ticks: {
+            callback: function (value) {
+
+              if (!(value % 10)) {
+                return value;
+              }
+              else if (!(value % 1)) {
+                return value;
+              }
+
+
+            },
+          },
+          stacked: true,
+        },
+      ],
+      xAxes: [{
+        stacked: true
+      }]
+    },
+    tooltips: {
+      callbacks: {
+        label: function (item, data) {
+          var label = data.datasets[item.datasetIndex].label || "";
+          var yLabel = item.yLabel;
+          var content = "";
+
+          content += label;
+
+          content += " " + yLabel;
+          return content;
+        },
+      },
+    },
+  };
+  const handleMonthFilter = (month, index) => {
+    setMonthName(month);
+
+    setSelectedMonth(index);
+  }
+  const handleYearFilter = (year) =>{
+    setSelectedYear(year);
+    
+  }
+
+
   // Random color generator from the same hue
   let hue = Math.random() * 360;
   const goldenRatioConjugate = 0.618033988749895;
@@ -167,7 +273,84 @@ const Dashboard = (props) => {
     const h = Math.floor(hue * 360)
     return `hsl(${h},60%,60%)`
   }
+  //Get labels based on filter
+  const getLabels = (filter, transactions) => {
+    if (filter === 'daily') {
+      return transactions.transactions.map(transaction => transaction._id);
 
+    } else if (filter === 'weekly') {
+      // return transactions.transactions.map(transaction => transaction._id);
+      const [month, day, year] = transactions.startDate.split('/');
+      const start = new Date(year, month - 1, Number(day) + 1);
+      return Array.from({ length: 7 }, (_, i) => {
+        const date = new Date(start.getTime());
+        date.setDate(date.getDate() + i);
+        return date.toISOString().split('T')[0];
+      });
+    } else if (filter === 'monthly') {
+      return Array.from({ length: 12 }, (_, i) => new Date(0, i + 1, 0).toLocaleString('default', { month: 'long' }));
+    } else if (filter === 'yearly') {
+      const currentYear = new Date().getFullYear();
+      return Array.from({ length: 5 }, (_, i) => (currentYear - i).toString()).reverse();
+    }
+  };
+  const getRefillLabels = (filter, data) => {
+    if (filter === 'daily') {
+      return data.orders[0]["Refill"].map(label => label._id);
+    } else if (filter === 'weekly') {
+      // return data.orders[0]["Refill"].map(label => label._id);
+      const [month, day, year] = data.startDate.split('/');
+      const start = new Date(year, month - 1, Number(day) + 1);
+      return Array.from({ length: 7 }, (_, i) => {
+        const date = new Date(start.getTime());
+        date.setDate(date.getDate() + i);
+        return date.toISOString().split('T')[0];
+      });
+    } else if (filter === 'monthly') {
+      return Array.from({ length: 12 }, (_, i) => new Date(0, i + 1, 0).toLocaleString('default', { month: 'long' }));
+    } else if (filter === 'yearly') {
+      const currentYear = new Date().getFullYear();
+      return Array.from({ length: 5 }, (_, i) => (currentYear - i).toString()).reverse();
+    }
+  };
+  const getNewContainerLabels = (filter, data) => {
+    if (filter === 'daily') {
+      return data.orders[0]["New Container"].map(label => label._id);
+    } else if (filter === 'weekly') {
+      // return data.orders[0]["New Container"].map(label => label._id);
+      const [month, day, year] = data.startDate.split('/');
+      const start = new Date(year, month - 1, Number(day) + 1);
+      return Array.from({ length: 7 }, (_, i) => {
+        const date = new Date(start.getTime());
+        date.setDate(date.getDate() + i);
+        return date.toISOString().split('T')[0];
+      });
+    } else if (filter === 'monthly') {
+      return Array.from({ length: 12 }, (_, i) => new Date(0, i + 1, 0).toLocaleString('default', { month: 'long' }));
+    } else if (filter === 'yearly') {
+      const currentYear = new Date().getFullYear();
+      return Array.from({ length: 5 }, (_, i) => (currentYear - i).toString()).reverse();
+    }
+  }
+  const totalSalesBranchLabel = (filter, data) => {
+    if (filter === 'today') {
+      return data.salesByBranch.map((sale) => sale._id.date)
+    } else if (filter === 'week') {
+      // return data.salesByBranch.map((sale) => sale._id.date)
+      const [month, day, year] = data.startDate.split('/');
+      const start = new Date(year, month - 1, Number(day) + 1);
+      return Array.from({ length: 7 }, (_, i) => {
+        const date = new Date(start.getTime());
+        date.setDate(date.getDate() + i);
+        return date.toISOString().split('T')[0];
+      });
+    } else if (filter === 'month') {
+      return Array.from({ length: 12 }, (_, i) => new Date(0, i + 1, 0).toLocaleString('default', { month: 'long' }));
+    } else if (filter === 'year') {
+      const currentYear = new Date().getFullYear();
+      return Array.from({ length: 5 }, (_, i) => (currentYear - i).toString()).reverse();
+    }
+  }
   // Change the data of the chart depending on the sales, transactions, gallons
   useEffect(() => {
     if (sales) {
@@ -184,47 +367,112 @@ const Dashboard = (props) => {
       }
       setData(salesData)
     }
-    if (transactions) {
+    if (transactions && transactions.transactions && transactions.transactions.length > 0) {
+
+      // Get all unique statuses
+      const statuses = [...new Set(transactions.transactions.flatMap((transaction) => transaction.orders.map((order) => order.status)))];
+
+      // Generate labels
+      const labels = getLabels(filter1, transactions);
+
+      // Create a dataset for each status
+      const datasets = statuses.map((status) => ({
+        label: status,
+        data: labels.map((label) => {
+
+          const transaction = transactions.transactions.find((transaction) => transaction._id === label);
+
+          const order = transaction && transaction.orders.find((order) => order.status === status);
+
+          return order ? order.count : 0;
+        }),
+        backgroundColor: getRandomColor(),
+      }));
+
       let salesData = {
-        labels: transactions.map((sale) => sale._id),
-        datasets: [
-          {
-            label: "Sales",
-            data: transactions.map((sale) => sale.count),
-            maxBarThickness: 30,
-            backgroundColor: transactions.map(() => getRandomColor()),
-          },
-        ],
-      }
-      setData2(salesData)
+        labels,
+        datasets,
+      };
+
+      setData2(salesData);
+
+
     }
-    if (gallons && gallons.length > 0) {
-      let salesData = {
-        labels: gallons[0]["Refill"].map((sale) => sale.typeName),
+    else {
+      setData2({
+        labels: [],
         datasets: [
           {
             label: "Sales",
-            data: gallons[0]["Refill"].map((sale) => sale.count),
-            maxBarThickness: 30,
-            backgroundColor: gallons.map(() => getRandomColor()),
+            data: [],
+
           },
         ],
+      })
+    }
+    if (gallons && gallons.orders && gallons.orders.length > 0) {
+      const RefillTypeNames = [...new Set(gallons.orders[0]["Refill"].flatMap((refills) => refills.orders.map((order) => order.typeName)))];
+
+      let refillLabel = getRefillLabels(filter2, gallons)
+
+      const datasets = RefillTypeNames.map((status) => ({
+        label: status,
+        data: refillLabel.map((labels) => {
+          const gallon = gallons.orders[0]["Refill"].find((label) => label._id === labels);
+          const order = gallon && gallon.orders.find((order) => order.typeName === status);
+          return order ? order.count : 0;
+        }),
+        backgroundColor: getRandomColor(),
+      }));
+
+
+      let data3 = {
+        labels: refillLabel,
+        datasets,
+      };
+      setData3(data3);
+
+      const newContainerTypeNames = [...new Set(gallons.orders[0]["New Container"].flatMap((refills) => refills.orders.map((order) => order.typeName)))];
+
+      let newContainerLabel = getNewContainerLabels(filter2, gallons)
+
+      const newContainerdatasets = newContainerTypeNames.map((status) => ({
+        label: status,
+        data: newContainerLabel.map((labels) => {
+          const gallon = gallons.orders[0]["New Container"].find((label) => label._id === labels);
+          const order = gallon && gallon.orders.find((order) => order.typeName === status);
+          return order ? order.count : 0;
+        }),
+        backgroundColor: getRandomColor(),
+      }));
+
+      let salesData1 = {
+        labels: newContainerLabel,
+        datasets: newContainerdatasets,
       }
-      setData3(salesData)
-      let salesData4 = {
-        labels: gallons[0]["New Container"].map((sale) => sale.typeName),
+      setData4(salesData1);
+    }
+    else {
+      setData3({
+        labels: [],
         datasets: [
           {
             label: "Sales",
-            data: gallons[0]["New Container"].map((sale) => sale.count),
-            maxBarThickness: 30,
-            backgroundColor: gallons[0]["New Container"].map(() => getRandomColor()),
+            data: [],
+
           },
         ],
+      })
+      setData4({
+        labels: [],
+        datasets: [
+          {
+            label: "Sales",
+            data: [],
 
-      }
-      setData4(salesData4);
-
+          },
+        ],
+      })
     }
     if (barangay && barangay.orders && barangay.orders.length > 0) {
       let color = barangay.orders.map(() => getRandomColor());
@@ -255,10 +503,11 @@ const Dashboard = (props) => {
       };
       setData5(salesData);
       setOptions(options);
-      // console.log("barangay: ",barangay.orders)
+
 
     }
     if (performance && performance.employees) {
+
       let salesData = {
         labels: performance.employees.map((sale) => sale._id),
         datasets: [
@@ -286,7 +535,35 @@ const Dashboard = (props) => {
       }
       setData7(salesData)
     }
-  }, [sales, transactions, gallons, barangay, performance])
+    if (currentSalesBranch && currentSalesBranch.salesByBranch && currentSalesBranch.salesByBranch.length > 0) {
+      const labels = totalSalesBranchLabel(filter3, currentSalesBranch)
+
+      const datasets = [{
+        data: labels.map((label) => {
+          const sale = currentSalesBranch.salesByBranch.find((sale) => String(sale._id.date) === label)
+          return sale ? sale.totalSales : 0
+        })
+      }]
+      let salesData = {
+        labels: labels,
+        datasets: datasets
+      }
+      setData8(salesData)
+    }
+    else {
+      setData8({
+        labels: [],
+        datasets: [
+          {
+            label: "Sales",
+            data: [],
+
+          },
+        ],
+      })
+    }
+
+  }, [sales, transactions, gallons, barangay, performance, currentSalesBranch])
 
 
   // Function to calculate the total sales of the selected branch
@@ -298,50 +575,58 @@ const Dashboard = (props) => {
       localStorage.setItem("totalSales", totalSalesOrder + totalSalesWalkin)
     }
   }
-
   // Change depending on the branch
   useEffect(() => {
+    if (user.role === 'admin') {
+      if (branch) {
+        // Get the total sales of the selected branch
+        getTotalSales(orders, walkinSales)
 
-    if (branch) {
-      // Get the total sales of the selected branch
-      getTotalSales(orders, walkinSales)
+        // Get the order transactions of the selected branch
+        dispatch(getOrderTransactions(branch, filter1));
 
-      // Get the order transactions of the selected branch
-      dispatch(getOrderTransactions(branch));
+        // Get the product stocks of the selected branch
+        dispatch(allProductList(branch));
 
-      // Get the product stocks of the selected branch
-      dispatch(allProductList(branch));
+        // Get the gallon type of the selected branch (Refill or New Container)
+        dispatch(getOrderByGallonType(branch, filter2));
 
-      // Get the gallon type of the selected branch (Refill or New Container)
-      dispatch(getOrderByGallonType(branch));
+        // Get the sales of all barangays of the selected branch
+        dispatch(getSalesOrderByBarangay(branch));
 
-      // Get the sales of all barangays of the selected branch
-      dispatch(getSalesOrderByBarangay(branch));
+        // Get the performance of all employees of the selected branch
+        dispatch(getStaffPerformance(branch, selectedMonth + 1, selectedYear))
 
-      // Get the performance of all employees of the selected branch
-      dispatch(getStaffPerformance(branch))
+        //Action for current branch sales
+        //Gets the total sales of selected branch
+        dispatch(getCurrentBranchSales(branch, filter3));
+      }
     }
-
-  }, [sales, walkinSales, branch])
-
+  }, [sales, walkinSales, branch, filter1, filter2, filter3, user, selectedMonth, selectedYear])
   // Universal UseEffect
   useEffect(() => {
-    // Action for sales state
-    // Gets the total sales of all stores
-    dispatch(allStoreSalesAction(user._id));
+    if (user.role === 'admin') {
 
-    // Action for walkinSales state
-    // Gets the total sales of all walkin sales
-    dispatch(getSalesWalkin());
+      // Action for sales state
+      // Gets the total sales of all stores
+      dispatch(allStoreSalesAction(user._id));
 
-    // Action for orders state
-    // Gets the total sales of all orders
-    dispatch(getSalesOrderByBranch(user._id));
+      // Action for walkinSales state
+      // Gets the total sales of all walkin sales
+      dispatch(getSalesWalkin());
 
-    if (error) {
-      dispatch(clearErrors())
+      // Action for orders state
+      // Gets the total sales of all orders
+      dispatch(getSalesOrderByBranch(user._id));
+
+      //Get all admin branches
+      dispatch(allAdminBranches(user._id));
+
+      if (error) {
+        dispatch(clearErrors())
+      }
     }
-  }, [dispatch, error])
+  }, [dispatch, error, user])
 
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
@@ -362,10 +647,18 @@ const Dashboard = (props) => {
     if (user.role === 'admin') {
       socket.emit('login', { adminId: user._id })
     }
-
-    
-   
   }, [])
+  useEffect(() => {
+    const storedBranchId = localStorage.getItem("branch");
+    if (storedBranchId) {
+      const name = storeBranch.find((branch) => branch._id === storedBranchId);
+      setBranch2(name ? name.branch : "");
+    }
+    else {
+      const name = storeBranch.find((branches) => branches._id === branch);
+      setBranch2(name ? name.branch : "");
+    }
+  }, [storeBranch, branch])
 
   return (
     <>
@@ -464,18 +757,73 @@ const Dashboard = (props) => {
 
             </Col>
           </Row>
-
-          {/* Order transactions, Order Refill, Order New Container */}
+          {/*Order transactions, Total sales by branch */}
           <Row>
-            <Col className="mb-5 mb-xl-4" xl="4">
+            <Col className="mb-5 mb-xl-4" lg="6" xl="5">
               <Card className="shadow">
                 <CardHeader className="bg-transparent">
-                  <Row className="align-items-center">
+                  <Row className="align-items-center mb-3">
                     <div className="col">
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Performance
                       </h6>
-                      <h2 className="mb-0">Order Transactions {branch ? transactions && transactions.length === 0 && <span className="text-danger text-sm">(No results)</span> : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
+                      <h2 className="mb-0">Order Transactions {branch ? transactions && transactions.transactions && transactions.transactions.length === 0 && <span className="text-danger text-sm">(No results)</span> : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
+                    </div>
+                    <div className="col d-flex  justify-content-end">
+                      <h2 className="mb-0 text-primary">{filter1 === 'daily' ? "Today" : filter1 === 'weekly' ? "Past 7 days" : filter1 === "monthly" ? "This year" : "Past 5 years"}</h2>
+                    </div>
+                  </Row>
+                  <Row className="align-items-center">
+                    <div className="col">
+                      <Nav className="justify-content-start" pills>
+                        <NavItem>
+                          <NavLink
+                            className={classnames("py-2 px-3", {
+                              active: activeNav === 1,
+                            })}
+                            href="#pablo"
+                            onClick={(e) => toggleNavs(e, 1)}>
+                            <span className="d-none d-md-block">Today</span>
+                            <span className="d-md-none">T</span>
+                          </NavLink>
+                        </NavItem>
+                        <NavItem>
+                          <NavLink
+                            className={classnames("py-2 px-3", {
+                              active: activeNav === 2,
+                            })}
+                            href="#pablo"
+                            onClick={(e) => toggleNavs(e, 2)}>
+                            <span className="d-none d-md-block">Week</span>
+                            <span className="d-md-none">W</span>
+                          </NavLink>
+                        </NavItem>
+                        <NavItem>
+                          <NavLink
+                            className={classnames("py-2 px-3", {
+                              active: activeNav === 3,
+                            })}
+                            data-toggle="tab"
+                            href="#pablo"
+                            onClick={(e) => toggleNavs(e, 3)}>
+                            <span className="d-none d-md-block">Month</span>
+                            <span className="d-md-none">M</span>
+
+                          </NavLink>
+                        </NavItem>
+                        <NavItem>
+                          <NavLink
+                            className={classnames("py-2 px-3", {
+                              active: activeNav === 4,
+                            })}
+                            href="#pablo"
+                            onClick={(e) => toggleNavs(e, 4)}>
+                            <span className="d-none d-md-block">Year</span>
+                            <span className="d-md-none">Y</span>
+
+                          </NavLink>
+                        </NavItem>
+                      </Nav>
                     </div>
                   </Row>
                 </CardHeader>
@@ -484,61 +832,216 @@ const Dashboard = (props) => {
                   <div className="chart">
                     <Bar
                       data={data2}
-                      options={chartExample2.options}
+                      options={options2}
                     />
                   </div>
                 </CardBody>
               </Card>
-
             </Col>
-            <Col className="mb-5 mb-xl-4" xl="4">
-              <Card className="shadow">
-                <CardHeader className="bg-transparent">
-                  <Row className="align-items-center">
+            <Col className="mb-5 mb-xl-4" xl="7">
+              <Card className="shadow h-100">
+                <CardHeader className="border-0">
+                  <Row className="align-items-center mb-3">
                     <div className="col">
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Performance
                       </h6>
+                      <h2 className="mb-0">Total Sales: ({branch2}) {currentSalesBranch && currentSalesBranch.salesByBranch && currentSalesBranch.salesByBranch.length === 0 && <span className="text-danger text-sm">(No results)</span>}</h2>
+                    </div>
 
-                      <h2 className="mb-0">Gallon Type (Refill) {branch ? (gallons.length === 0 ? <span className="text-danger text-sm">(No results)</span> : gallons[0].Refill.length === 0 ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
+                    <div className="col d-flex  justify-content-end">
+                      <h2 className="mb-0 text-primary">{filter3 === 'today' ? "Today" : filter3 === 'week' ? "Past 7 days" : filter3 === "month" ? "This year" : "Past 5 years"}</h2>
+                    </div>
+                  </Row>
+                  <Row className="align-items-center">
+                    <div className="col">
+                      <Nav className="justify-content-start" pills>
+                        <NavItem>
+                          <NavLink
+                            className={classnames("py-2 px-3", {
+                              active: activeNav3 === 1,
+                            })}
+                            href="#pablo"
+                            onClick={(e) => toggleNavs3(e, 1)}>
+                            <span className="d-none d-md-block">Today</span>
+                            <span className="d-md-none">T</span>
+                          </NavLink>
+                        </NavItem>
+                        <NavItem>
+                          <NavLink
+                            className={classnames("py-2 px-3", {
+                              active: activeNav3 === 2,
+                            })}
+                            href="#pablo"
+                            onClick={(e) => toggleNavs3(e, 2)}>
+                            <span className="d-none d-md-block">Week</span>
+                            <span className="d-md-none">W</span>
+                          </NavLink>
+                        </NavItem>
+                        <NavItem>
+                          <NavLink
+                            className={classnames("py-2 px-3", {
+                              active: activeNav3 === 3,
+                            })}
+                            data-toggle="tab"
+                            href="#pablo"
+                            onClick={(e) => toggleNavs3(e, 3)}>
+                            <span className="d-none d-md-block">Month</span>
+                            <span className="d-md-none">M</span>
+
+                          </NavLink>
+                        </NavItem>
+                        <NavItem>
+                          <NavLink
+                            className={classnames("py-2 px-3", {
+                              active: activeNav3 === 4,
+                            })}
+                            href="#pablo"
+                            onClick={(e) => toggleNavs3(e, 4)}>
+                            <span className="d-none d-md-block">Year</span>
+                            <span className="d-md-none">Y</span>
+
+                          </NavLink>
+                        </NavItem>
+                      </Nav>
                     </div>
                   </Row>
                 </CardHeader>
                 <CardBody>
-
                   <div className="chart">
-                    <Bar
-                      data={data3}
-                      options={chartExample2.options}
+                    <Line
+                      data={data8}
+                      options={chartExample1.options}
+                      getDatasetAtEvent={(e) => console.log(e)}
                     />
                   </div>
                 </CardBody>
               </Card>
-
             </Col>
-            <Col className="mb-5 mb-xl-4" xl="4">
+          </Row>
+
+
+          {/*Order Refill, Order New Container */}
+          <Row>
+            <Col className="mb-5 mb-xl-4" lg="6" xl="12">
               <Card className="shadow">
                 <CardHeader className="bg-transparent">
-                  <Row className="align-items-center">
+                  <Row className="align-items-center mb-3">
                     <div className="col">
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Performance
                       </h6>
-                      <h2 className="mb-0">Gallon Type (New Container) {branch ? (gallons.length === 0 ? <span className="text-danger text-sm">(No results)</span> : gallons[0]["New Container"].length === 0 ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
+                      <h2 className="mb-0">Gallon Type</h2>
+
+                    </div>
+                    <div className="col d-flex  justify-content-end">
+                      <h2 className="mb-0 text-primary">{filter2 === 'daily' ? "Today" : filter2 === 'weekly' ? "Past 7 days" : filter2 === "monthly" ? "This year" : "Past 5 years"}</h2>
+                    </div>
+                  </Row>
+                  <Row>
+                    <div className="col">
+                      <Nav className="justify-content-start" pills>
+                        <NavItem>
+                          <NavLink
+                            className={classnames("py-2 px-3", {
+                              active: activeNav2 === 1,
+                            })}
+                            href="#pablo"
+                            onClick={(e) => toggleNavs2(e, 1)}>
+                            <span className="d-none d-md-block">Today</span>
+                            <span className="d-md-none">T</span>
+                          </NavLink>
+                        </NavItem>
+                        <NavItem>
+                          <NavLink
+                            className={classnames("py-2 px-3", {
+                              active: activeNav2 === 2,
+                            })}
+                            href="#pablo"
+                            onClick={(e) => toggleNavs2(e, 2)}>
+                            <span className="d-none d-md-block">Week</span>
+                            <span className="d-md-none">W</span>
+                          </NavLink>
+                        </NavItem>
+                        <NavItem>
+                          <NavLink
+                            className={classnames("py-2 px-3", {
+                              active: activeNav2 === 3,
+                            })}
+                            data-toggle="tab"
+                            href="#pablo"
+                            onClick={(e) => toggleNavs2(e, 3)}>
+                            <span className="d-none d-md-block">Month</span>
+                            <span className="d-md-none">M</span>
+
+                          </NavLink>
+                        </NavItem>
+                        <NavItem>
+                          <NavLink
+                            className={classnames("py-2 px-3", {
+                              active: activeNav2 === 4,
+                            })}
+                            href="#pablo"
+                            onClick={(e) => toggleNavs2(e, 4)}>
+                            <span className="d-none d-md-block">Year</span>
+                            <span className="d-md-none">Y</span>
+
+                          </NavLink>
+                        </NavItem>
+                      </Nav>
                     </div>
                   </Row>
                 </CardHeader>
                 <CardBody>
+                  <CardDeck>
+                    <Card className="shadow">
+                      <CardHeader className="bg-transparent">
+                        <Row className="align-items-center mb-3">
+                          <div className="col">
+                            <h6 className="text-uppercase text-muted ls-1 mb-1">
+                              Type
+                            </h6>
 
-                  <div className="chart">
-                    <Bar
-                      data={data4}
-                      options={chartExample2.options}
-                    />
-                  </div>
+                            <h2 className="mb-0">Refill {branch ? (gallons && gallons.orders && gallons.orders.length === 0 ? <span className="text-danger text-sm">(No results)</span> : gallons && gallons.orders && gallons.orders[0].Refill.length === 0 ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
+                          </div>
+
+                        </Row>
+                      </CardHeader>
+                      <CardBody>
+                        <div className="chart">
+                          <Bar
+                            data={data3}
+                            options={options2}
+                          />
+                        </div>
+                      </CardBody>
+                    </Card>
+                    <Card className="shadow">
+                      <CardHeader className="bg-transparent">
+                        <Row className="align-items-center mb-3">
+                          <div className="col">
+                            <h6 className="text-uppercase text-muted ls-1 mb-1">
+                              Type
+                            </h6>
+                            <h2 className="mb-0">New Container {branch ? (gallons && gallons.orders && gallons.orders.length === 0 ? <span className="text-danger text-sm">(No results)</span> : gallons && gallons.orders && gallons.orders[0]["New Container"].length === 0 ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
+
+                          </div>
+
+                        </Row>
+                      </CardHeader>
+                      <CardBody>
+
+                        <div className="chart">
+                          <Bar
+                            data={data4}
+                            options={options2}
+                          />
+                        </div>
+                      </CardBody>
+                    </Card>
+                  </CardDeck>
                 </CardBody>
               </Card>
-
             </Col>
           </Row>
 
@@ -597,7 +1100,7 @@ const Dashboard = (props) => {
             <Col className="mb-5 mb-xl-4" xl="6">
               <Card className="shadow">
                 <CardHeader className="bg-transparent">
-                  <Row className="align-items-center">
+                  <Row className="align-items-center mb-3">
                     <div className="col">
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Performance
@@ -605,6 +1108,7 @@ const Dashboard = (props) => {
                       <h2 className="mb-0">Sales By Barangay {branch ? ((barangay && Object.keys(barangay).length === 0) ? <span className="text-danger text-sm">(No results)</span> : (barangay.orders && barangay.orders.length === 0) ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
                     </div>
                   </Row>
+
                 </CardHeader>
                 <CardBody>
                   <div className="d-flex align-items-center justify-content-center">
@@ -634,57 +1138,137 @@ const Dashboard = (props) => {
           </Row>
           {/* Employee Accepted orders and Rider Delivered orders */}
           <Row>
-            <Col className="mb-5 mb-xl-4" xl="6">
+            <Col className="mb-5 mb-xl-4" lg="6" xl="12">
               <Card className="shadow">
-                <CardHeader className="bg-transparent">
-                  <Row className="align-items-center">
+                <CardHeader>
+                  <Row className="align-items-center mb-3">
                     <div className="col">
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Performance
                       </h6>
-                      <h2 className="mb-0">Employee Performance  {branch ? (performance && Object.keys(performance).length === 0 ?
-                        <span className="text-danger text-sm">(No results)</span> : (performance.employees && performance.employees.length === 0) ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
+                      <h2 className="mb-0">Staff Performance Ranking</h2>
+
                     </div>
+                    <Col className="d-flex justify-content-end z-3" xl="6">
+                      <Dropdown>
+                        <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                          {monthName ? monthName : "Select Month"}
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                          {months.map((month, index) => (
+                            <Dropdown.Item key={index} eventKey={index + 1} onClick={() => handleMonthFilter(month, index)}>{month}</Dropdown.Item>
+                          ))}
+                        </Dropdown.Menu>
+                      </Dropdown>
+                      <Dropdown>
+                        <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                          {selectedYear ? selectedYear : "Select Year"}
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                          {years.map((year, index) => (
+                            <Dropdown.Item key={index} eventKey={index + 1} onClick={() => handleYearFilter(year, index)}>{year}</Dropdown.Item>
+                          ))}
+                        </Dropdown.Menu>
+                      </Dropdown>
+
+                    </Col>
                   </Row>
+
                 </CardHeader>
                 <CardBody>
+                  <CardDeck className="mb-3">
+                    <Card className="shadow h-100">
+                      <CardHeader className="bg-transparent">
+                        <Row className="align-items-center w-100">
+                          <Col xl="6">
+                            <h6 className="text-uppercase text-muted ls-1 mb-1">
+                              Staff Type
+                            </h6>
+                            <h2 className="mb-0">Employee {branch ? (performance && Object.keys(performance).length === 0 ?
+                              <span className="text-danger text-sm">(No results)</span> : (performance.employees && performance.employees.length === 0) ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
+                          </Col>
 
-                  <div className="chart">
-                    <Bar
-                      data={data6}
-                      options={chartExample2.options}
-                    />
-                  </div>
+                        </Row>
+
+                      </CardHeader>
+
+                      <CardBody>
+                        <Table className="align-items-center table-flush" responsive>
+                          <thead className="thead-light">
+                            <tr>
+                              <th scope="col">Rank</th>
+                              <th scope="col">Name</th>
+                              <th scope="col">Accepted Orders</th>
+
+                            </tr>
+                          </thead>
+                          <tbody className="position-relative h-100">
+                            {performance && performance.employees && performance.employees
+                              .sort((a, b) => b.count - a.count)
+                              .map((employee, index) => {
+                                return (
+                                  <tr key={index}>
+                                    <th>{index + 1}</th>
+                                    <th>{employee.name}</th>
+                                    <td>{employee.count}</td>
+                                  </tr>
+                                );
+                              })}
+                          </tbody>
+                        </Table>
+                      </CardBody>
+
+                    </Card>
+                    <Card className="shadow">
+                      <CardHeader className="bg-transparent">
+                        <Row className="align-items-center">
+                          <Col xl="6">
+                            <h6 className="text-uppercase text-muted ls-1 mb-1">
+                              Staff Type
+                            </h6>
+                            <h2 className="mb-0">Rider {branch ? (performance && Object.keys(performance).length === 0 ?
+                              <span className="text-danger text-sm">(No results)</span> : (performance.riders && performance.riders.length === 0) ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
+                          </Col>
+
+                        </Row>
+                      </CardHeader>
+                      <CardBody>
+                        <Table className="align-items-center table-flush" responsive>
+                          <thead className="thead-light">
+                            <tr>
+                              <th scope="col">Rank</th>
+                              <th scope="col">Name</th>
+                              <th scope="col">Delivered Orders</th>
+
+                            </tr>
+                          </thead>
+                          <tbody className="position-relative h-100">
+                            {performance && performance.riders && performance.riders
+                              .sort((a, b) => b.count - a.count)
+                              .map((rider, index) => {
+                                return (
+                                  <tr key={index}>
+                                    <th>{index + 1}</th>
+                                    <th>{rider.name}</th>
+                                    <td>{rider.count}</td>
+                                  </tr>
+                                );
+                              })}
+                          </tbody>
+                        </Table>
+
+                      </CardBody>
+                    </Card>
+                  </CardDeck>
                 </CardBody>
               </Card>
-
-            </Col>
-            <Col className="mb-5 mb-xl-4" xl="6">
-              <Card className="shadow">
-                <CardHeader className="bg-transparent">
-                  <Row className="align-items-center">
-                    <div className="col">
-                      <h6 className="text-uppercase text-muted ls-1 mb-1">
-                        Performance
-                      </h6>
-                      <h2 className="mb-0">Rider Performance {branch ? (performance && Object.keys(performance).length === 0 ?
-                        <span className="text-danger text-sm">(No results)</span> : (performance.riders && performance.riders.length === 0) ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
-                    </div>
-                  </Row>
-                </CardHeader>
-                <CardBody>
-
-                  <div className="chart">
-                    <Bar
-                      data={data7}
-                      options={chartExample2.options}
-                    />
-                  </div>
-                </CardBody>
-              </Card>
-
             </Col>
           </Row>
+
+
+
           {/* Total Sales By Branch */}
           <Row>
             <Col className="mb-5 mb-xl-4" xl="12">
