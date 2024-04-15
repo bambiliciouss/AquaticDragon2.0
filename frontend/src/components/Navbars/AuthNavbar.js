@@ -174,7 +174,7 @@ const AdminNavbar = () => {
                         (user.role === "rider" ||
                           user.role === "employee" ||
                           user.role === "admin") && (
-                          <DropdownItem href="/dashboard">
+                          <DropdownItem href={user.role==="admin"? "/dashboard" : user.role === "employee" ? "/employee/orderlist" : "/rider/orderlist"}>
                             <i className="now-ui-icons business_chart-bar-32"></i>
                             Dashboard
                           </DropdownItem>
