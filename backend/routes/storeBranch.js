@@ -11,7 +11,10 @@ const {
   AllStoreBranchUser,
   getAdminBranches,
   getSalesByBranch,
-  getSalesOrderByBranch
+  getSalesOrderByBranch,
+  getSalesOfCurrentBranch,
+  getEmployeeBranches,
+  getSalesOrderByBranchEmployee
 } = require("../controllers/storeBranchController");
 
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
@@ -52,8 +55,10 @@ router.put(
   isAuthenticatedUser,
   updateStoreBranch
 );
-
-router.get('/admin/all/store/branches/:id', getAdminBranches);
-router.get('/admin/all/store/sales/:id', getSalesByBranch);
-router.get('/admin/all/sales/order/:id', getSalesOrderByBranch)
+router.get('/employee/branch/:id', isAuthenticatedUser, authorizeRoles("employee", "rider"), getEmployeeBranches);
+router.get('/admin/all/store/branches/:id', isAuthenticatedUser,  authorizeRoles("admin", "employee", "rider"), getAdminBranches);
+router.get('/admin/all/store/sales/:id', isAuthenticatedUser,  authorizeRoles("admin", "employee", "rider"),getSalesByBranch);
+router.get('/admin/store/sales/:id', isAuthenticatedUser,  authorizeRoles("admin", "employee", "rider"),getSalesOfCurrentBranch);
+router.get('/admin/all/sales/order/:id', isAuthenticatedUser,  authorizeRoles("admin", "employee", "rider"),getSalesOrderByBranch)
+router.get('/employee/all/sales/order/:id', isAuthenticatedUser,  authorizeRoles("employee", "rider"), getSalesOrderByBranchEmployee)
 module.exports = router;
