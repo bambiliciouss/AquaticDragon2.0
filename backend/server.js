@@ -53,10 +53,6 @@ io.on('connection', (socket) => {
     const { message, branch, title, order } = data;
     try {
       const adminId = (await getAdminIdFromBranch(branch)).toString();
-
-      console.log('Received notification in server:', message);
-      console.log('order: ', order)
-
       orderItems = order.orderItems;
       orderProducts = order.orderProducts;
       await storeNotification(message, title, orderItems, orderProducts, adminId, order._id);
