@@ -50,11 +50,12 @@ import {
 
 import { AdminallAddress } from "actions/addressAction";
 
-const UpdateUser = () => {
+import { adminApproval } from "actions/superadminActions";
+const PendingAdminDetails = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   let navigate = useNavigate();
-  const { error, isUpdated } = useSelector((state) => state.user);
+  const { error, isUpdated } = useSelector((state) => state.adminApproval);
   const { user } = useSelector((state) => state.userDetails);
   const { id } = useParams();
 
@@ -75,38 +76,19 @@ const UpdateUser = () => {
 
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
-  const [medcert, setMedcert] = useState("");
-  const [medcertPreview, setMedcertPreview] = useState(
-    "/images/default_avatar.jpg"
-  );
-  const [barangayclearance, setBarangayclearance] = useState("");
-  const [barangayclearancePreview, setBarangayclearancePreview] = useState(
-    "/images/default_avatar.jpg"
-  );
-  const [driverslicense, setDriversLicense] = useState("");
-  const [driverslicensePreview, setDriverslicensePreview] = useState(
+
+  const [validIDPreview, setvalidIDPreview] = useState(
     "/images/default_avatar.jpg"
   );
 
-  const [selectedFileName, setSelectedFileName] = useState("");
-  const [selectedFileNameBC, setSelectedFileNameBC] = useState("");
-  const [selectedFileNameDL, setSelectedFileNameDL] = useState("");
+  const [bPermitPreview, setbPermitPreview] = useState(
+    "/images/default_avatar.jpg"
+  );
 
   const notifyError = (message = "") =>
     toast.error(message, {
       position: "bottom-left",
       autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-
-  const notifySuccess = (message = "") =>
-    toast.success(message, {
-      position: "bottom-left",
-      autoClose: 5000,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
@@ -131,9 +113,8 @@ const UpdateUser = () => {
       setCity(user.city);
       setEmail(user.email);
       setAvatarPreview(user.avatar.url);
-      setMedcertPreview(user.medcert.url);
-      setBarangayclearancePreview(user.barangayclearance.url);
-      setDriverslicensePreview(user.driverslicense.url);
+      setbPermitPreview(user.mayorsPermit.url);
+      setvalidIDPreview(user.validID.url);
     }
 
     if (error) {
@@ -144,111 +125,19 @@ const UpdateUser = () => {
     if (isUpdated) {
       swal("Updated Successfully!", "", "success");
 
-      navigate("/userlist", { replace: true });
+      navigate("/superadmin/pendinglist", { replace: true });
       dispatch({
         type: UPDATE_PROFILE_RESET,
       });
     }
   }, [dispatch, error, isUpdated, navigate, user]);
 
-  const submitHandler = (e) => {
-    e.preventDefault();
-
-    const formData = new FormData();
-    formData.append("fname", fname);
-    formData.append("lname", lname);
-    formData.append("phone", phone);
-    formData.append("houseNo", houseNo);
-    formData.append("streetName", streetName);
-    formData.append("purokNum", purokNum);
-    formData.append("barangay", barangay);
-    formData.append("city", city);
-    formData.append("avatar", avatar);
-    formData.append("role", role);
-
-    dispatch(updateRider(id, formData));
-    //console.log(formData)
-  };
-
-  const onChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (/^image\/(png|jpg|jpeg)$/.test(file.type)) {
-        const reader = new FileReader();
-
-        reader.onload = () => {
-          if (reader.readyState === 2) {
-            setAvatarPreview(reader.result);
-            setAvatar(reader.result);
-          }
-        };
-
-        reader.readAsDataURL(file);
-      } else {
-        swal("Please select .png, .jpg, or .jpeg image file.", "", "error");
-        e.target.value = null;
-      }
-    }
-  };
-  const setAddresses = () => {
-    const data = {
-      columns: [
-        {
-          label: "Address",
-          field: "address",
-          sort: "asc",
-        },
-        {
-          label: "Set Default",
-          field: "default",
-          sort: "asc",
-        },
-
-        // {
-        //   label: "Actions",
-        //   field: "actions",
-        // },
-      ],
-
-      rows: [],
-    };
-
-    useraddress.forEach((useraddresses) => {
-      data.rows.push({
-        address: `${useraddresses.houseNo} ${useraddresses.purokNum} ${useraddresses.streetName} ${useraddresses.barangay} ${useraddresses.city}`,
-        actions: (
-          <Fragment>
-            {/* <button
-              className="btn btn-primary py-1 px-2 ml-2"
-              onClick={() => EditModal(useraddresses._id)}>
-              <i className="fa fa-info-circle"></i>
-            </button>
-
-            <button
-              className="btn btn-danger py-1 px-2 ml-2"
-              onClick={() => deleteHandler(useraddresses._id)}>
-              <i className="fa fa-trash"></i>
-            </button> */}
-          </Fragment>
-        ),
-        default: (
-          <Fragment>
-            <Badge
-              color={useraddresses.isDefault ? "success" : "secondary"}
-              // href=""
-              // onClick={() => setDefAddress(useraddresses._id)}
-            >
-              {useraddresses.isDefault ? "Default" : "Default"}
-            </Badge>
-          </Fragment>
-        ),
-      });
-    });
-
-    return data;
-  };
   const defaultAddress =
     user?.addresses?.find((address) => address.isDefault) || {};
+
+  const approvalHandler = (e) => {
+    dispatch(adminApproval(id));
+  };
 
   return (
     <>
@@ -273,7 +162,19 @@ const UpdateUser = () => {
                       <CardHeader className="bg-white border-0">
                         <Row className="align-items-center">
                           <Col xs="8">
-                            <h3 className="mb-0">Customer's Details</h3>
+                            <h3 className="mb-0">User Details</h3>
+                          </Col>
+                          <Col lg="4">
+                            {user && user.role === "PendingAdmin" && (
+                              <Button
+                                className="my-1"
+                                color="primary"
+                                size="md"
+                                onClick={() => approvalHandler()}
+                                block>
+                                Approved
+                              </Button>
+                            )}
                           </Col>
                         </Row>
                       </CardHeader>
@@ -513,6 +414,33 @@ const UpdateUser = () => {
                                 </FormGroup>
                               </Col>
                             </Row>
+
+                            <Row>
+                              <Col lg="6">
+                                <Button
+                                  className="my-1"
+                                  color="success"
+                                  size="md"
+                                  onClick={() =>
+                                    window.open(validIDPreview, "_blank")
+                                  }
+                                  block>
+                                  View Valid ID
+                                </Button>
+                              </Col>
+                              <Col lg="6">
+                                <Button
+                                  className="my-1"
+                                  color="success"
+                                  size="md"
+                                  onClick={() =>
+                                    window.open(bPermitPreview, "_blank")
+                                  }
+                                  block>
+                                  View Business Permit
+                                </Button>
+                              </Col>
+                            </Row>
                           </div>
                         </Form>
                       </CardBody>
@@ -531,4 +459,4 @@ const UpdateUser = () => {
   );
 };
 
-export default UpdateUser;
+export default PendingAdminDetails;

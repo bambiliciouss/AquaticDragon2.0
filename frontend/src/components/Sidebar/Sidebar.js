@@ -16,7 +16,7 @@
 
 */
 /*eslint-disable*/
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink as NavLinkRRD, Link } from "react-router-dom";
 // nodejs library to set properties for components
 import { PropTypes } from "prop-types";
@@ -51,11 +51,15 @@ import {
   Row,
   Col,
 } from "reactstrap";
-import { useSelector } from "react-redux";
+
+import { useDispatch, useSelector } from "react-redux";
+import { getStoreDetails } from "actions/storebranchActions";
 var ps;
 
 const Sidebar = (props) => {
+  const dispatch = useDispatch();
   const { user, loading } = useSelector((state) => state.auth);
+  const { storeBranch } = useSelector((state) => state.storeDetails);
   const [collapseOpen, setCollapseOpen] = useState();
   const activeRoute = (routeName) => {
     return props.location.pathname.indexOf(routeName) > -1 ? "active" : "";
@@ -81,6 +85,12 @@ const Sidebar = (props) => {
     };
   }
 
+  useEffect(() => {
+    dispatch(getStoreDetails(user.storebranch));
+    console.log(user.storebranch);
+   
+  }, [dispatch]);
+
   return (
     <Navbar
       className="navbar-vertical fixed-left navbar-light bg-white"
@@ -104,8 +114,10 @@ const Sidebar = (props) => {
               src={logo.imgSrc}
               style={{ width: "200px", height: "300px" }}
             />
-
-            <br />
+            <br />{" "}
+            {user && (user.role === "rider" || user.role === "employee") && (
+              <h3 className="text-overflow m-0">{`${storeBranch.branch}`}</h3>
+            )}
             <h3
               className="text-overflow m-0"
               style={{ textTransform: "uppercase" }}>
@@ -160,93 +172,183 @@ const Sidebar = (props) => {
             </InputGroup>
           </Form>
           {/* Navigation */}
-          <Nav navbar>
-            <NavItem>
-              <NavLink href="/dashboard" onClick={closeCollapse}>
-                <i className="ni ni-chart-bar-32 text-pink" /> Dashboard
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink href="/userlist" onClick={closeCollapse}>
-                <i className="ni ni-single-02 text-info" /> Customers
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink href="/employee" onClick={closeCollapse}>
-                <i className="ni ni-badge text-blue" /> Employees
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink href="/rider" onClick={closeCollapse}>
-                <i className="ni ni-user-run text-orange" /> Riders
-              </NavLink>
-            </NavItem>
-            <NavLink href="/storebranchlist">
-              <i className="ni ni-shop text-red" /> Stores
-            </NavLink>
 
-            {/* <NavItem>
+          {user && user.role === "admin" && (
+            <>
+              <Nav navbar>
+                <NavItem>
+                  <NavLink href="/dashboard" onClick={closeCollapse}>
+                    <i className="ni ni-chart-bar-32 text-pink" /> Dashboard
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink href="/userlist" onClick={closeCollapse}>
+                    <i className="ni ni-single-02 text-info" /> Customers
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink href="/employee" onClick={closeCollapse}>
+                    <i className="ni ni-badge text-blue" /> Employees
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink href="/rider" onClick={closeCollapse}>
+                    <i className="ni ni-user-run text-orange" /> Riders
+                  </NavLink>
+                </NavItem>
+                <NavLink href="/storebranchlist">
+                  <i className="ni ni-shop text-red" /> Stores
+                </NavLink>
+
+                {/* <NavItem>
               <NavLink href="/gallonlist" onClick={closeCollapse}>
                 <i className="ni ni-settings-gear-65 text-yellow" /> Gallons
               </NavLink>
             </NavItem> */}
-            {/* <NavItem>
+                {/* <NavItem>
               <NavLink href="/storebranchlist" onClick={closeCollapse}>
                 <i className="ni ni-shop text-red" /> Store Branch
               </NavLink>
             </NavItem> */}
-          </Nav>
-          <hr className="my-3" />
-          <h6 className="navbar-heading text-muted">POS</h6>
-          <Nav navbar>
-            <NavItem>
-              <NavLink href="/admin/POS/" onClick={closeCollapse}>
-                <i className="ni ni-active-40 text-yellow" /> Walk In Refill
+              </Nav>
+              <hr className="my-3" />
+              <h6 className="navbar-heading text-muted">POS</h6>
+              <Nav navbar>
+                <NavItem>
+                  <NavLink href="/admin/POS/" onClick={closeCollapse}>
+                    <i className="ni ni-active-40 text-yellow" /> Walk In Refill
+                  </NavLink>
+                </NavItem>
+
+                <NavItem>
+                  <NavLink href="/orderlist" onClick={closeCollapse}>
+                    <i className="ni ni-basket text-green" /> Orders
+                  </NavLink>
+                </NavItem>
+              </Nav>
+
+              <hr className="my-3" />
+              <h6 className="navbar-heading text-muted">Store Records</h6>
+
+              <Nav navbar>
+                <NavLink href="/machinecleaning">
+                  <i className="ni ni-collection text-blue" /> Machine Cleaning
+                </NavLink>
+
+                <NavLink href="/barangayhealth">
+                  <i className="ni ni-collection text-pink" /> Potability Test
+                </NavLink>
+
+                <NavLink href="/physicalchemtest">
+                  <i className="ni ni-collection text-black" /> Physical &
+                  Chemical Test
+                </NavLink>
+
+                <NavLink href="/businesspermit">
+                  <i className="ni ni-collection text-info" /> Business Permit
+                </NavLink>
+              </Nav>
+
+              <hr className="my-3" />
+              <h6 className="navbar-heading text-muted">Store Container</h6>
+              <Nav navbar>
+                <NavLink href="/admin/product">
+                  <i className="ni ni-bag-17 text-orange" /> Stocks
+                </NavLink>
+                <NavItem>
+                  <NavLink href="/typesgallonlist" onClick={closeCollapse}>
+                    <i className="ni ni-check-bold" />
+                    Types & Pricing
+                  </NavLink>
+                </NavItem>
+              </Nav>
+            </>
+          )}
+
+          {user && user.role === "superadmin" && (
+            <>
+              <Nav navbar>
+                <NavItem>
+                  <NavLink href="/superadmin/dashboard" onClick={closeCollapse}>
+                    <i className="ni ni-chart-bar-32 text-pink" /> Dashboard
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink href="/superadmin/userlist" onClick={closeCollapse}>
+                    <i className="ni ni-single-02 text-info" /> Users
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                    href="/superadmin/pendinglist"
+                    onClick={closeCollapse}>
+                    <i className="ni ni-badge text-blue" /> Pending Admin
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink href="/superadmin/adminlist" onClick={closeCollapse}>
+                    <i className="ni ni-user-run text-orange" /> Admin
+                  </NavLink>
+                </NavItem>
+                <NavLink href="/storebranchlist">
+                  <i className="ni ni-shop text-red" /> Stores
+                </NavLink>
+
+                {/* <NavItem>
+              <NavLink href="/gallonlist" onClick={closeCollapse}>
+                <i className="ni ni-settings-gear-65 text-yellow" /> Gallons
               </NavLink>
-            </NavItem>
-
-            <NavItem>
-              <NavLink href="/orderlist" onClick={closeCollapse}>
-                <i className="ni ni-basket text-green" /> Orders
+            </NavItem> */}
+                {/* <NavItem>
+              <NavLink href="/storebranchlist" onClick={closeCollapse}>
+                <i className="ni ni-shop text-red" /> Store Branch
               </NavLink>
-            </NavItem>
-          </Nav>
+            </NavItem> */}
+              </Nav>
+            </>
+          )}
 
-          <hr className="my-3" />
-          <h6 className="navbar-heading text-muted">Store Records</h6>
+          {user && user.role === "employee" && (
+            <>
+              <Nav navbar>
+                <NavItem>
+                  <NavLink href="#" onClick={closeCollapse}>
+                    <i className="ni ni-chart-bar-32 text-pink" /> Dashboard
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink href="/employee/orderlist" onClick={closeCollapse}>
+                    <i className="ni ni-single-02 text-info" /> Orders
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                    href={`/admin/POS/inventory/${user.storebranch}`}
+                    onClick={closeCollapse}>
+                    <i className="ni ni-badge text-blue" /> Walk In Refill
+                  </NavLink>
+                </NavItem>
+              </Nav>
+            </>
+          )}
 
-          <Nav navbar>
-            <NavLink href="/machinecleaning">
-              <i className="ni ni-collection text-blue" /> Machine Cleaning
-            </NavLink>
+          {user && user.role === "rider" && (
+            <>
+              <Nav navbar>
+                <NavItem>
+                  <NavLink href="#" onClick={closeCollapse}>
+                    <i className="ni ni-chart-bar-32 text-pink" /> Dashboard
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink href="/rider/orderlist" onClick={closeCollapse}>
+                    <i className="ni ni-single-02 text-info" /> Orders
+                  </NavLink>
+                </NavItem>
+              </Nav>
+            </>
+          )}
 
-            <NavLink href="/barangayhealth">
-              <i className="ni ni-collection text-pink" /> Potability Test
-            </NavLink>
-
-            <NavLink href="/physicalchemtest">
-              <i className="ni ni-collection text-black" /> Physical & Chemical
-              Test
-            </NavLink>
-
-            <NavLink href="/businesspermit">
-              <i className="ni ni-collection text-info" /> Business Permit
-            </NavLink>
-          </Nav>
-
-          <hr className="my-3" />
-          <h6 className="navbar-heading text-muted">Store Container</h6>
-          <Nav navbar>
-            <NavLink href="/admin/product">
-              <i className="ni ni-bag-17 text-orange" /> Stocks
-            </NavLink>
-            <NavItem>
-              <NavLink href="/typesgallonlist" onClick={closeCollapse}>
-                <i className="ni ni-check-bold" />
-                Types & Pricing
-              </NavLink>
-            </NavItem>
-          </Nav>
           {/* <Nav vertical>
                 <NavItem>
                   <NavLink href="/subpage1" onClick={closeCollapse}>

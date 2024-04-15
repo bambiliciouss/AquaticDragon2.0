@@ -94,7 +94,7 @@ const AdminNavbar = () => {
               src={require("../../assets/img/brand/logoss.png")}
               style={{ width: "150px", height: "auto" }}
             /> */}
-            Aquatic Dragon
+            Home
           </NavbarBrand>
           <button className="navbar-toggler" id="navbar-collapse-main">
             <span className="navbar-toggler-icon" />
@@ -130,7 +130,7 @@ const AdminNavbar = () => {
                         </span>
                       </NavLink>
                     </NavItem>
-                  ) : (
+                  ) : user && user.role === "user" ? (
                     <NavItem>
                       <NavLink
                         className="nav-link-icon"
@@ -140,7 +140,8 @@ const AdminNavbar = () => {
                         <span className="nav-link-inner--text">Order Now</span>
                       </NavLink>
                     </NavItem>
-                  )}
+                  ) : null}
+
                   <UncontrolledDropdown nav>
                     <DropdownToggle
                       caret
@@ -151,20 +152,33 @@ const AdminNavbar = () => {
                       {/* <span className="ml-2">Profile</span> */}
                     </DropdownToggle>
                     <DropdownMenu>
-                      <DropdownItem href="/my-profile">
-                        <i className="now-ui-icons users_single-02"></i>
-                        Profile
-                      </DropdownItem>
+                      {user &&
+                      (user.role === "employee" ||
+                        user.role === "admin" ||
+                        user.role === "rider") ? (
+                        <DropdownItem href="/admin-profile">
+                          <i className="now-ui-icons users_single-02"></i>
+                          Profile
+                        </DropdownItem>
+                      ) : (
+                        <DropdownItem href="/my-profile">
+                          <i className="now-ui-icons users_single-02"></i>
+                          Profile
+                        </DropdownItem>
+                      )}
                       <DropdownItem href="/orders/me">
                         <i className="now-ui-icons users_single-02"></i>
                         My orders
                       </DropdownItem>
-                      {user && user.role === "admin" && (
-                        <DropdownItem href="/dashboard">
-                          <i className="now-ui-icons business_chart-bar-32"></i>
-                          Dashboard
-                        </DropdownItem>
-                      )}
+                      {user &&
+                        (user.role === "rider" ||
+                          user.role === "employee" ||
+                          user.role === "admin") && (
+                          <DropdownItem href="/dashboard">
+                            <i className="now-ui-icons business_chart-bar-32"></i>
+                            Dashboard
+                          </DropdownItem>
+                        )}
                       {/* 
                       <DropdownItem href="/gallon/order">
                         <i className="now-ui-icons business_chart-bar-32"></i>

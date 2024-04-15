@@ -87,12 +87,12 @@ const WalkInPOS = (args) => {
     setSelectedGallonType(type);
 
     switch (type) {
-      case "PETBottles":
-        setPrice(5);
-        break;
-      case "7Liters":
-        setPrice(15);
-        break;
+      // case "PETBottles":
+      //   setPrice(5);
+      //   break;
+      // case "7Liters":
+      //   setPrice(15);
+      //   break;
       case "Others":
         setPrice(0);
         break;
@@ -283,7 +283,7 @@ const WalkInPOS = (args) => {
                     </>
                   ))}
 
-                  <div>
+                  {/* <div>
                     <Button
                       block
                       color={
@@ -311,7 +311,7 @@ const WalkInPOS = (args) => {
                       className="mr-2 mb-2">
                       7 Liters
                     </Button>
-                  </div>
+                  </div> */}
                   <div style={{ marginBottom: "20px" }}></div>
                   <div>
                     <Button

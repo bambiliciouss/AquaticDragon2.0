@@ -78,12 +78,12 @@ const WalkInSalesInventory = () => {
     setSelectedGallonType(type);
 
     switch (type) {
-      case "PETBottles":
-        setPrice(5);
-        break;
-      case "7Liters":
-        setPrice(15);
-        break;
+      // case "PETBottles":
+      //   setPrice(5);
+      //   break;
+      // case "7Liters":
+      //   setPrice(15);
+      //   break;
       case "Others":
         setPrice(0);
         break;
@@ -264,8 +264,8 @@ const WalkInSalesInventory = () => {
                                 Select Type
                               </label>
 
-                              {typeofGallon.map((typeofGallons) => (
-                                <>
+                              {typeofGallon.map((typeofGallons, index) => (
+                                <Fragment key={index}>
                                   <div>
                                     <Button
                                       block
@@ -286,11 +286,11 @@ const WalkInSalesInventory = () => {
                                     </Button>
                                   </div>
                                   <div style={{ marginBottom: "20px" }}></div>
-                                </>
+                                </Fragment>
                               ))}
 
-                              <div>
-                                <Button
+                              
+                                {/* <div><Button
                                   block
                                   color={
                                     selectedGallonType === "PETBottles"
@@ -321,7 +321,7 @@ const WalkInSalesInventory = () => {
                                   className="mr-2 mb-2">
                                   7 Liters
                                 </Button>
-                              </div>
+                              </div> */}
                               <div style={{ marginBottom: "20px" }}></div>
                               <div>
                                 <Button

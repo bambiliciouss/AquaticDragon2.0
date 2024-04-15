@@ -66,7 +66,7 @@ const MyQRCode = () => {
         }}>
         <div className="row">
           {/* Sidebar */}
-       
+
           <div className="col-md-12">
             <Card className="bg-secondary shadow">
               <CardHeader className="bg-white border-0">
@@ -96,7 +96,7 @@ const MyQRCode = () => {
                     width: "auto",
                     border: "8px solid darkblue",
                   }}>
-                  <img
+                  {/* <img
                     src="/images/qr_header.png"
                     alt="QR Header"
                     style={{
@@ -108,7 +108,7 @@ const MyQRCode = () => {
                       width: "300px",
                       height: "100px",
                     }}
-                  />
+                  /> */}
 
                   {/* <QRCode value={user?._id} size={200} /> */}
                   {qrdetails && <QRCode value={qrdetails} size={250} />}

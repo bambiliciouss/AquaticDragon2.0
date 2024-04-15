@@ -9,6 +9,8 @@ const {
   getSingleOrder,
   allOrdersAdmin,
   addOrderStatuswithRider,
+  allOrdersEmployee,
+  allOrdersRider,
   getOrderTransactions,
   getOrdersByGallonType,
   getOrderByBarangay,
@@ -37,4 +39,13 @@ router.get("/admin/all/orders/:id", isAuthenticatedUser, authorizeRoles("admin")
 router.get("/admin/orders/byGallon/:id",isAuthenticatedUser, authorizeRoles("admin"), getOrdersByGallonType);
 router.get("/admin/orders/byBarangay/:id",isAuthenticatedUser, authorizeRoles("admin"), getOrderByBarangay);
 router.get("/admin/orders/staff/:id", isAuthenticatedUser, authorizeRoles("admin"), getAcceptedAndDeliveredOrders);
+router
+  .route("/all/employee/orders/")
+  .get(isAuthenticatedUser, authorizeRoles("employee"), allOrdersEmployee);
+
+
+  router
+  .route("/all/rider/orders/")
+  .get(isAuthenticatedUser, authorizeRoles("rider"), allOrdersRider);
+
 module.exports = router;

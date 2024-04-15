@@ -83,9 +83,19 @@ import StoreBarangayList from "components/admin/StoreBarangayList";
 
 import AdminProcessing from "components/admin/AdminProcessing";
 
+import EmployeeOrderList from "components/employee/Orderlist";
+import RiderOrderList from "components/rider/RiderOrderlist";
+
+
+
 import store from "./store";
 import { loadUser } from "./actions/userActions";
 import { useEffect } from "react";
+import SuperAdminDashboard from "components/superadmin/dashboard";
+import SuperAdminUserList from "components/superadmin/userlist";
+import PendingAdminList from "components/superadmin/pendingadminlist";
+import PendingAdminDetails from "components/superadmin/PendingAdminDetails";
+import AdminList from "components/superadmin/adminlist";
 import Notification from "components/notification/Notification";
 
 function App() {
@@ -188,6 +198,17 @@ function App() {
         <Route path="/create/store/barangay/:id" element={<ProtectedRoute> <StoreBarangayList /> </ProtectedRoute>}  exact="true"  />
         <Route path="/employee" element={<ProtectedRoute><Employee/></ProtectedRoute>} exact="true" />
         <Route path="/rider" element={<ProtectedRoute><Rider/></ProtectedRoute>} exact="true" />
+
+
+        <Route path="/superadmin/dashboard" element={<ProtectedRoute><SuperAdminDashboard /></ProtectedRoute>} exact="true" />
+        <Route path="/superadmin/userlist" element={<ProtectedRoute><SuperAdminUserList /></ProtectedRoute>} exact="true" />
+        <Route path="/superadmin/pendinglist" element={<ProtectedRoute><PendingAdminList /></ProtectedRoute>} exact="true" />
+        <Route path="/superadmin/admin/details/:id" element={<ProtectedRoute><PendingAdminDetails /></ProtectedRoute>} exact="true" />
+        <Route path="/superadmin/adminlist" element={<ProtectedRoute><AdminList /></ProtectedRoute>} exact="true" />
+
+         <Route path="/employee/orderlist" element={<ProtectedRoute><EmployeeOrderList /></ProtectedRoute>} exact="true" /> 
+         <Route path="/rider/orderlist" element={<ProtectedRoute><RiderOrderList /></ProtectedRoute>} exact="true" /> 
+
       </Routes>
     </>
   );

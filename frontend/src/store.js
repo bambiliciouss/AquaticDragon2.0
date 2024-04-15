@@ -34,6 +34,7 @@ import {
   allOrdersReducer,
   orderDetailsReducer,
   orderReducer,
+  allOrdersStaffReducer
 } from "reducers/orderReducers";
 
 import { cartReducer, cartProductReducer } from "reducers/cartReducers";
@@ -125,6 +126,13 @@ import {
 
 
 
+import {
+  allUsersSAReducer,
+  allPendingAdminSAReducer,
+  adminApprovalReducer,
+  allAdminSAReducer,
+} from "reducers/superadminReducers";
+
 const reducers = combineReducers({
   adminStoreSales: allStoreSalesReducer,
   adminStoreBranch: adminSingleStoreReducer,
@@ -157,6 +165,7 @@ const reducers = combineReducers({
   newOrder: newOrderReducer,
   myOrders: myOrdersReducer,
   allOrders: allOrdersReducer,
+  allOrdersStaff:allOrdersStaffReducer,
   orderDetails: orderDetailsReducer,
   order: orderReducer,
   userDetails: userDetailsReducer,
@@ -213,6 +222,11 @@ const reducers = combineReducers({
   allStorebarangay: allStorebarangayReducer,
   singleStorebarangay: singleStorebarangayReducer,
   storebarangay: storebarangayReducer,
+
+  allUsersSA: allUsersSAReducer,
+  allPendingAdminSA: allPendingAdminSAReducer,
+  adminApproval: adminApprovalReducer,
+  allAdminSA: allAdminSAReducer,
 });
 
 let initialState = {

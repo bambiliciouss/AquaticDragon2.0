@@ -62,6 +62,14 @@ const Login = () => {
       if (user && user.role === "admin") {
         navigate("/dashboard");
         socket.emit("login", {adminId: user._id})
+      } else if (user && user.role === "superadmin") {
+        navigate("/superadmin/dashboard");
+      } else if (user && user.role === "employee") {
+        navigate("/dashboard");
+      } else if (user && user.role === "superadmin") {
+        navigate("/superadmin/dashboard");
+      } else if (user && user.role === "employee") {
+        navigate("/dashboard");
       } else if (
         user &&
         user.verified &&

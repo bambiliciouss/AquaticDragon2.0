@@ -42,7 +42,7 @@ import {
   createBarangayHealth,
   allBarangayHealth,
   deleteBarangayHealth,
-  clearErrors
+  clearErrors,
 } from "actions/barangayhealthActions";
 const BarangayHealthList = () => {
   const dispatch = useDispatch();
@@ -118,26 +118,25 @@ const BarangayHealthList = () => {
 
   const onChange = (e) => {
     const file = e.target.files[0];
-    const allowedImageTypes = ['image/png', 'image/jpeg', 'image/jpg']; // Allowed image file types
-  
+    const allowedImageTypes = ["image/png", "image/jpeg", "image/jpg"]; // Allowed image file types
+
     if (e.target.name === "certPotability") {
       if (file && allowedImageTypes.includes(file.type)) {
         const reader = new FileReader();
-  
+
         reader.onload = () => {
           if (reader.readyState === 2) {
             setcertPotabilityPreview(reader.result);
             setcertPotability(reader.result);
           }
         };
-  
+
         reader.readAsDataURL(e.target.files[0]);
       } else {
         swal("Please select a valid image file (PNG, JPEG, JPG).", "", "error");
-        e.target.value = null; 
+        e.target.value = null;
       }
-    } 
-  
+    }
   };
 
   const submitHandler = (e) => {

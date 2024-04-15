@@ -117,17 +117,25 @@ const BusinessPermitList = () => {
   };
 
   const onChange = (e) => {
+    const file = e.target.files[0];
+    const allowedImageTypes = ["image/png", "image/jpeg", "image/jpg"]; // Allowed image file types
+
     if (e.target.name === "permitImage") {
-      const reader = new FileReader();
+      if (file && allowedImageTypes.includes(file.type)) {
+        const reader = new FileReader();
 
-      reader.onload = () => {
-        if (reader.readyState === 2) {
-          setpermitImagePreview(reader.result);
-          setpermitImage(reader.result);
-        }
-      };
+        reader.onload = () => {
+          if (reader.readyState === 2) {
+            setpermitImagePreview(reader.result);
+            setpermitImage(reader.result);
+          }
+        };
 
-      reader.readAsDataURL(e.target.files[0]);
+        reader.readAsDataURL(e.target.files[0]);
+      } else {
+        swal("Please select a valid image file (PNG, JPEG, JPG).", "", "error");
+        e.target.value = null;
+      }
     }
   };
 
@@ -315,7 +323,13 @@ const BusinessPermitList = () => {
                             className="form-control"
                             type="date"
                             name="dateTested"
-                            max={new Date(new Date().getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0]}// Setting min attribute to today's date
+                            max={
+                              new Date(
+                                new Date().getTime() + 24 * 60 * 60 * 1000
+                              )
+                                .toISOString()
+                                .split("T")[0]
+                            } // Setting min attribute to today's date
                             {...register("dateIssued", {
                               required: "Please enter date.",
                             })}

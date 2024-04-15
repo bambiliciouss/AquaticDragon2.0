@@ -37,17 +37,12 @@ router.get(
   AdminAllStoreBranch
 );
 
-
-router.get(
-  "/available/store",
-  isAuthenticatedUser,
-  AllStoreBranchUser
-);
+router.get("/available/store", isAuthenticatedUser, AllStoreBranchUser);
 
 router.get(
   "/admin/store/:id",
   isAuthenticatedUser,
-  authorizeRoles("admin"),
+  authorizeRoles("admin", "employee", "rider"),
   GetStoreDetails
 );
 

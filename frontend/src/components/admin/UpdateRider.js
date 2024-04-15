@@ -670,7 +670,7 @@ const UpdateRider = () => {
                             <Button
                               className="my-4 mr-4"
                               color="secondary"
-                              onClick={() => navigate("/userlist")}>
+                              onClick={() => navigate(`/riderlist/${store}`)}>
                               Back
                             </Button>
                           </div>

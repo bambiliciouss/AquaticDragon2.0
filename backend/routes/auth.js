@@ -141,27 +141,27 @@ router.get(
 router.get(
   "/admin/store/rider/:id",
   isAuthenticatedUser,
-  authorizeRoles("admin"),
+  authorizeRoles("admin", "employee"),
   AllStoreRider
 );
 router.get(
   "/admin/user/:id",
   isAuthenticatedUser,
-  authorizeRoles("admin"),
+  authorizeRoles("admin", "superadmin"),
   GetUserDetails
 );
 
 router.get(
   "/admin/staff/:id",
   isAuthenticatedUser,
-  authorizeRoles("admin"),
+  authorizeRoles("admin", "superadmin"),
   GetStaffDetails
 );
 
 router.delete(
   "/admin/user/:id",
   isAuthenticatedUser,
-  authorizeRoles("admin"),
+  authorizeRoles("superadmin"),
   DeleteUser
 );
 

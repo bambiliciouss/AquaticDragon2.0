@@ -631,21 +631,26 @@ exports.registerEmployee = async (req, res, next) => {
       },
       role,
       storebranch,
+      verified: true,
     });
 
-    const token = await new Token({
-      userId: user._id,
-      token: crypto.randomBytes(32).toString("hex"),
-      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
-    }).save();
+    // const token = await new Token({
+    //   userId: user._id,
+    //   token: crypto.randomBytes(32).toString("hex"),
+    //   expiresAt: new Date(Date.now() + 5 * 60 * 1000),
+    // }).save();
 
-    const url = `${process.env.BASE_URL}/${user._id}/verify/${token.token}`;
-    await sendEmail(user.email, "Aquatic Dragon", url, user);
+    // const url = `${process.env.BASE_URL}/${user._id}/verify/${token.token}`;
+    // await sendEmail(user.email, "Aquatic Dragon", url, user);
 
-    res.status(201).json({
-      message: "An Email sent to your employee account please verify",
-    });
+    // res.status(201).json({
+    //   message: "An Email sent to your employee account please verify",
+    // });
     //sendToken(user, 200, res);
+    res.status(201).json({
+      success: true,
+      user,
+    });
   } catch (error) {
     if (error.code === 11000 && error.keyPattern && error.keyPattern.phone) {
       const errorMessage = `Phone number '${newUserData.phone}' is already taken.`;
