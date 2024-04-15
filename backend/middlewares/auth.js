@@ -9,7 +9,7 @@ const ErrorHandler = require("../utils/errorHandler");
 exports.isAuthenticatedUser = async (req, res, next) => {
   const { token } = req.cookies;
 
-  console.log(token);
+  // console.log(token);
 
   if (!token) {
     return next(new ErrorHandler("Login first to access this resource.", 401));
@@ -27,12 +27,14 @@ exports.authorizeRoles = (...roles) => {
 
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
+      console.log("Not allowed")
       return next(
         new ErrorHandler(
           `Role (${req.user.role}) is not allowed to acccess this resource`,
           403
         )
       );
+     
     }
 
     next();
