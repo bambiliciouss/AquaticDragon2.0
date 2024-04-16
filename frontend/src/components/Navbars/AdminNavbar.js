@@ -126,7 +126,7 @@ const AdminNavbar = (props) => {
             </Form> */}
             <Nav className="align-items-center d-none d-md-flex" navbar>
               <NotificationBell notifications={notifications} unreadCount={unreadCount} toggleDropdown={toggleDropdown} />
-              <DropdownComponent />
+              {user && user.role === "admin" && <DropdownComponent />}
 
               <UncontrolledDropdown nav>
                 <DropdownToggle className="pr-0" nav>
