@@ -8,7 +8,7 @@ import {
 } from "../constants/cartConstants";
 
 export const cartReducer = (state = { cartItems: [] }, action) => {
-  console.log(state.cartItems);
+  
   switch (action.type) {
     case ADD_TO_CART:
       const item = action.payload;
@@ -55,7 +55,7 @@ export const cartProductReducer = (
   state = { cartProductItems: [] },
   action
 ) => {
-  console.log(state.cartProductItems);
+  
   switch (action.type) {
     case ADD_TO_CART_PRODUCT:
       const item = action.payload;
