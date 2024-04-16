@@ -316,12 +316,12 @@ export const adminStaffPerformanceReducer = (state = { performance: [] }, action
     }
 }
 
-export const adminCurrentBranchSalesReducer = (state = { sales: [] }, action) => {
+export const adminCurrentBranchSalesReducer = (state = { sales: {} }, action) => {
     switch(action.type){
         case CURRENT_STORE_SALES_REQUEST:
             return {
                 loading: true,
-                sales: [],
+                sales: {},
             };
         case CURRENT_STORE_SALES_SUCCESS:
             return {
