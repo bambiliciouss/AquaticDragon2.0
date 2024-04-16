@@ -61,9 +61,10 @@ io.on('connection', (socket) => {
         // Emit the 'notification' event to all socket IDs for the admin ID
         adminSockets[adminId].forEach(socketId => {
           io.to(socketId).emit('notification', notifications);
+          io.to(socketId).emit('newOrder');
         });
       }
-
+      
     } catch (error) {
       console.log(error);
     }
