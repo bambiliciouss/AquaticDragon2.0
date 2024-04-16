@@ -118,12 +118,15 @@ exports.deleteOtherGallonStoreInventory = async (req, res, next) => {
 
 exports.getTotalSalesWalkin = async (req, res) => {
   try {
-
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
     const totalSalesByBranch = await OtherGallon.aggregate([
       {
         $match: {
-          deleted: false
-
+          deleted: false,
+          createdAt: { $gte: startOfToday, $lt: endOfToday },
         },
       },
       {
