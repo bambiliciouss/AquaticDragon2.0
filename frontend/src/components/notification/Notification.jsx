@@ -14,14 +14,7 @@ const Notification = () => {
     },[dispatch])
     useEffect(() => {
         
-        // Listen for 'notification' event from server
-        socket.on("newOrder", (message) => {
-           
-            console.log('Received notification:', message);
-            // Handle the notification (e.g., show it to the user)
-            // swal("New Order Placed", message, "info")
-            toast.success(message)
-        });
+       
 
        
     }, [sales]);
