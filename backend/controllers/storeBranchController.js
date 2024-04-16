@@ -5,6 +5,7 @@ const ErrorHandler = require("../utils/errorHandler");
 const cloudinary = require("cloudinary");
 const mongoose = require("mongoose");
 const Order = require("../models/order");
+const OtherGallon = require("../models/othergalloninventory");
 exports.registerStoreBranch = async (req, res, next) => {
   try {
     const result = await new Promise((resolve, reject) => {
@@ -249,10 +250,16 @@ exports.getSalesOrderByBranch = async (req, res) => {
     const branches = await StoreBranch.find({ user: req.params.id });
     const branchIds = branches.map((branch) => branch._id);
 
+
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
     const salesByBranch = await Order.aggregate([
       {
         $match: {
           'selectedStore.store': { $in: branchIds },
+          createdAt: { $gte: startOfToday, $lte: endOfToday }, 
         },
       },
       {
@@ -288,14 +295,18 @@ exports.getSalesOrderByBranch = async (req, res) => {
 };
 exports.getSalesOrderByBranchEmployee = async (req, res) => {
   try {
-    
-    const branch = await User.findById(req.params.id).select('storebranch');
-    
 
+    const branch = await User.findById(req.params.id).select('storebranch');
+
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
     const salesByBranch = await Order.aggregate([
       {
         $match: {
           'selectedStore.store': new mongoose.Types.ObjectId(branch.storebranch),
+          createdAt: { $gte: startOfToday, $lte: endOfToday }, 
         },
       },
       {
@@ -333,23 +344,60 @@ exports.getSalesByBranch = async (req, res) => {
   try {
     const branches = await StoreBranch.find({ user: req.params.id });
     const branchIds = branches.map((branch) => branch._id);
+    const { filter } = req.query; // 'daily', 'weekly', 'monthly'
+    // Query the database for the earliest order
+    const firstOrder = await Order
+      .find({ 'selectedStore.store': { $in: branchIds }})
+      .sort({ createdAt: 1 })
+      .limit(1);
+    
+    let startDate = firstOrder.length > 0 ? firstOrder[0].createdAt : new Date();
+    let endDate = new Date();
 
+    let groupBy;
+    if (filter === 'today') {
+      startDate = new Date();
+      startDate.setHours(0, 0, 0, 0); // set the time to the start of today
+
+      endDate = new Date();
+      endDate.setDate(endDate.getDate() + 1); // set the date to tomorrow
+      endDate.setHours(0, 0, 0, 0); // set the time to the start of tomorrow
+
+      groupBy = { $dateToString: { format: "%Y-%m-%d %H:00", date: "$createdAt" } };
+    } else if (filter === 'week') {
+      const today = new Date();
+
+      startDate = new Date();
+      startDate.setDate(today.getDate() - 6); // go back 6 days from today
+      startDate.setHours(0, 0, 0, 0); // set the time to the start of the day
+
+      endDate = new Date();
+      endDate.setHours(23, 59, 59, 999); // set the time to the end of the day
+
+      groupBy = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } };
+    } else if (filter === 'month') {
+      groupBy = { $dateToString: { format: "%m", date: "$createdAt" } };
+    } else if (filter === 'year') {
+      groupBy = { $year: "$createdAt" };
+    }
     const salesByBranch = await Order.aggregate([
       {
         $match: {
           'selectedStore.store': { $in: branchIds },
+          createdAt: { $gte: startDate, $lt: endDate },
         },
       },
       {
         $group: {
-          _id: '$selectedStore.store',
+          _id: {store: '$selectedStore.store', date: groupBy},
           totalSales: { $sum: '$totalPrice' },
         },
       },
+      
       {
         $lookup: {
           from: 'storebranches', // replace with the actual name of your store branches collection
-          localField: '_id',
+          localField: '_id.store',
           foreignField: '_id',
           as: 'store',
         },
@@ -392,9 +440,33 @@ exports.getSalesByBranch = async (req, res) => {
           totalSales: 1,
         },
       },
+      {
+        $group: {
+          _id: '$_id.date',
+          branches: {
+            $push: {
+              store: '$_id.store',
+              branch: '$branch',
+              totalSales: '$totalSales',
+            },
+          },
+        },
+      },
+      {
+        $sort: { '_id': 1 }
+      }
     ]);
-
-    res.status(200).json(salesByBranch);
+    if (filter === 'month') {
+      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      salesByBranch.forEach(transaction => {
+        transaction._id = monthNames[parseInt(transaction._id) - 1];
+      });
+    }
+    res.status(200).json({
+      salesByBranch,
+      startDate: startDate.toLocaleDateString(),
+      endDate: endDate.toLocaleDateString()
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -546,4 +618,193 @@ exports.getEmployeeBranches = async (req, res) => {
   } catch (error) {
     console.log(error)
   }
+}
+
+exports.getTotalSalesCurrentBranch = async (req, res) => {
+  try {
+    const branches = await StoreBranch.find({ user: req.params.id });
+    const branchIds = branches.map((branch) => branch._id);
+    const { filter } = req.query; // 'daily', 'weekly', 'monthly'
+    // Query the database for the earliest order
+    const firstOrder = await Order
+      .find({ 'selectedStore.store': { $in: branchIds }})
+      .sort({ createdAt: 1 })
+      .limit(1);
+    
+    let startDate = firstOrder.length > 0 ? firstOrder[0].createdAt : new Date();
+    let endDate = new Date();
+
+    let groupBy;
+    if (filter === 'today') {
+      startDate = new Date();
+      startDate.setHours(0, 0, 0, 0); // set the time to the start of today
+
+      endDate = new Date();
+      endDate.setDate(endDate.getDate() + 1); // set the date to tomorrow
+      endDate.setHours(0, 0, 0, 0); // set the time to the start of tomorrow
+
+      groupBy = { $dateToString: { format: "%Y-%m-%d %H:00", date: "$createdAt" } };
+    } else if (filter === 'week') {
+      const today = new Date();
+
+      startDate = new Date();
+      startDate.setDate(today.getDate() - 6); // go back 6 days from today
+      startDate.setHours(0, 0, 0, 0); // set the time to the start of the day
+
+      endDate = new Date();
+      endDate.setHours(23, 59, 59, 999); // set the time to the end of the day
+
+      groupBy = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } };
+    } else if (filter === 'month') {
+      groupBy = { $dateToString: { format: "%m", date: "$createdAt" } };
+    } else if (filter === 'year') {
+      groupBy = { $year: "$createdAt" };
+    }
+    const salesByBranch = await Order.aggregate([
+      {
+        $match: {
+          'selectedStore.store': { $in: branchIds },
+          createdAt: { $gte: startDate, $lt: endDate },
+        },
+      },
+      {
+        $group: {
+          _id: {store: '$selectedStore.store', date: groupBy},
+          totalSales: { $sum: '$totalPrice' },
+        },
+      },
+      
+      {
+        $lookup: {
+          from: 'storebranches', // replace with the actual name of your store branches collection
+          localField: '_id.store',
+          foreignField: '_id',
+          as: 'store',
+        },
+      },
+      {
+        $unwind: '$store',
+      },
+      {
+        $lookup: {
+          from: 'othergallons', // replace with the actual name of your OtherGallon collection
+          localField: '_id',
+          foreignField: 'storebranch',
+          as: 'otherGallons',
+        },
+      },
+      {
+        $addFields: {
+          totalWalkInSales: {
+            $sum: {
+              $map: {
+                input: "$otherGallons",
+                as: "gallon",
+                in: {
+                  $multiply: ["$$gallon.price", "$$gallon.quantity"],
+                },
+              }
+            }
+          },
+        },
+      },
+      {
+        $addFields: {
+          totalSales: { $add: ["$totalSales", "$totalWalkInSales"] },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          branch: '$store.branch',
+          totalSales: 1,
+        },
+      },
+      {
+        $group: {
+          _id: '$_id.date',
+          branches: {
+            $push: {
+              store: '$_id.store',
+              branch: '$branch',
+              totalSales: '$totalSales',
+            },
+          },
+        },
+      },
+      {
+        $sort: { '_id': 1 }
+      }
+    ]);
+    if (filter === 'month') {
+      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      salesByBranch.forEach(transaction => {
+        transaction._id = monthNames[parseInt(transaction._id) - 1];
+      });
+    }
+    const walkinSalesByBranch = await OtherGallon.aggregate([
+      {
+        $match: {
+          deleted: false,
+          createdAt: { $gte: startDate, $lt: endDate },
+        },
+      },
+      {
+        $group: {
+          _id: {store: '$storebranch', date: groupBy},
+          totalSales: { $sum: { $multiply: ['$price', '$quantity'] } },
+        },
+      },
+      {
+        $lookup: {
+          from: 'storebranches', // replace with the actual name of your store branches collection
+          localField: '_id',
+          foreignField: '_id',
+          as: 'storebranch',
+        },
+      },
+      {
+        $unwind: '$storebranch',
+      },
+      {
+        $project: {
+          _id: 1,
+          totalSales: 1,
+          branch: '$storebranch.branch',
+        },
+      },
+      {
+        $group: {
+          _id: '$_id.date',
+          branches: {
+            $push: {
+              store: '$_id.store',
+              branch: '$branch',
+              totalSales: '$totalSales',
+            },
+          },
+        },
+      },
+      {
+        $sort: { '_id': 1 }
+      }
+    ]);
+    let combinedSales = salesByBranch.map(sale => {
+      let branches = sale.branches.map(branch => {
+        let walkinSale = walkinSalesByBranch.find(walkin => walkin._id === sale._id);
+        let walkinBranch = walkinSale ? walkinSale.branches.find(walkinBranch => walkinBranch.store === branch.store) : null;
+        let totalSales = branch.totalSales + (walkinBranch ? walkinBranch.totalSales : 0);
+        return { ...branch, totalSales };
+      });
+      return { _id: sale._id, branches };
+    });
+    res.status(200).json({
+      combinedSales,
+      startDate: startDate.toLocaleDateString(),
+      endDate: endDate.toLocaleDateString()
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+  
 }
