@@ -16,7 +16,7 @@
 
 */
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 // node.js library that concatenates classes (strings)
 import classnames from "classnames";
 // javascipt plugin for creating charts
@@ -61,7 +61,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 
 import React from "react";
 import { useLocation, Link } from "react-router-dom";
-
+import moment from 'moment-timezone'; // convert UTC date to Asia/Manila date
 // core components
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import AdminFooter from "components/Footers/AdminFooter.js";
@@ -131,6 +131,13 @@ const Dashboard = (props) => {
     setFilter3(index === 1 ? "today" : index === 2 ? "week" : index === 3 ? "month" : "year")
   }
 
+  const [filter4, setFilter4] = useState("today");
+  const [activeNav4, setActiveNav4] = useState(1);
+  const toggleNavs4 = (e, index) => {
+    e.preventDefault();
+    setActiveNav4(index);
+    setFilter4(index === 1 ? "today" : index === 2 ? "week" : index === 3 ? "month" : "year")
+  }
 
 
   const [data, setData] = useState({
@@ -258,9 +265,9 @@ const Dashboard = (props) => {
 
     setSelectedMonth(index);
   }
-  const handleYearFilter = (year) =>{
+  const handleYearFilter = (year) => {
     setSelectedYear(year);
-    
+
   }
 
 
@@ -276,16 +283,17 @@ const Dashboard = (props) => {
   //Get labels based on filter
   const getLabels = (filter, transactions) => {
     if (filter === 'daily') {
-      return transactions.transactions.map(transaction => transaction._id);
+      return transactions.transactions.map(transaction => moment(transaction._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD HH:mm'));
 
     } else if (filter === 'weekly') {
       // return transactions.transactions.map(transaction => transaction._id);
       const [month, day, year] = transactions.startDate.split('/');
-      const start = new Date(year, month - 1, Number(day) + 1);
+      const start = new Date(year, month - 1, Number(day));
       return Array.from({ length: 7 }, (_, i) => {
         const date = new Date(start.getTime());
         date.setDate(date.getDate() + i);
-        return date.toISOString().split('T')[0];
+        // return date.toISOString().split('T')[0];
+        return moment(date).tz('Asia/Manila').format('YYYY-MM-DD');
       });
     } else if (filter === 'monthly') {
       return Array.from({ length: 12 }, (_, i) => new Date(0, i + 1, 0).toLocaleString('default', { month: 'long' }));
@@ -296,15 +304,15 @@ const Dashboard = (props) => {
   };
   const getRefillLabels = (filter, data) => {
     if (filter === 'daily') {
-      return data.orders[0]["Refill"].map(label => label._id);
+      return data.orders[0]["Refill"].map(label => moment(label._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD HH:mm'));
     } else if (filter === 'weekly') {
       // return data.orders[0]["Refill"].map(label => label._id);
       const [month, day, year] = data.startDate.split('/');
-      const start = new Date(year, month - 1, Number(day) + 1);
+      const start = new Date(year, month - 1, Number(day));
       return Array.from({ length: 7 }, (_, i) => {
         const date = new Date(start.getTime());
         date.setDate(date.getDate() + i);
-        return date.toISOString().split('T')[0];
+        return moment(date).tz('Asia/Manila').format('YYYY-MM-DD');
       });
     } else if (filter === 'monthly') {
       return Array.from({ length: 12 }, (_, i) => new Date(0, i + 1, 0).toLocaleString('default', { month: 'long' }));
@@ -315,15 +323,15 @@ const Dashboard = (props) => {
   };
   const getNewContainerLabels = (filter, data) => {
     if (filter === 'daily') {
-      return data.orders[0]["New Container"].map(label => label._id);
+      return data.orders[0]["New Container"].map(label => moment(label._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD HH:mm'));
     } else if (filter === 'weekly') {
       // return data.orders[0]["New Container"].map(label => label._id);
       const [month, day, year] = data.startDate.split('/');
-      const start = new Date(year, month - 1, Number(day) + 1);
+      const start = new Date(year, month - 1, Number(day));
       return Array.from({ length: 7 }, (_, i) => {
         const date = new Date(start.getTime());
         date.setDate(date.getDate() + i);
-        return date.toISOString().split('T')[0];
+        return moment(date).tz('Asia/Manila').format('YYYY-MM-DD');
       });
     } else if (filter === 'monthly') {
       return Array.from({ length: 12 }, (_, i) => new Date(0, i + 1, 0).toLocaleString('default', { month: 'long' }));
@@ -334,15 +342,34 @@ const Dashboard = (props) => {
   }
   const totalSalesBranchLabel = (filter, data) => {
     if (filter === 'today') {
-      return data.salesByBranch.map((sale) => sale._id.date)
+      return data.salesByBranch.map((sale) => moment(sale._id.date + 'Z').tz('Asia/Manila').format('YYYY-MM-DD HH:mm'))
     } else if (filter === 'week') {
       // return data.salesByBranch.map((sale) => sale._id.date)
       const [month, day, year] = data.startDate.split('/');
-      const start = new Date(year, month - 1, Number(day) + 1);
+      const start = new Date(year, month - 1, Number(day));
       return Array.from({ length: 7 }, (_, i) => {
         const date = new Date(start.getTime());
         date.setDate(date.getDate() + i);
-        return date.toISOString().split('T')[0];
+        return moment(date).tz('Asia/Manila').format('YYYY-MM-DD');
+      });
+    } else if (filter === 'month') {
+      return Array.from({ length: 12 }, (_, i) => new Date(0, i + 1, 0).toLocaleString('default', { month: 'long' }));
+    } else if (filter === 'year') {
+      const currentYear = new Date().getFullYear();
+      return Array.from({ length: 5 }, (_, i) => (currentYear - i).toString()).reverse();
+    }
+  }
+  const getAllSalesLabels = (filter, data) => {
+    if (filter === 'today') {
+      return data.salesByBranch.map((sale) => moment(sale._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD HH:mm'));
+    } else if (filter === 'week') {
+      // return data.salesByBranch.map((sale) => sale._id.date)
+      const [month, day, year] = data.startDate.split('/');
+      const start = new Date(year, month - 1, Number(day));
+      return Array.from({ length: 7 }, (_, i) => {
+        const date = new Date(start.getTime());
+        date.setDate(date.getDate() + i);
+        return moment(date).tz('Asia/Manila').format('YYYY-MM-DD');
       });
     } else if (filter === 'month') {
       return Array.from({ length: 12 }, (_, i) => new Date(0, i + 1, 0).toLocaleString('default', { month: 'long' }));
@@ -353,19 +380,48 @@ const Dashboard = (props) => {
   }
   // Change the data of the chart depending on the sales, transactions, gallons
   useEffect(() => {
-    if (sales) {
+    if (sales && sales.salesByBranch) {
+      // Get all unique statuses
+      const branches = [...new Set(sales.salesByBranch.flatMap((transaction) => transaction.branches.map((order) => order.branch)))];
+
+      //Generate labels
+      const labels = getAllSalesLabels(filter4, sales);
+      const datasets = branches.map((status) => ({
+        label: status,
+        data: labels.map((label) => {
+          let sale;
+          if (filter4 === 'today') {
+            sale = sales.salesByBranch.find((transaction) => moment(transaction._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD HH:mm') === label);
+          }
+          else if (filter4 === 'week') {
+            sale = sales.salesByBranch.find((transaction) => moment(transaction._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD') === label);
+          }
+          else if (filter4 === 'month' || filter4 === 'year') {
+            sale = sales.salesByBranch.find((transaction) => String(transaction._id) === label);
+          }
+          const order = sale && sale.branches.find((order) => order.branch === status);
+
+          return order ? order.totalSales : 0;
+        }),
+        backgroundColor: getRandomColor(),
+      }));
       let salesData = {
-        labels: sales.map((sale) => sale.branch),
+        labels,
+        datasets
+      }
+      setData(salesData)
+    }
+    else {
+      setData({
+        labels: [],
         datasets: [
           {
             label: "Sales",
-            data: sales.map((sale) => sale.totalSales),
-            maxBarThickness: 30,
-            backgroundColor: sales.map(() => getRandomColor()),
+            data: [],
+            maxBarThickness: 20,
           },
         ],
-      }
-      setData(salesData)
+      })
     }
     if (transactions && transactions.transactions && transactions.transactions.length > 0) {
 
@@ -379,8 +435,18 @@ const Dashboard = (props) => {
       const datasets = statuses.map((status) => ({
         label: status,
         data: labels.map((label) => {
+          let transaction;
+          if (filter1 === 'daily') {
+            transaction = transactions.transactions.find((transaction) => moment(transaction._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD HH:mm') === label);
+          }
+          else if (filter1 === 'weekly') {
+            transaction = transactions.transactions.find((transaction) => moment(transaction._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD') === label);
+          }
+          else if (filter1 === 'monthly' || filter1 === 'yearly') {
+            transaction = transactions.transactions.find((transaction) => transaction._id === label);
+          }
 
-          const transaction = transactions.transactions.find((transaction) => transaction._id === label);
+
 
           const order = transaction && transaction.orders.find((order) => order.status === status);
 
@@ -418,7 +484,18 @@ const Dashboard = (props) => {
       const datasets = RefillTypeNames.map((status) => ({
         label: status,
         data: refillLabel.map((labels) => {
-          const gallon = gallons.orders[0]["Refill"].find((label) => label._id === labels);
+          let gallon;
+          if (filter2 === 'daily') {
+            gallon = gallons.orders[0]["Refill"].find((label) => moment(label._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD HH:mm') === labels);
+          }
+          else if (filter2 === 'weekly') {
+            gallon = gallons.orders[0]["Refill"].find((label) => moment(label._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD') === labels);
+          }
+          else if (filter2 === 'monthly' || filter2 === 'yearly') {
+            gallon = gallons.orders[0]["Refill"].find((label) => String(label._id) === labels);
+          }
+
+
           const order = gallon && gallon.orders.find((order) => order.typeName === status);
           return order ? order.count : 0;
         }),
@@ -439,7 +516,16 @@ const Dashboard = (props) => {
       const newContainerdatasets = newContainerTypeNames.map((status) => ({
         label: status,
         data: newContainerLabel.map((labels) => {
-          const gallon = gallons.orders[0]["New Container"].find((label) => label._id === labels);
+          let gallon;
+          if (filter2 === 'daily') {
+            gallon = gallons.orders[0]["New Container"].find((label) => moment(label._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD HH:mm') === labels);
+          }
+          else if (filter2 === 'weekly') {
+            gallon = gallons.orders[0]["New Container"].find((label) => moment(label._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD') === labels);
+          }
+          else if (filter2 === 'monthly' || filter2 === 'yearly') {
+            gallon = gallons.orders[0]["New Container"].find((label) => String(label._id) === labels);
+          }
           const order = gallon && gallon.orders.find((order) => order.typeName === status);
           return order ? order.count : 0;
         }),
@@ -540,7 +626,17 @@ const Dashboard = (props) => {
 
       const datasets = [{
         data: labels.map((label) => {
-          const sale = currentSalesBranch.salesByBranch.find((sale) => String(sale._id.date) === label)
+          let sale;
+          if (filter3 === 'today') {
+            sale = currentSalesBranch.salesByBranch.find((sale) => moment(sale._id.date + 'Z').tz('Asia/Manila').format('YYYY-MM-DD HH:mm') === label)
+          }
+          else if (filter3 === 'week') {
+            sale = currentSalesBranch.salesByBranch.find((sale) => moment(sale._id.date + 'Z').tz('Asia/Manila').format('YYYY-MM-DD') === label)
+          }
+          else if (filter3 === 'month' || filter3 === 'year') {
+            sale = currentSalesBranch.salesByBranch.find((sale) => String(sale._id.date) === label)
+          }
+
           return sale ? sale.totalSales : 0
         })
       }]
@@ -568,19 +664,29 @@ const Dashboard = (props) => {
 
   // Function to calculate the total sales of the selected branch
   const getTotalSales = (order, walkin) => {
-    if (order.length > 0 && walkin.length > 0) {
-      const totalSalesOrder = order.find((sale) => sale._id === branch).totalSales || 0;
-      const totalSalesWalkin = walkin.find((sale) => sale._id === branch).totalSales || 0;
+    if (order.length > 0 || walkin.length > 0) {
+      const totalSalesOrder = order.find((sale) => sale._id === branch)?.totalSales || 0;
+      const totalSalesWalkin = walkin.find((sale) => sale._id === branch)?.totalSales || 0;
       setTotalSales(totalSalesOrder + totalSalesWalkin)
       localStorage.setItem("totalSales", totalSalesOrder + totalSalesWalkin)
+
     }
+    else {
+      setTotalSales(0);
+      localStorage.setItem("totalSales", 0);
+    }
+
   }
+
   // Change depending on the branch
   useEffect(() => {
     if (user.role === 'admin') {
       if (branch) {
-        // Get the total sales of the selected branch
-        getTotalSales(orders, walkinSales)
+        if (orders && walkinSales) {
+          // Get the total sales of the selected branch
+          getTotalSales(orders, walkinSales)
+        }
+
 
         // Get the order transactions of the selected branch
         dispatch(getOrderTransactions(branch, filter1));
@@ -602,14 +708,14 @@ const Dashboard = (props) => {
         dispatch(getCurrentBranchSales(branch, filter3));
       }
     }
-  }, [sales, walkinSales, branch, filter1, filter2, filter3, user, selectedMonth, selectedYear])
+  }, [orders, walkinSales, branch, filter1, filter2, filter3, user, selectedMonth, selectedYear])
   // Universal UseEffect
   useEffect(() => {
     if (user.role === 'admin') {
-
+      
       // Action for sales state
       // Gets the total sales of all stores
-      dispatch(allStoreSalesAction(user._id));
+      dispatch(allStoreSalesAction(user._id, filter4));
 
       // Action for walkinSales state
       // Gets the total sales of all walkin sales
@@ -626,8 +732,34 @@ const Dashboard = (props) => {
         dispatch(clearErrors())
       }
     }
-  }, [dispatch, error, user])
+  }, [dispatch, error, user, filter4])
 
+  useEffect(()=>{
+    const fetchData = () => {
+      if (user.role === 'admin' && branch) {
+        dispatch(getOrderTransactions(branch, filter1));
+        dispatch(allProductList(branch));
+        dispatch(getOrderByGallonType(branch, filter2));
+        dispatch(getSalesOrderByBarangay(branch));
+        dispatch(getStaffPerformance(branch, selectedMonth + 1, selectedYear));
+        dispatch(getCurrentBranchSales(branch, filter3));
+      }
+  
+      dispatch(allStoreSalesAction(user._id, filter4));
+      dispatch(getSalesWalkin());
+      dispatch(getSalesOrderByBranch(user._id));
+      dispatch(allAdminBranches(user._id));
+    };
+    socket.off('newOrder')
+    socket.on('newOrder', ()=>{
+      fetchData();
+    })
+    return ()=>{
+      socket.off('newOrder')
+    }
+  },[user, branch, filter1, filter2, filter3, filter4, selectedMonth, selectedYear])
+
+  
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
   }
@@ -678,12 +810,14 @@ const Dashboard = (props) => {
         <Container className="mt--7" fluid>
           {/* Total Sales, Order Sales, Walk in Sales */}
           <Row>
-            <Col className="mb-5 mb-xl-4" lg="6" xl="4">
-
+            <Col className="mb-5 mb-xl-4" xl="4" >
               <Card className="shadow card-stats mb-4 mb-xl-0">
                 <CardBody>
                   <Row className="align-items-center">
                     <div className="col">
+                      <h5 className="text-uppercase text-muted ls-1 mb-1">
+                        {new Date().toLocaleDateString()}
+                      </h5>
                       <CardTitle
                         tag="h2"
                         className="text-uppercase text-black mb-0  font-weight-bolder">
@@ -693,23 +827,24 @@ const Dashboard = (props) => {
                     </div>
                     <Col className="col-auto">
                       <CardTitle
-                        tag={sales && branch && sales.find((sale) => sale._id === branch) ? "h1" : "h3"}
+                        tag="h1"
                         className="text-uppercase text-primary mb-0 font-weight-bolder">
-                        {totalSales ? `₱${totalSales}` : localStorage.getItem("totalSales") ? `₱${localStorage.getItem("totalSales")}` : <span className="text-danger">Select a branch</span>}
+                        {totalSales && totalSales > 0 ? `₱${totalSales}` : localStorage.getItem("totalSales") && localStorage.getItem("totalSales") > 0 ? `₱${localStorage.getItem("totalSales")}` : <span className="text-danger">₱0</span>}
                       </CardTitle>
 
                     </Col>
                   </Row>
                 </CardBody>
               </Card>
-
             </Col>
-            <Col className="mb-5 mb-xl-4" lg="6" xl="4">
-
+            <Col className="mb-5 mb-xl-4" xl="4">
               <Card className="shadow card-stats mb-4 mb-xl-0">
                 <CardBody>
                   <Row className="align-items-center">
                     <div className="col">
+                      <h5 className="text-uppercase text-muted ls-1 mb-1">
+                        {new Date().toLocaleDateString()}
+                      </h5>
                       <CardTitle
                         tag="h2"
                         className="text-uppercase text-black mb-0  font-weight-bolder">
@@ -719,23 +854,24 @@ const Dashboard = (props) => {
                     </div>
                     <Col className="col-auto">
                       <CardTitle
-                        tag={orders && branch && orders.find((sale) => sale._id === branch) ? "h1" : "h3"}
+                        tag="h1"
                         className="text-uppercase text-primary mb-0 font-weight-bolder">
-                        {orders && branch && orders.find((sale) => sale._id === branch) ? `₱${orders.find((sale) => sale._id === branch).totalSales}` : <span className="text-danger">Select a branch</span>}
+                        {orders && branch && orders.find((sale) => sale._id === branch) ? `₱${orders.find((sale) => sale._id === branch).totalSales}` : <span className="text-danger">₱0</span>}
                       </CardTitle>
 
                     </Col>
                   </Row>
                 </CardBody>
               </Card>
-
             </Col>
-            <Col className="mb-5 mb-xl-4" lg="6" xl="4">
-
+            <Col className="mb-5 mb-xl-4" xl="4">
               <Card className="shadow card-stats mb-4 mb-xl-0">
                 <CardBody>
                   <Row className="align-items-center">
                     <div className="col">
+                      <h5 className="text-uppercase text-muted ls-1 mb-1">
+                        {new Date().toLocaleDateString()}
+                      </h5>
                       <CardTitle
                         tag="h2"
                         className="text-uppercase text-black mb-0  font-weight-bolder">
@@ -745,21 +881,20 @@ const Dashboard = (props) => {
                     </div>
                     <Col className="col-auto">
                       <CardTitle
-                        tag={walkinSales && branch && walkinSales.find((sale) => sale._id === branch) ? "h1" : "h3"}
+                        tag="h1"
                         className="text-uppercase text-primary mb-0 font-weight-bolder">
-                        {walkinSales && branch && walkinSales.find((sale) => sale._id === branch) ? `₱${walkinSales.find((sale) => sale._id === branch).totalSales}` : <span className="text-danger">Select a branch</span>}
+                        {walkinSales && branch && walkinSales.find((sale) => sale._id === branch) ? `₱${walkinSales.find((sale) => sale._id === branch).totalSales}` : <span className="text-danger">₱0</span>}
                       </CardTitle>
 
                     </Col>
                   </Row>
                 </CardBody>
               </Card>
-
             </Col>
           </Row>
           {/*Order transactions, Total sales by branch */}
           <Row>
-            <Col className="mb-5 mb-xl-4" lg="6" xl="5">
+            <Col className="mb-5 mb-xl-4" xl="5">
               <Card className="shadow">
                 <CardHeader className="bg-transparent">
                   <Row className="align-items-center mb-3">
@@ -770,7 +905,7 @@ const Dashboard = (props) => {
                       <h2 className="mb-0">Order Transactions {branch ? transactions && transactions.transactions && transactions.transactions.length === 0 && <span className="text-danger text-sm">(No results)</span> : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
                     </div>
                     <div className="col d-flex  justify-content-end">
-                      <h2 className="mb-0 text-primary">{filter1 === 'daily' ? "Today" : filter1 === 'weekly' ? "Past 7 days" : filter1 === "monthly" ? "This year" : "Past 5 years"}</h2>
+                      <h2 className="mb-0 text-primary">{filter1 === 'daily' ? new Date().toLocaleDateString() : filter1 === 'weekly' ? "Past 7 days" : filter1 === "monthly" ? "This year" : "Past 5 years"}</h2>
                     </div>
                   </Row>
                   <Row className="align-items-center">
@@ -850,7 +985,7 @@ const Dashboard = (props) => {
                     </div>
 
                     <div className="col d-flex  justify-content-end">
-                      <h2 className="mb-0 text-primary">{filter3 === 'today' ? "Today" : filter3 === 'week' ? "Past 7 days" : filter3 === "month" ? "This year" : "Past 5 years"}</h2>
+                      <h2 className="mb-0 text-primary">{filter3 === 'today' ? new Date().toLocaleDateString() : filter3 === 'week' ? "Past 7 days" : filter3 === "month" ? "This year" : "Past 5 years"}</h2>
                     </div>
                   </Row>
                   <Row className="align-items-center">
@@ -923,7 +1058,7 @@ const Dashboard = (props) => {
 
           {/*Order Refill, Order New Container */}
           <Row>
-            <Col className="mb-5 mb-xl-4" lg="6" xl="12">
+            <Col className="mb-5 mb-xl-4" xl="12">
               <Card className="shadow">
                 <CardHeader className="bg-transparent">
                   <Row className="align-items-center mb-3">
@@ -935,7 +1070,7 @@ const Dashboard = (props) => {
 
                     </div>
                     <div className="col d-flex  justify-content-end">
-                      <h2 className="mb-0 text-primary">{filter2 === 'daily' ? "Today" : filter2 === 'weekly' ? "Past 7 days" : filter2 === "monthly" ? "This year" : "Past 5 years"}</h2>
+                      <h2 className="mb-0 text-primary">{filter2 === 'daily' ? new Date().toLocaleDateString() : filter2 === 'weekly' ? "Past 7 days" : filter2 === "monthly" ? "This year" : "Past 5 years"}</h2>
                     </div>
                   </Row>
                   <Row>
@@ -1138,7 +1273,7 @@ const Dashboard = (props) => {
           </Row>
           {/* Employee Accepted orders and Rider Delivered orders */}
           <Row>
-            <Col className="mb-5 mb-xl-4" lg="6" xl="12">
+            <Col className="mb-5 mb-xl-4" xl="12">
               <Card className="shadow">
                 <CardHeader>
                   <Row className="align-items-center mb-3">
@@ -1198,7 +1333,7 @@ const Dashboard = (props) => {
                         <Table className="align-items-center table-flush" responsive>
                           <thead className="thead-light">
                             <tr>
-                              <th scope="col">Rank</th>
+                              <th scope="col" className="text-center">Rank</th>
                               <th scope="col">Name</th>
                               <th scope="col">Accepted Orders</th>
 
@@ -1210,9 +1345,9 @@ const Dashboard = (props) => {
                               .map((employee, index) => {
                                 return (
                                   <tr key={index}>
-                                    <th>{index + 1}</th>
-                                    <th>{employee.name}</th>
-                                    <td>{employee.count}</td>
+                                    <th className="text-center">{((index + 1) === 1) ? <img src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199793/AQUATIC_DRAGON/1_hxgypi.png" style={{ width: '50px', height: 'auto' }} /> : ((index + 1) === 2) ? <img src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199794/AQUATIC_DRAGON/2_zz2j3b.png" style={{ width: '50px', height: 'auto' }} /> : ((index + 1) === 3) ? <img src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199794/AQUATIC_DRAGON/3_xq7e4w.png" style={{ width: '50px', height: 'auto' }} /> : <span style={{ fontSize: '20px', display: 'inline-block', verticalAlign: 'middle' }}>{index + 1}</span>}</th>
+                                    <th style={{ fontSize: '16px' }}>{employee.name}</th>
+                                    <td style={{ fontSize: '16px' }}>{employee.count}</td>
                                   </tr>
                                 );
                               })}
@@ -1238,7 +1373,7 @@ const Dashboard = (props) => {
                         <Table className="align-items-center table-flush" responsive>
                           <thead className="thead-light">
                             <tr>
-                              <th scope="col">Rank</th>
+                              <th scope="col" className="text-center">Rank</th>
                               <th scope="col">Name</th>
                               <th scope="col">Delivered Orders</th>
 
@@ -1250,9 +1385,9 @@ const Dashboard = (props) => {
                               .map((rider, index) => {
                                 return (
                                   <tr key={index}>
-                                    <th>{index + 1}</th>
-                                    <th>{rider.name}</th>
-                                    <td>{rider.count}</td>
+                                    <th className="text-center">{((index + 1) === 1) ? <img src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199793/AQUATIC_DRAGON/1_hxgypi.png" style={{ width: '50px', height: 'auto' }} /> : ((index + 1) === 2) ? <img src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199794/AQUATIC_DRAGON/2_zz2j3b.png" style={{ width: '50px', height: 'auto' }} /> : ((index + 1) === 3) ? <img src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199794/AQUATIC_DRAGON/3_xq7e4w.png" style={{ width: '50px', height: 'auto' }} /> : <span style={{ fontSize: '20px', display: 'inline-block', verticalAlign: 'middle' }}>{index + 1}</span>}</th>
+                                    <th style={{ fontSize: '16px' }}>{rider.name}</th>
+                                    <td style={{ fontSize: '16px' }}>{rider.count}</td>
                                   </tr>
                                 );
                               })}
@@ -1274,12 +1409,65 @@ const Dashboard = (props) => {
             <Col className="mb-5 mb-xl-4" xl="12">
               <Card className="shadow">
                 <CardHeader className="bg-transparent">
-                  <Row className="align-items-center">
+                  <Row className="align-items-center mb-3">
                     <div className="col">
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Performance
                       </h6>
                       <h2 className="mb-0">Total Sales By Branch {sales && sales.length === 0 && <span className="text-danger text-sm">(No results)</span>}</h2>
+                    </div>
+                  </Row>
+                  <Row className="align-items-center">
+                    <div className="col">
+                      <Nav className="justify-content-start" pills>
+                        <NavItem>
+                          <NavLink
+                            className={classnames("py-2 px-3", {
+                              active: activeNav4 === 1,
+                            })}
+                            href="#pablo"
+                            onClick={(e) => toggleNavs4(e, 1)}>
+                            <span className="d-none d-md-block">Today</span>
+                            <span className="d-md-none">T</span>
+                          </NavLink>
+                        </NavItem>
+                        <NavItem>
+                          <NavLink
+                            className={classnames("py-2 px-3", {
+                              active: activeNav4 === 2,
+                            })}
+                            href="#pablo"
+                            onClick={(e) => toggleNavs4(e, 2)}>
+                            <span className="d-none d-md-block">Week</span>
+                            <span className="d-md-none">W</span>
+                          </NavLink>
+                        </NavItem>
+                        <NavItem>
+                          <NavLink
+                            className={classnames("py-2 px-3", {
+                              active: activeNav4 === 3,
+                            })}
+                            data-toggle="tab"
+                            href="#pablo"
+                            onClick={(e) => toggleNavs4(e, 3)}>
+                            <span className="d-none d-md-block">Month</span>
+                            <span className="d-md-none">M</span>
+
+                          </NavLink>
+                        </NavItem>
+                        <NavItem>
+                          <NavLink
+                            className={classnames("py-2 px-3", {
+                              active: activeNav4 === 4,
+                            })}
+                            href="#pablo"
+                            onClick={(e) => toggleNavs4(e, 4)}>
+                            <span className="d-none d-md-block">Year</span>
+                            <span className="d-md-none">Y</span>
+
+                          </NavLink>
+                        </NavItem>
+                      </Nav>
                     </div>
                   </Row>
                 </CardHeader>
@@ -1288,7 +1476,12 @@ const Dashboard = (props) => {
                   <div className="chart">
                     <Bar
                       data={data}
-                      options={chartExample2.options}
+                      options={{
+                        ...options2, scales: {
+                          yAxes: [{ stacked: false }],
+                          xAxes: [{ stacked: false }]
+                        }
+                      }}
                     />
                   </div>
                 </CardBody>
