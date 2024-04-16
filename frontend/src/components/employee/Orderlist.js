@@ -40,20 +40,24 @@ const EmployeeOrderList = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth) // Get the user id
   const { sales: walkinSales } = useSelector((state) => state.adminSalesWalkin); // Get the sales of all walk in orders
-  const {orders: orderSales} = useSelector((state)=> state.employeeOrderSales)
+  const { orders: orderSales } = useSelector((state) => state.employeeOrderSales)
   const { branches: branch } = useSelector((state) => state.employeeBranch) // Get employee branch
   // const { sales } = useSelector((state) => state.adminStoreSales); // Get the sales of all stores
-  
+
   let navigate = useNavigate();
   const [totalSales, setTotalSales] = useState(0)
   const { loading, error, orders } = useSelector((state) => state.allOrdersStaff);
   // Function to calculate the total sales of the selected branch
   const getTotalSales = (order, walkin) => {
-    if (order.length > 0 && walkin.length > 0) {
-      const totalSalesOrder = order.find((sale) => sale._id === branch.branches.storebranch).totalSales || 0;
-      const totalSalesWalkin = walkin.find((sale) => sale._id === branch.branches.storebranch).totalSales || 0;
+    if (order.length > 0 || walkin.length > 0) {
+      const totalSalesOrder = order.find((sale) => sale._id === branch.branches.storebranch)?.totalSales || 0;
+      const totalSalesWalkin = walkin.find((sale) => sale._id === branch.branches.storebranch)?.totalSales || 0;
       setTotalSales(totalSalesOrder + totalSalesWalkin)
       localStorage.setItem("totalSales", totalSalesOrder + totalSalesWalkin)
+    }
+    else {
+      setTotalSales(0);
+      localStorage.setItem("totalSales", 0)
     }
   }
   useEffect(() => {
@@ -81,7 +85,7 @@ const EmployeeOrderList = () => {
 
       //Get all admin branches
       dispatch(getEmployeeBranch(user._id));
-      
+
       if (error) {
         dispatch(clearErrors())
       }
@@ -92,9 +96,9 @@ const EmployeeOrderList = () => {
   useEffect(() => {
     if (branch && branch.branches && orderSales && walkinSales) {
       getTotalSales(orderSales, walkinSales)
-      
+
     }
-  }, [branch,orderSales, walkinSales])
+  }, [branch, orderSales, walkinSales])
 
 
   const setOrders = () => {
@@ -187,7 +191,11 @@ const EmployeeOrderList = () => {
 
     return data;
   };
-
+  useEffect(()=>{
+    if (orderSales){
+      console.log('order', orderSales)
+    }
+  },[orderSales])
   return (
     <>
       <MetaData title={"Order(s)"} />
@@ -219,9 +227,9 @@ const EmployeeOrderList = () => {
                     </div>
                     <Col className="col-auto">
                       <CardTitle
-                        tag={branch && branch.branches ? "h1" : "h3"}
+                        tag="h1"
                         className="text-uppercase text-primary mb-0 font-weight-bolder">
-                        {totalSales ? `₱${totalSales}` : localStorage.getItem("totalSales") ? `₱${localStorage.getItem("totalSales")}` : <span className="text-danger">Select a branch</span>}
+                        {totalSales && totalSales > 0 ? `₱${totalSales}` : localStorage.getItem("totalSales") && localStorage.getItem("totalSales") > 0 ? `₱${localStorage.getItem("totalSales")}` : <span className="text-danger">₱0</span>}
                       </CardTitle>
 
                     </Col>
@@ -245,9 +253,9 @@ const EmployeeOrderList = () => {
                     </div>
                     <Col className="col-auto">
                       <CardTitle
-                        tag={orderSales && branch && branch.branches && orderSales.find((sale) => sale._id === branch.branches.storebranch) ? "h1" : "h3"}
+                        tag="h1"
                         className="text-uppercase text-primary mb-0 font-weight-bolder">
-                        {orderSales && branch && branch.branches && orderSales.find((sale) => sale._id === branch.branches.storebranch) ? `₱${orderSales.find((sale) => sale._id === branch.branches.storebranch).totalSales}` : <span className="text-danger">Select a branch</span>}
+                        {orderSales && branch && branch.branches&& orderSales.find((sale) => sale._id === branch.branches.storebranch) ? `₱${orderSales.find((sale) => sale._id === branch.branches.storebranch).totalSales}` : <span className="text-danger">₱0</span>}
                       </CardTitle>
 
                     </Col>
@@ -271,9 +279,9 @@ const EmployeeOrderList = () => {
                     </div>
                     <Col className="col-auto">
                       <CardTitle
-                        tag={walkinSales && branch && branch.branches && walkinSales.find((sale) => sale._id === branch.branches.storebranch) ? "h1" : "h3"}
+                        tag="h1"
                         className="text-uppercase text-primary mb-0 font-weight-bolder">
-                        {walkinSales && branch && branch.branches && walkinSales.find((sale) => sale._id === branch.branches.storebranch) ? `₱${walkinSales.find((sale) => sale._id === branch.branches.storebranch).totalSales}` : <span className="text-danger">Select a branch</span>}
+                        {walkinSales && branch &&branch.branches&& walkinSales.find((sale) => sale._id === branch.branches.storebranch) ? `₱${walkinSales.find((sale) => sale._id === branch.branches.storebranch).totalSales}` : <span className="text-danger">₱0</span>}
                       </CardTitle>
 
                     </Col>
