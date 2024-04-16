@@ -52,10 +52,10 @@ import {
     CLEAR_ERRORS,
 } from "../constants/adminConstants";
 import axios from 'axios'
-export const allStoreSalesAction = (id) => async (dispatch) => {
+export const allStoreSalesAction = (id, filter="") => async (dispatch) => {
     try {
         dispatch({ type: ALL_STORE_SALES_REQUEST });
-        const { data } = await axios.get(`/api/v1/admin/all/store/sales/${id}`);
+        const { data } = await axios.get(`/api/v1/admin/all/store/sales/${id}/?filter=${filter}`);
         dispatch({
             type: ALL_STORE_SALES_SUCCESS,
             payload: data,
