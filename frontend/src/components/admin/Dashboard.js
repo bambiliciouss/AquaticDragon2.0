@@ -777,8 +777,9 @@ const Dashboard = (props) => {
   useEffect(() => {
     // Listen for 'notification' event from server
     if (user.role === 'admin') {
-      socket.emit('login', { adminId: user._id })
+      socket.emit('login', { userID: user._id, role: user.role })
     }
+    
   }, [])
   useEffect(() => {
     const storedBranchId = localStorage.getItem("branch");

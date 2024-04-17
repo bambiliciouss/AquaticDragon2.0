@@ -36,6 +36,7 @@ import Sidebar from "components/Sidebar/Sidebar";
 import AdminNavbar from "components/Navbars/AdminNavbar";
 import Header2 from "components/Headers/Header2";
 import { allRider, allUsers, deleteUser } from "actions/userActions";
+import socket from '../../socket'
 const UpdateOrderDetails = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -110,7 +111,7 @@ const UpdateOrderDetails = () => {
 
     formData.set("orderLevel", orderLevelup);
     formData.set("staff", assignedRider);
-
+    socket.emit('containerForPickup', {id, orderLevelup, assignedRider})
     dispatch(updateOrderwithRider(id, formData));
     toggle();
     window.location.reload();

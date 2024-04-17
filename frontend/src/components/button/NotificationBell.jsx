@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useCallback, forwardRef } from 'react'
 import Dropdown from 'react-bootstrap/Dropdown'
 import Badge from 'react-bootstrap/Badge';
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
-import {useSelector} from 'react-redux'
+import { useSelector } from 'react-redux'
 import socket from '../../socket'
-const NotificationBell = ({ notifications, unreadCount, toggleDropdown}) => {
-    const {user} = useSelector(state => state.auth)
+const NotificationBell = ({ notifications, unreadCount, toggleDropdown }) => {
+    const { user } = useSelector(state => state.auth)
     const navigate = useNavigate();
     const CustomToggle = forwardRef(({ children, onClick }, ref) => (
         <a
@@ -50,16 +50,25 @@ const NotificationBell = ({ notifications, unreadCount, toggleDropdown}) => {
         toggleDropdown();
         setIsOpen((prevIsOpen) => !prevIsOpen);
     }, [toggleDropdown]);
-    const markAsRead = (id, orderid) =>{
-        socket.emit('readNotification', {adminId: user._id, notificationId: id})
+    const markAsRead = (id, orderid) => {
+        if (user.role === 'admin') {
+            socket.emit('readNotification', { adminId: user._id, notificationId: id })
+        }
+        if (user.role === 'employee') {
+            socket.emit('readNotification', { adminId: user._id, notificationId: id })
+        }
+        if (user.role === 'rider') {
+            socket.emit('readRiderNotification', { riderId: user._id, notificationId: id })
+        }
         navigate(`/update/order/${orderid}`)
     }
     return (
+        <div style={{position: 'relative'}}>
         <Dropdown className="mr-3" show={isOpen} onToggle={handleToggle}>
             <Dropdown.Toggle as={CustomToggle} id="dropdown-custom-components">
                 <div style={{ position: 'relative' }}>
                     <FontAwesomeIcon icon={faBell} size="2x" />
-                    {unreadCount>0 && <Badge pill bg="danger"
+                    {unreadCount > 0 && <Badge pill bg="danger"
                         style={{
                             position: 'absolute',
                             top: '-10px',
@@ -76,19 +85,20 @@ const NotificationBell = ({ notifications, unreadCount, toggleDropdown}) => {
                     >
                         {unreadCount}
                     </Badge>}
-                    
+
                 </div>
             </Dropdown.Toggle>
 
-            <Dropdown.Menu as={CustomMenu} style={{marginTop: "35px"}}>
+            <Dropdown.Menu as={CustomMenu} className="custom-dropdown-menu">
                 {notifications.length > 0 ? notifications.map((notification, index) => (
-                    <Dropdown.Item key={index} eventKey={index} onClick={()=>markAsRead(notification.notificationId, notification.order)}>
+                    <Dropdown.Item key={index} eventKey={index} onClick={() => markAsRead(notification.notificationId, notification.order)}>
                         ({notification.title}): {notification.message}
                     </Dropdown.Item>
                 )) : <Dropdown.Item disabled>No notifications</Dropdown.Item>}
             </Dropdown.Menu>
 
         </Dropdown>
+        </div>
     )
 }
 

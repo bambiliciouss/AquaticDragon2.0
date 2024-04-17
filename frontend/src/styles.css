@@ -19,3 +19,10 @@
   font-size: 1.2rem;
   box-shadow: 0 0 0px 5px #fff;
 }
+
+.custom-dropdown-menu {
+  transform: none !important;
+  top: 35px !important;
+  right: 0 !important;
+  left: auto !important;
+}

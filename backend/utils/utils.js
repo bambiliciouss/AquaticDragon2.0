@@ -1,8 +1,18 @@
 const StoreBranch = require("../models/storeBranch")
 const TypeOfGallon = require("../models/typeofgallon")
+const User = require('../models/user')
 exports.getAdminIdFromBranch = async (branch) => {
     const adminId = await StoreBranch.findById(branch).select('user');
     return adminId.user;
+}
+exports.getEmployeeIdFromBranch = async (branch) => {
+    const employees = await User.find({storebranch: branch, role: 'employee'}).select('_id');
+    return employees;
+}
+exports.getRiderBranchFromId = async (id) => {
+    const riders = await User.findById(id).select('storebranch');
+    const branch = await StoreBranch.findById(riders.storebranch).select('branch');
+    return branch.branch;
 }
 exports.getProductTypeName = async (productType) => {
     const name = await TypeOfGallon.findById(productType).select('typeofGallon');
