@@ -86,6 +86,7 @@ const Login = () => {
         navigate("/login");
       } else {
         navigate("/");
+        socket.emit('login', {userID: user._id, role: user.role})
       }
     } else if (error) {
       //notifyError(error);

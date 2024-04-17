@@ -1,6 +1,13 @@
 const StoreBranch = require("../models/storeBranch")
 const TypeOfGallon = require("../models/typeofgallon")
 const User = require('../models/user')
+const Order = require('../models/order')
+
+exports.getUserIdAndBranchFromOrder = async (orderId) => {
+    const order = await Order.findById(orderId).select('customer selectedStore.branchNo');
+    return order;
+}
+
 exports.getAdminIdFromBranch = async (branch) => {
     const adminId = await StoreBranch.findById(branch).select('user');
     return adminId.user;

@@ -100,7 +100,7 @@ const UpdateOrderDetails = () => {
     const formData = new FormData();
 
     formData.set("orderLevel", orderLevelup);
-
+    socket.emit('updateOrder', {id, orderLevelup});
     dispatch(updateOrder(id, formData));
     toggle();
     window.location.reload();
@@ -112,6 +112,7 @@ const UpdateOrderDetails = () => {
     formData.set("orderLevel", orderLevelup);
     formData.set("staff", assignedRider);
     socket.emit('containerForPickup', {id, orderLevelup, assignedRider})
+    socket.emit('updateOrder', {id, orderLevelup});
     dispatch(updateOrderwithRider(id, formData));
     toggle();
     window.location.reload();

@@ -3,8 +3,38 @@ const User = require('../models/user');
 const Order = require('../models/order');
 const mongoose = require('mongoose');
 const RiderNotification = require('../models/riderNotification');
+const CustomerNotification = require('../models/customerNotification');
 
+exports.storeCustomerNotification = async (message, title, orderId, customerId) => {
+    try {
+        const notification = await CustomerNotification.create({
+            message,
+            title,
+            order: orderId,
+            userID: customerId,
+        });
+        return notification;
+    } catch (error) {
+        console.log(error);
+    }
 
+}
+exports.fetchCustomerNotification = async (customerId) => {
+    try {
+        const notifications = await CustomerNotification.find({ userID: customerId, read: false });
+        return notifications;
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+exports.readCustomerNotification = async (notificationId) => {
+    try {
+        await CustomerNotification.findByIdAndUpdate(notificationId, { read: true }, { new: true });
+    } catch (error) {
+        console.error("Error marking notification as read", error);
+    }
+}
 exports.storeRiderNotification = async (message, title, orderId, riderId) => {
     try{
         const notification = await RiderNotification.create({

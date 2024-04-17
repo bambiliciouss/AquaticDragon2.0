@@ -776,7 +776,7 @@ const Dashboard = (props) => {
 
   useEffect(() => {
     // Listen for 'notification' event from server
-    if (user.role === 'admin') {
+    if (user && user.role === 'admin') {
       socket.emit('login', { userID: user._id, role: user.role })
     }
     

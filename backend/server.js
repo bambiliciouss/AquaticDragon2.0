@@ -16,8 +16,8 @@ const phychem = require("./config/phychemtestNotif");
 const notifyBusinessP = require("./config/businessPermit");
 const dotenv = require("dotenv");
 const cloudinary = require("cloudinary");
-const { getAdminIdFromBranch, notifyAdmin, getEmployeeIdFromBranch, getRiderBranchFromId } = require("./utils/utils");
-const { storeNotification, fetchNotification, markAsRead, storeRiderNotification, fetchRiderNotification, readRiderNotification } = require('./controllers/notificationController')
+const { getAdminIdFromBranch, notifyAdmin, getEmployeeIdFromBranch, getRiderBranchFromId,getUserIdAndBranchFromOrder } = require("./utils/utils");
+const { storeNotification, fetchNotification, markAsRead, storeRiderNotification, fetchRiderNotification, readRiderNotification, storeCustomerNotification, fetchCustomerNotification, readCustomerNotification } = require('./controllers/notificationController')
 dotenv.config({ path: "config/.env" });
 connectDatabase();
 // autoAgeUp();
@@ -35,6 +35,7 @@ cloudinary.config({
 let adminSockets = {};
 let employeeSockets = {};
 let riderSockets = {};
+let customerSockets = {};
 let orderItems = [];
 let orderProducts = [];
 // Socket.io connection handling
@@ -60,15 +61,33 @@ io.on('connection', (socket) => {
         riderSockets[riderId].splice(socketIndex, 1);
       }
     }
+    for (let customerId in customerSockets) {
+      const socketIndex = customerSockets[customerId].indexOf(socket.id);
+      if (socketIndex !== -1) {
+        customerSockets[customerId].splice(socketIndex, 1);
+      }
+    }
   });
-
+  socket.on('updateOrder', async (data)=>{
+    const {id, orderLevelup} = data;
+    const order = await getUserIdAndBranchFromOrder(id);
+    console.log('order', order);
+    console.log('orderLevelup', orderLevelup);
+    await storeCustomerNotification(orderLevelup, order.selectedStore.branchNo, id, order.customer);
+    const notification = await fetchCustomerNotification(order.customer);
+    console.log('stored notification', notification);
+    if (customerSockets[order.customer] && customerSockets[order.customer].length > 0) {
+      customerSockets[order.customer].forEach(socketId => {
+        io.to(socketId).emit('customerNotification', notification);
+      });
+    }
+    // console.log('user', user);
+    // console.log('storeBranch', storeBranch);
+  })
   socket.on('containerForPickup', async (data)=>{
     const {id, orderLevelup, assignedRider}  = data;
     const riderBranch = (await getRiderBranchFromId(assignedRider))
-    console.log('branch', riderBranch)
-    console.log('id', id);
-    console.log('orderlevelup', orderLevelup);
-    console.log('assignedRider', assignedRider);
+
     await storeRiderNotification(orderLevelup,riderBranch, id, assignedRider);
     const notification = await fetchRiderNotification(assignedRider);
     console.log('stored notification', notification);
@@ -162,6 +181,18 @@ io.on('connection', (socket) => {
       // Emit the 'notification' event only to the socket that triggered the 'login' event
       socket.emit('riderNotification', notifications);
     }
+    else if (role === 'user'){
+      if (!customerSockets[userID]) {
+        customerSockets[userID] = [];
+      }
+      if (!customerSockets[userID].includes(socket.id)) {
+        customerSockets[userID].push(socket.id);
+      }
+      console.log(`Added user: ${userID} to customerSockets`)
+      console.log('customer socket',customerSockets)
+      const notification = await fetchCustomerNotification(userID);
+      socket.emit('customerNotification', notification);
+    }
 
   })
 
@@ -178,6 +209,13 @@ io.on('connection', (socket) => {
     const notifications = await fetchRiderNotification(riderId);
 
     socket.emit('riderNotification', notifications);
+  })
+  socket.on('readCustomerNotification', async (data) => {
+    const { notificationId, customerId } = data;
+    await readCustomerNotification(notificationId);
+    const notifications = await fetchCustomerNotification(customerId);
+
+    socket.emit('customerNotification', notifications);
   })
 });
 

@@ -55,10 +55,9 @@ const AdminNavbar = (props) => {
   const [riderNotifications, setRiderNotifications] = useState([]);
   const [riderUnreadCount, setRiderUnreadCount] = useState(0);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  
 
-  const hasRun = useRef(false);
-  const newOrderNotif = useRef(false);
+
   const [orderCount, setOrderCount] = useState(0);
   const [riderCount, setRiderCount] = useState(0);
   useEffect(() => {
@@ -93,7 +92,10 @@ const AdminNavbar = (props) => {
     socket.off('riderNotification');
     socket.on('riderNotification', (data) => {
       console.log('riderNotification', data);
+      setRiderNotifications([])
+      setRiderUnreadCount(0);
       data.forEach((item, index) => {
+       
         setRiderNotifications(prevNotifications => [...prevNotifications, { message: item.message, title: item.title, notificationId: item._id, order: item.order }]);
         setRiderUnreadCount(prevCount => prevCount + 1);
       

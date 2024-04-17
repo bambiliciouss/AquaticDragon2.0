@@ -53,14 +53,21 @@ const NotificationBell = ({ notifications, unreadCount, toggleDropdown }) => {
     const markAsRead = (id, orderid) => {
         if (user.role === 'admin') {
             socket.emit('readNotification', { adminId: user._id, notificationId: id })
+            navigate(`/update/order/${orderid}`)
         }
         if (user.role === 'employee') {
             socket.emit('readNotification', { adminId: user._id, notificationId: id })
+            navigate(`/update/order/${orderid}`)
         }
         if (user.role === 'rider') {
             socket.emit('readRiderNotification', { riderId: user._id, notificationId: id })
+            navigate(`/update/order/${orderid}`)
         }
-        navigate(`/update/order/${orderid}`)
+        if (user.role === 'user'){
+            socket.emit('readCustomerNotification', {customerId: user._id, notificationId: id})
+            navigate(`/order/${orderid}`)
+        }
+       
     }
     return (
         <div style={{position: 'relative'}}>

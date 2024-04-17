@@ -33,18 +33,26 @@ import {
   Button,
   DropdownItem,
 } from "reactstrap";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../actions/userActions";
 import { useNavigate } from "react-router-dom";
 import swal from "sweetalert";
+import NotificationBell from "components/button/NotificationBell";
 import socket from '../../socket'
+import {toast} from 'react-toastify'
 const AdminNavbar = () => {
   const { user, loading } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.cart);
   const { cartProductItems } = useSelector((state) => state.cartProduct);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  
+
+
+  const [orderCount, setOrderCount] = useState(0);
 
   const logoutHandler = () => {
     dispatch(logout());
@@ -75,6 +83,36 @@ const AdminNavbar = () => {
       </div>
     );
   };
+  const toggleDropdown = () => {
+    setUnreadCount(0); // Reset unread count when dropdown is opened
+  };
+  useEffect(()=>{
+    if (user && user.role === 'user'){
+      socket.emit('login', {userID: user._id, role: user.role})
+    }
+    
+    socket.off('customerNotification');
+    socket.on('customerNotification', (data) => {
+      console.log('riderNotification', data);
+      setNotifications([])
+      setUnreadCount(0);
+      data.forEach((item, index) => {
+     
+        setNotifications(prevNotifications => [...prevNotifications, { message: item.message, title: item.title, notificationId: item._id, order: item.order }]);
+        setUnreadCount(prevCount => prevCount + 1);
+      
+      });
+      if (data.length > 0){
+        setOrderCount(data.length);
+      }
+    })
+  },[])
+
+  useEffect(()=>{
+    if (orderCount){
+      toast.success(`You have ${orderCount} new notification(s)`)
+    }
+  },[orderCount])
   return (
     <>
       <Navbar
@@ -118,7 +156,8 @@ const AdminNavbar = () => {
                 </Col>
               </Row>
             </div>
-            <Nav className="ml-auto" navbar>
+            <Nav className="ml-auto align-items-center d-none d-md-flex" navbar>
+            
               {user ? (
                 <>
                   {storeBranchinfo ? (
@@ -223,6 +262,7 @@ const AdminNavbar = () => {
                   <span className="nav-link-inner--text">Profile</span>
                 </NavLink>
               </NavItem> */}
+              <NotificationBell notifications={notifications} unreadCount={unreadCount} toggleDropdown={toggleDropdown} />
             </Nav>
           </UncontrolledCollapse>
         </Container>
