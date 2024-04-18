@@ -6,6 +6,8 @@ const mongoose = require("mongoose");
 exports.createBarangayHealthRecord = async (req, res, next) => {
   try {
     const { dateVisited } = req.body;
+    const expiryDate = new Date(dateVisited);
+    expiryDate.setMonth(expiryDate.getMonth() + 1);
     const result = await new Promise((resolve, reject) => {
       cloudinary.v2.uploader.upload(
         req.body.certPotability,
@@ -32,6 +34,7 @@ exports.createBarangayHealthRecord = async (req, res, next) => {
         url: result.secure_url,
       },
       dateVisited,
+      expiryDate
     });
 
     res.status(201).json({

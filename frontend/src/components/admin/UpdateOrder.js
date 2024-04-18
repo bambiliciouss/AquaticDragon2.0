@@ -36,7 +36,7 @@ import Sidebar from "components/Sidebar/Sidebar";
 import AdminNavbar from "components/Navbars/AdminNavbar";
 import Header2 from "components/Headers/Header2";
 import { allRider, allUsers, deleteUser } from "actions/userActions";
-import socket from '../../socket'
+import socket from "../../socket";
 const UpdateOrderDetails = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -100,7 +100,7 @@ const UpdateOrderDetails = () => {
     const formData = new FormData();
 
     formData.set("orderLevel", orderLevelup);
-    socket.emit('updateOrder', {id, orderLevelup});
+    socket.emit("updateOrder", { id, orderLevelup });
     dispatch(updateOrder(id, formData));
     toggle();
     window.location.reload();
@@ -111,8 +111,8 @@ const UpdateOrderDetails = () => {
 
     formData.set("orderLevel", orderLevelup);
     formData.set("staff", assignedRider);
-    socket.emit('containerForPickup', {id, orderLevelup, assignedRider})
-    socket.emit('updateOrder', {id, orderLevelup});
+    socket.emit("containerForPickup", { id, orderLevelup, assignedRider });
+    socket.emit("updateOrder", { id, orderLevelup });
     dispatch(updateOrderwithRider(id, formData));
     toggle();
     window.location.reload();
@@ -153,7 +153,8 @@ const UpdateOrderDetails = () => {
                                   className="mb-3"
                                   color="primary"
                                   type="button"
-                                  onClick={toggle}>
+                                  onClick={toggle}
+                                >
                                   Update Order Status{" "}
                                   {orderStatus && orderStatus.orderLevel}
                                 </Button>
@@ -163,7 +164,8 @@ const UpdateOrderDetails = () => {
                           <Modal
                             className="modal-dialog-centered"
                             isOpen={modal}
-                            toggle={toggle}>
+                            toggle={toggle}
+                          >
                             <ModalHeader toggle={toggle}>
                               Update Status
                             </ModalHeader>
@@ -189,7 +191,8 @@ const UpdateOrderDetails = () => {
                                         value={orderLevelup}
                                         onChange={(e) =>
                                           setOrderLevel(e.target.value)
-                                        }>
+                                        }
+                                      >
                                         <option value="" disabled>
                                           Select Status
                                         </option>
@@ -229,7 +232,8 @@ const UpdateOrderDetails = () => {
                                       value={orderLevelup}
                                       onChange={(e) =>
                                         setOrderLevel(e.target.value)
-                                      }>
+                                      }
+                                    >
                                       <option value="" disabled>
                                         Select Status
                                       </option>
@@ -256,7 +260,8 @@ const UpdateOrderDetails = () => {
                                     value={assignedRider}
                                     onChange={(e) =>
                                       setAssignedRider(e.target.value)
-                                    }>
+                                    }
+                                  >
                                     <option value="">Select Rider</option>
                                     {users.map((item) => (
                                       <option key={item._id} value={item._id}>
@@ -277,7 +282,8 @@ const UpdateOrderDetails = () => {
                                     orderLevelup === "Out for Delivery"
                                       ? assignHandler(order._id) // Function for assigning
                                       : updateOrderHandler(order._id) // Function for updating
-                                }>
+                                }
+                              >
                                 {orderLevelup === "Container for pick up" ||
                                 orderLevelup === "Out for Delivery"
                                   ? "Assign"
@@ -304,30 +310,30 @@ const UpdateOrderDetails = () => {
                         </Row>
                       </CardHeader>
                       <CardBody>
-                      {user &&
-                            (user.role === "admin" ||
-                              user.role === "employee" ||
-                              user.role === "rider") && (
-                          <Row>
-                            <Col sm="12">
-                              <Card body>
-                                <CardText>
-                                  <span style={{ fontWeight: "bold" }}>
-                                    Name:
-                                  </span>{" "}
-                                  {customer && customer.fname}{" "}
-                                  {customer && customer.lname}
-                                </CardText>
-                                {/* <CardText>
+                        {user &&
+                          (user.role === "admin" ||
+                            user.role === "employee" ||
+                            user.role === "rider") && (
+                            <Row>
+                              <Col sm="12">
+                                <Card body>
+                                  <CardText>
+                                    <span style={{ fontWeight: "bold" }}>
+                                      Name:
+                                    </span>{" "}
+                                    {customer && customer.fname}{" "}
+                                    {customer && customer.lname}
+                                  </CardText>
+                                  {/* <CardText>
                                   <span style={{ fontWeight: "bold" }}>
                                     Email:
                                   </span>{" "}
                                   {customer && customer.email}
                                 </CardText> */}
-                              </Card>
-                            </Col>
-                          </Row>
-                        )}
+                                </Card>
+                              </Col>
+                            </Row>
+                          )}
                         <div style={{ marginBottom: "20px" }}></div>
 
                         <Row>
@@ -402,12 +408,14 @@ const UpdateOrderDetails = () => {
                                       <Col sm="5">{item.type} (REFILL)</Col>
                                       <Col
                                         sm="3"
-                                        style={{ textAlign: "center" }}>
+                                        style={{ textAlign: "center" }}
+                                      >
                                         {item.quantity} pc(s)
                                       </Col>
                                       <Col
                                         sm="4"
-                                        style={{ textAlign: "right" }}>
+                                        style={{ textAlign: "right" }}
+                                      >
                                         ₱{item.price}.00
                                       </Col>
                                     </Row>
@@ -420,12 +428,14 @@ const UpdateOrderDetails = () => {
                                       </Col>
                                       <Col
                                         sm="3"
-                                        style={{ textAlign: "center" }}>
+                                        style={{ textAlign: "center" }}
+                                      >
                                         {item.quantity} pc(s)
                                       </Col>
                                       <Col
                                         sm="4"
-                                        style={{ textAlign: "right" }}>
+                                        style={{ textAlign: "right" }}
+                                      >
                                         ₱{item.price}.00
                                       </Col>
                                     </Row>

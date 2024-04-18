@@ -25,10 +25,10 @@ import Chart from "chart.js";
 import { Line, Bar, Pie } from "react-chartjs-2";
 
 //import socket connection
-import socket from '../../socket'
+import socket from "../../socket";
 
 //import toast from react-toastify
-import { toast } from 'react-toastify'
+import { toast } from "react-toastify";
 // reactstrap components
 import {
   Button,
@@ -45,7 +45,7 @@ import {
   Col,
   CardTitle,
   CardDeck,
-  CardFooter
+  CardFooter,
 } from "reactstrap";
 
 // core components
@@ -57,88 +57,141 @@ import {
 } from "../variables/charts.js";
 
 import Header from "components/Headers/Header.js";
-import Dropdown from 'react-bootstrap/Dropdown';
+import Dropdown from "react-bootstrap/Dropdown";
 
 import React from "react";
 import { useLocation, Link } from "react-router-dom";
-import moment from 'moment-timezone'; // convert UTC date to Asia/Manila date
+import moment from "moment-timezone"; // convert UTC date to Asia/Manila date
 // core components
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import AdminFooter from "components/Footers/AdminFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 import MetaData from "components/layout/MetaData.js";
 
-
 // Default Admin Chart (All store sales)
 import { allProductList } from "actions/productActions.js"; // Action for product inventory
-import { allStoreSalesAction, getSalesOrderByBarangay, getSalesWalkin, getSalesOrderByBranch, getOrderTransactions, getOrderByGallonType, getStaffPerformance, clearErrors, getCurrentBranchSales } from "../../actions/adminAction"; // Actions for sales, walkin sales, order sales, order transactions, order gallon type, barangay sales, staff performance
+import {
+  allStoreSalesAction,
+  getSalesOrderByBarangay,
+  getSalesWalkin,
+  getSalesOrderByBranch,
+  getOrderTransactions,
+  getOrderByGallonType,
+  getStaffPerformance,
+  clearErrors,
+  getCurrentBranchSales,
+} from "../../actions/adminAction"; // Actions for sales, walkin sales, order sales, order transactions, order gallon type, barangay sales, staff performance
 
-import { allAdminBranches } from 'actions/storebranchActions'
+import { allAdminBranches } from "actions/storebranchActions";
 import { useDispatch, useSelector } from "react-redux";
 const Dashboard = (props) => {
-
   const dispatch = useDispatch();
 
-
   const { sales, error } = useSelector((state) => state.adminStoreSales); // Get the sales of all stores
-  const { orders } = useSelector((state) => state.adminSalesOrder) // Get the sales of all online orders
+  const { orders } = useSelector((state) => state.adminSalesOrder); // Get the sales of all online orders
   const { transactions } = useSelector((state) => state.adminOrderTransaction); // Get the transactions of all orders
-  const { user } = useSelector((state) => state.auth) // Get the user id
-  const { branch } = useSelector((state) => state.adminStoreBranch) // Get the selected branch id
+  const { user } = useSelector((state) => state.auth); // Get the user id
+  const { branch } = useSelector((state) => state.adminStoreBranch); // Get the selected branch id
   const { sales: walkinSales } = useSelector((state) => state.adminSalesWalkin); // Get the sales of all walk in orders
-  const { gallons } = useSelector((state) => state.adminOrderGallonType) // Get the gallon type of all orders
+  const { gallons } = useSelector((state) => state.adminOrderGallonType); // Get the gallon type of all orders
   const { products } = useSelector((state) => state.allProducts); // Get the inventory of all products
   const { orders: barangay } = useSelector((state) => state.adminSalesBarangay); // Get the sales of all barangays
   const { performance } = useSelector((state) => state.adminStaffPerformance); // Get the performance of all employees
-  const { sales: currentSalesBranch } = useSelector(state => state.adminCurrentBranchSales); // Get the total sales of selected branch
+  const { sales: currentSalesBranch } = useSelector(
+    (state) => state.adminCurrentBranchSales
+  ); // Get the total sales of selected branch
   const { storeBranch } = useSelector((state) => state.allStoreBranch); //get all store branches of admin
-  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]; // Array of months
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ]; // Array of months
   const currentYear = new Date().getFullYear();
   let years = [];
   for (let year = 2024; year <= currentYear; year++) {
     years.push(year);
   }
   const [selectedYear, setSelectedYear] = useState(currentYear); // Selected year (number)
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());  // Selected month (number)
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth()); // Selected month (number)
   const [monthName, setMonthName] = useState(months[selectedMonth]); // Selected month name (String)
   const [startDate, setStartDate] = useState(new Date());
 
   const [branch2, setBranch2] = useState(""); // Selected branch
-  const [totalSales, setTotalSales] = useState(0)
-  const [colors, setColors] = useState([])
+  const [totalSales, setTotalSales] = useState(0);
+  const [colors, setColors] = useState([]);
   //Filter states
   const [filter1, setFilter1] = useState("daily");
   const [activeNav, setActiveNav] = useState(1);
   const toggleNavs = (e, index) => {
     e.preventDefault();
     setActiveNav(index);
-    setFilter1(index === 1 ? "daily" : index === 2 ? "weekly" : index === 3 ? "monthly" : "yearly")
-  }
+    setFilter1(
+      index === 1
+        ? "daily"
+        : index === 2
+        ? "weekly"
+        : index === 3
+        ? "monthly"
+        : "yearly"
+    );
+  };
 
   const [filter2, setFilter2] = useState("daily");
   const [activeNav2, setActiveNav2] = useState(1);
   const toggleNavs2 = (e, index) => {
     e.preventDefault();
     setActiveNav2(index);
-    setFilter2(index === 1 ? "daily" : index === 2 ? "weekly" : index === 3 ? "monthly" : "yearly")
-  }
+    setFilter2(
+      index === 1
+        ? "daily"
+        : index === 2
+        ? "weekly"
+        : index === 3
+        ? "monthly"
+        : "yearly"
+    );
+  };
 
   const [filter3, setFilter3] = useState("today");
   const [activeNav3, setActiveNav3] = useState(1);
   const toggleNavs3 = (e, index) => {
     e.preventDefault();
     setActiveNav3(index);
-    setFilter3(index === 1 ? "today" : index === 2 ? "week" : index === 3 ? "month" : "year")
-  }
+    setFilter3(
+      index === 1
+        ? "today"
+        : index === 2
+        ? "week"
+        : index === 3
+        ? "month"
+        : "year"
+    );
+  };
 
   const [filter4, setFilter4] = useState("today");
   const [activeNav4, setActiveNav4] = useState(1);
   const toggleNavs4 = (e, index) => {
     e.preventDefault();
     setActiveNav4(index);
-    setFilter4(index === 1 ? "today" : index === 2 ? "week" : index === 3 ? "month" : "year")
-  }
-
+    setFilter4(
+      index === 1
+        ? "today"
+        : index === 2
+        ? "week"
+        : index === 3
+        ? "month"
+        : "year"
+    );
+  };
 
   const [data, setData] = useState({
     labels: [],
@@ -149,7 +202,7 @@ const Dashboard = (props) => {
         maxBarThickness: 20,
       },
     ],
-  })
+  });
   const [data2, setData2] = useState({
     labels: [],
     datasets: [
@@ -159,7 +212,7 @@ const Dashboard = (props) => {
         maxBarThickness: 20,
       },
     ],
-  })
+  });
   const [data3, setData3] = useState({
     labels: [],
     datasets: [
@@ -169,7 +222,7 @@ const Dashboard = (props) => {
         maxBarThickness: 20,
       },
     ],
-  })
+  });
   const [data4, setData4] = useState({
     labels: [],
     datasets: [
@@ -179,71 +232,65 @@ const Dashboard = (props) => {
         maxBarThickness: 20,
       },
     ],
-  })
+  });
   const [data5, setData5] = useState({
     labels: [],
     datasets: [
       {
         label: "Sales",
         data: [],
-
       },
     ],
-  })
+  });
   const [data6, setData6] = useState({
     labels: [],
     datasets: [
       {
         label: "Sales",
         data: [],
-
       },
     ],
-  })
+  });
   const [data7, setData7] = useState({
     labels: [],
     datasets: [
       {
         label: "Sales",
         data: [],
-
       },
     ],
-  })
+  });
   const [data8, setData8] = useState({
     labels: [],
     datasets: [
       {
         label: "Sales",
         data: [],
-
       },
     ],
-  })
-  const [options, setOptions] = useState({})
+  });
+  const [options, setOptions] = useState({});
   const options2 = {
     scales: {
       yAxes: [
         {
           ticks: {
             callback: function (value) {
-
               if (!(value % 10)) {
                 return value;
-              }
-              else if (!(value % 1)) {
+              } else if (!(value % 1)) {
                 return value;
               }
-
-
             },
           },
           stacked: true,
         },
       ],
-      xAxes: [{
-        stacked: true
-      }]
+      xAxes: [
+        {
+          stacked: true,
+        },
+      ],
     },
     tooltips: {
       callbacks: {
@@ -264,12 +311,10 @@ const Dashboard = (props) => {
     setMonthName(month);
 
     setSelectedMonth(index);
-  }
+  };
   const handleYearFilter = (year) => {
     setSelectedYear(year);
-
-  }
-
+  };
 
   // Random color generator from the same hue
   let hue = Math.random() * 360;
@@ -277,112 +322,157 @@ const Dashboard = (props) => {
   function getRandomColor() {
     hue += goldenRatioConjugate;
     hue = hue % 1;
-    const h = Math.floor(hue * 360)
-    return `hsl(${h},60%,60%)`
+    const h = Math.floor(hue * 360);
+    return `hsl(${h},60%,60%)`;
   }
   //Get labels based on filter
   const getLabels = (filter, transactions) => {
-    if (filter === 'daily') {
-      return transactions.transactions.map(transaction => moment(transaction._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD HH:mm'));
-
-    } else if (filter === 'weekly') {
+    if (filter === "daily") {
+      return transactions.transactions.map((transaction) =>
+        moment(transaction._id + "Z")
+          .tz("Asia/Manila")
+          .format("YYYY-MM-DD HH:mm")
+      );
+    } else if (filter === "weekly") {
       // return transactions.transactions.map(transaction => transaction._id);
-      const [month, day, year] = transactions.startDate.split('/');
+      const [month, day, year] = transactions.startDate.split("/");
       const start = new Date(year, month - 1, Number(day));
       return Array.from({ length: 7 }, (_, i) => {
         const date = new Date(start.getTime());
         date.setDate(date.getDate() + i);
         // return date.toISOString().split('T')[0];
-        return moment(date).tz('Asia/Manila').format('YYYY-MM-DD');
+        return moment(date).tz("Asia/Manila").format("YYYY-MM-DD");
       });
-    } else if (filter === 'monthly') {
-      return Array.from({ length: 12 }, (_, i) => new Date(0, i + 1, 0).toLocaleString('default', { month: 'long' }));
-    } else if (filter === 'yearly') {
+    } else if (filter === "monthly") {
+      return Array.from({ length: 12 }, (_, i) =>
+        new Date(0, i + 1, 0).toLocaleString("default", { month: "long" })
+      );
+    } else if (filter === "yearly") {
       const currentYear = new Date().getFullYear();
-      return Array.from({ length: 5 }, (_, i) => (currentYear - i).toString()).reverse();
+      return Array.from({ length: 5 }, (_, i) =>
+        (currentYear - i).toString()
+      ).reverse();
     }
   };
   const getRefillLabels = (filter, data) => {
-    if (filter === 'daily') {
-      return data.orders[0]["Refill"].map(label => moment(label._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD HH:mm'));
-    } else if (filter === 'weekly') {
+    if (filter === "daily") {
+      return data.orders[0]["Refill"].map((label) =>
+        moment(label._id + "Z")
+          .tz("Asia/Manila")
+          .format("YYYY-MM-DD HH:mm")
+      );
+    } else if (filter === "weekly") {
       // return data.orders[0]["Refill"].map(label => label._id);
-      const [month, day, year] = data.startDate.split('/');
+      const [month, day, year] = data.startDate.split("/");
       const start = new Date(year, month - 1, Number(day));
       return Array.from({ length: 7 }, (_, i) => {
         const date = new Date(start.getTime());
         date.setDate(date.getDate() + i);
-        return moment(date).tz('Asia/Manila').format('YYYY-MM-DD');
+        return moment(date).tz("Asia/Manila").format("YYYY-MM-DD");
       });
-    } else if (filter === 'monthly') {
-      return Array.from({ length: 12 }, (_, i) => new Date(0, i + 1, 0).toLocaleString('default', { month: 'long' }));
-    } else if (filter === 'yearly') {
+    } else if (filter === "monthly") {
+      return Array.from({ length: 12 }, (_, i) =>
+        new Date(0, i + 1, 0).toLocaleString("default", { month: "long" })
+      );
+    } else if (filter === "yearly") {
       const currentYear = new Date().getFullYear();
-      return Array.from({ length: 5 }, (_, i) => (currentYear - i).toString()).reverse();
+      return Array.from({ length: 5 }, (_, i) =>
+        (currentYear - i).toString()
+      ).reverse();
     }
   };
   const getNewContainerLabels = (filter, data) => {
-    if (filter === 'daily') {
-      return data.orders[0]["New Container"].map(label => moment(label._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD HH:mm'));
-    } else if (filter === 'weekly') {
+    if (filter === "daily") {
+      return data.orders[0]["New Container"].map((label) =>
+        moment(label._id + "Z")
+          .tz("Asia/Manila")
+          .format("YYYY-MM-DD HH:mm")
+      );
+    } else if (filter === "weekly") {
       // return data.orders[0]["New Container"].map(label => label._id);
-      const [month, day, year] = data.startDate.split('/');
+      const [month, day, year] = data.startDate.split("/");
       const start = new Date(year, month - 1, Number(day));
       return Array.from({ length: 7 }, (_, i) => {
         const date = new Date(start.getTime());
         date.setDate(date.getDate() + i);
-        return moment(date).tz('Asia/Manila').format('YYYY-MM-DD');
+        return moment(date).tz("Asia/Manila").format("YYYY-MM-DD");
       });
-    } else if (filter === 'monthly') {
-      return Array.from({ length: 12 }, (_, i) => new Date(0, i + 1, 0).toLocaleString('default', { month: 'long' }));
-    } else if (filter === 'yearly') {
+    } else if (filter === "monthly") {
+      return Array.from({ length: 12 }, (_, i) =>
+        new Date(0, i + 1, 0).toLocaleString("default", { month: "long" })
+      );
+    } else if (filter === "yearly") {
       const currentYear = new Date().getFullYear();
-      return Array.from({ length: 5 }, (_, i) => (currentYear - i).toString()).reverse();
+      return Array.from({ length: 5 }, (_, i) =>
+        (currentYear - i).toString()
+      ).reverse();
     }
-  }
+  };
   const totalSalesBranchLabel = (filter, data) => {
-    if (filter === 'today') {
-      return data.salesByBranch.map((sale) => moment(sale._id.date + 'Z').tz('Asia/Manila').format('YYYY-MM-DD HH:mm'))
-    } else if (filter === 'week') {
+    if (filter === "today") {
+      return data.salesByBranch.map((sale) =>
+        moment(sale._id.date + "Z")
+          .tz("Asia/Manila")
+          .format("YYYY-MM-DD HH:mm")
+      );
+    } else if (filter === "week") {
       // return data.salesByBranch.map((sale) => sale._id.date)
-      const [month, day, year] = data.startDate.split('/');
+      const [month, day, year] = data.startDate.split("/");
       const start = new Date(year, month - 1, Number(day));
       return Array.from({ length: 7 }, (_, i) => {
         const date = new Date(start.getTime());
         date.setDate(date.getDate() + i);
-        return moment(date).tz('Asia/Manila').format('YYYY-MM-DD');
+        return moment(date).tz("Asia/Manila").format("YYYY-MM-DD");
       });
-    } else if (filter === 'month') {
-      return Array.from({ length: 12 }, (_, i) => new Date(0, i + 1, 0).toLocaleString('default', { month: 'long' }));
-    } else if (filter === 'year') {
+    } else if (filter === "month") {
+      return Array.from({ length: 12 }, (_, i) =>
+        new Date(0, i + 1, 0).toLocaleString("default", { month: "long" })
+      );
+    } else if (filter === "year") {
       const currentYear = new Date().getFullYear();
-      return Array.from({ length: 5 }, (_, i) => (currentYear - i).toString()).reverse();
+      return Array.from({ length: 5 }, (_, i) =>
+        (currentYear - i).toString()
+      ).reverse();
     }
-  }
+  };
   const getAllSalesLabels = (filter, data) => {
-    if (filter === 'today') {
-      return data.salesByBranch.map((sale) => moment(sale._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD HH:mm'));
-    } else if (filter === 'week') {
+    if (filter === "today") {
+      return data.salesByBranch.map((sale) =>
+        moment(sale._id + "Z")
+          .tz("Asia/Manila")
+          .format("YYYY-MM-DD HH:mm")
+      );
+    } else if (filter === "week") {
       // return data.salesByBranch.map((sale) => sale._id.date)
-      const [month, day, year] = data.startDate.split('/');
+      const [month, day, year] = data.startDate.split("/");
       const start = new Date(year, month - 1, Number(day));
       return Array.from({ length: 7 }, (_, i) => {
         const date = new Date(start.getTime());
         date.setDate(date.getDate() + i);
-        return moment(date).tz('Asia/Manila').format('YYYY-MM-DD');
+        return moment(date).tz("Asia/Manila").format("YYYY-MM-DD");
       });
-    } else if (filter === 'month') {
-      return Array.from({ length: 12 }, (_, i) => new Date(0, i + 1, 0).toLocaleString('default', { month: 'long' }));
-    } else if (filter === 'year') {
+    } else if (filter === "month") {
+      return Array.from({ length: 12 }, (_, i) =>
+        new Date(0, i + 1, 0).toLocaleString("default", { month: "long" })
+      );
+    } else if (filter === "year") {
       const currentYear = new Date().getFullYear();
-      return Array.from({ length: 5 }, (_, i) => (currentYear - i).toString()).reverse();
+      return Array.from({ length: 5 }, (_, i) =>
+        (currentYear - i).toString()
+      ).reverse();
     }
-  }
+  };
   // Change the data of the chart depending on the sales, transactions, gallons
   useEffect(() => {
     if (sales && sales.salesByBranch) {
       // Get all unique statuses
-      const branches = [...new Set(sales.salesByBranch.flatMap((transaction) => transaction.branches.map((order) => order.branch)))];
+      const branches = [
+        ...new Set(
+          sales.salesByBranch.flatMap((transaction) =>
+            transaction.branches.map((order) => order.branch)
+          )
+        ),
+      ];
 
       //Generate labels
       const labels = getAllSalesLabels(filter4, sales);
@@ -390,16 +480,27 @@ const Dashboard = (props) => {
         label: status,
         data: labels.map((label) => {
           let sale;
-          if (filter4 === 'today') {
-            sale = sales.salesByBranch.find((transaction) => moment(transaction._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD HH:mm') === label);
+          if (filter4 === "today") {
+            sale = sales.salesByBranch.find(
+              (transaction) =>
+                moment(transaction._id + "Z")
+                  .tz("Asia/Manila")
+                  .format("YYYY-MM-DD HH:mm") === label
+            );
+          } else if (filter4 === "week") {
+            sale = sales.salesByBranch.find(
+              (transaction) =>
+                moment(transaction._id + "Z")
+                  .tz("Asia/Manila")
+                  .format("YYYY-MM-DD") === label
+            );
+          } else if (filter4 === "month" || filter4 === "year") {
+            sale = sales.salesByBranch.find(
+              (transaction) => String(transaction._id) === label
+            );
           }
-          else if (filter4 === 'week') {
-            sale = sales.salesByBranch.find((transaction) => moment(transaction._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD') === label);
-          }
-          else if (filter4 === 'month' || filter4 === 'year') {
-            sale = sales.salesByBranch.find((transaction) => String(transaction._id) === label);
-          }
-          const order = sale && sale.branches.find((order) => order.branch === status);
+          const order =
+            sale && sale.branches.find((order) => order.branch === status);
 
           return order ? order.totalSales : 0;
         }),
@@ -407,11 +508,10 @@ const Dashboard = (props) => {
       }));
       let salesData = {
         labels,
-        datasets
-      }
-      setData(salesData)
-    }
-    else {
+        datasets,
+      };
+      setData(salesData);
+    } else {
       setData({
         labels: [],
         datasets: [
@@ -421,12 +521,21 @@ const Dashboard = (props) => {
             maxBarThickness: 20,
           },
         ],
-      })
+      });
     }
-    if (transactions && transactions.transactions && transactions.transactions.length > 0) {
-
+    if (
+      transactions &&
+      transactions.transactions &&
+      transactions.transactions.length > 0
+    ) {
       // Get all unique statuses
-      const statuses = [...new Set(transactions.transactions.flatMap((transaction) => transaction.orders.map((order) => order.status)))];
+      const statuses = [
+        ...new Set(
+          transactions.transactions.flatMap((transaction) =>
+            transaction.orders.map((order) => order.status)
+          )
+        ),
+      ];
 
       // Generate labels
       const labels = getLabels(filter1, transactions);
@@ -436,19 +545,29 @@ const Dashboard = (props) => {
         label: status,
         data: labels.map((label) => {
           let transaction;
-          if (filter1 === 'daily') {
-            transaction = transactions.transactions.find((transaction) => moment(transaction._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD HH:mm') === label);
-          }
-          else if (filter1 === 'weekly') {
-            transaction = transactions.transactions.find((transaction) => moment(transaction._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD') === label);
-          }
-          else if (filter1 === 'monthly' || filter1 === 'yearly') {
-            transaction = transactions.transactions.find((transaction) => transaction._id === label);
+          if (filter1 === "daily") {
+            transaction = transactions.transactions.find(
+              (transaction) =>
+                moment(transaction._id + "Z")
+                  .tz("Asia/Manila")
+                  .format("YYYY-MM-DD HH:mm") === label
+            );
+          } else if (filter1 === "weekly") {
+            transaction = transactions.transactions.find(
+              (transaction) =>
+                moment(transaction._id + "Z")
+                  .tz("Asia/Manila")
+                  .format("YYYY-MM-DD") === label
+            );
+          } else if (filter1 === "monthly" || filter1 === "yearly") {
+            transaction = transactions.transactions.find(
+              (transaction) => transaction._id === label
+            );
           }
 
-
-
-          const order = transaction && transaction.orders.find((order) => order.status === status);
+          const order =
+            transaction &&
+            transaction.orders.find((order) => order.status === status);
 
           return order ? order.count : 0;
         }),
@@ -461,47 +580,58 @@ const Dashboard = (props) => {
       };
 
       setData2(salesData);
-
-
-    }
-    else {
+    } else {
       setData2({
         labels: [],
         datasets: [
           {
             label: "Sales",
             data: [],
-
           },
         ],
-      })
+      });
     }
     if (gallons && gallons.orders && gallons.orders.length > 0) {
-      const RefillTypeNames = [...new Set(gallons.orders[0]["Refill"].flatMap((refills) => refills.orders.map((order) => order.typeName)))];
+      const RefillTypeNames = [
+        ...new Set(
+          gallons.orders[0]["Refill"].flatMap((refills) =>
+            refills.orders.map((order) => order.typeName)
+          )
+        ),
+      ];
 
-      let refillLabel = getRefillLabels(filter2, gallons)
+      let refillLabel = getRefillLabels(filter2, gallons);
 
       const datasets = RefillTypeNames.map((status) => ({
         label: status,
         data: refillLabel.map((labels) => {
           let gallon;
-          if (filter2 === 'daily') {
-            gallon = gallons.orders[0]["Refill"].find((label) => moment(label._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD HH:mm') === labels);
-          }
-          else if (filter2 === 'weekly') {
-            gallon = gallons.orders[0]["Refill"].find((label) => moment(label._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD') === labels);
-          }
-          else if (filter2 === 'monthly' || filter2 === 'yearly') {
-            gallon = gallons.orders[0]["Refill"].find((label) => String(label._id) === labels);
+          if (filter2 === "daily") {
+            gallon = gallons.orders[0]["Refill"].find(
+              (label) =>
+                moment(label._id + "Z")
+                  .tz("Asia/Manila")
+                  .format("YYYY-MM-DD HH:mm") === labels
+            );
+          } else if (filter2 === "weekly") {
+            gallon = gallons.orders[0]["Refill"].find(
+              (label) =>
+                moment(label._id + "Z")
+                  .tz("Asia/Manila")
+                  .format("YYYY-MM-DD") === labels
+            );
+          } else if (filter2 === "monthly" || filter2 === "yearly") {
+            gallon = gallons.orders[0]["Refill"].find(
+              (label) => String(label._id) === labels
+            );
           }
 
-
-          const order = gallon && gallon.orders.find((order) => order.typeName === status);
+          const order =
+            gallon && gallon.orders.find((order) => order.typeName === status);
           return order ? order.count : 0;
         }),
         backgroundColor: getRandomColor(),
       }));
-
 
       let data3 = {
         labels: refillLabel,
@@ -509,24 +639,41 @@ const Dashboard = (props) => {
       };
       setData3(data3);
 
-      const newContainerTypeNames = [...new Set(gallons.orders[0]["New Container"].flatMap((refills) => refills.orders.map((order) => order.typeName)))];
+      const newContainerTypeNames = [
+        ...new Set(
+          gallons.orders[0]["New Container"].flatMap((refills) =>
+            refills.orders.map((order) => order.typeName)
+          )
+        ),
+      ];
 
-      let newContainerLabel = getNewContainerLabels(filter2, gallons)
+      let newContainerLabel = getNewContainerLabels(filter2, gallons);
 
       const newContainerdatasets = newContainerTypeNames.map((status) => ({
         label: status,
         data: newContainerLabel.map((labels) => {
           let gallon;
-          if (filter2 === 'daily') {
-            gallon = gallons.orders[0]["New Container"].find((label) => moment(label._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD HH:mm') === labels);
+          if (filter2 === "daily") {
+            gallon = gallons.orders[0]["New Container"].find(
+              (label) =>
+                moment(label._id + "Z")
+                  .tz("Asia/Manila")
+                  .format("YYYY-MM-DD HH:mm") === labels
+            );
+          } else if (filter2 === "weekly") {
+            gallon = gallons.orders[0]["New Container"].find(
+              (label) =>
+                moment(label._id + "Z")
+                  .tz("Asia/Manila")
+                  .format("YYYY-MM-DD") === labels
+            );
+          } else if (filter2 === "monthly" || filter2 === "yearly") {
+            gallon = gallons.orders[0]["New Container"].find(
+              (label) => String(label._id) === labels
+            );
           }
-          else if (filter2 === 'weekly') {
-            gallon = gallons.orders[0]["New Container"].find((label) => moment(label._id + 'Z').tz('Asia/Manila').format('YYYY-MM-DD') === labels);
-          }
-          else if (filter2 === 'monthly' || filter2 === 'yearly') {
-            gallon = gallons.orders[0]["New Container"].find((label) => String(label._id) === labels);
-          }
-          const order = gallon && gallon.orders.find((order) => order.typeName === status);
+          const order =
+            gallon && gallon.orders.find((order) => order.typeName === status);
           return order ? order.count : 0;
         }),
         backgroundColor: getRandomColor(),
@@ -535,30 +682,27 @@ const Dashboard = (props) => {
       let salesData1 = {
         labels: newContainerLabel,
         datasets: newContainerdatasets,
-      }
+      };
       setData4(salesData1);
-    }
-    else {
+    } else {
       setData3({
         labels: [],
         datasets: [
           {
             label: "Sales",
             data: [],
-
           },
         ],
-      })
+      });
       setData4({
         labels: [],
         datasets: [
           {
             label: "Sales",
             data: [],
-
           },
         ],
-      })
+      });
     }
     if (barangay && barangay.orders && barangay.orders.length > 0) {
       let color = barangay.orders.map(() => getRandomColor());
@@ -573,27 +717,27 @@ const Dashboard = (props) => {
             hoverBackgroundColor: color,
           },
         ],
-      }
+      };
       let options = {
         tooltips: {
           enabled: true,
-          mode: 'single',
+          mode: "single",
           callbacks: {
             label: function (tooltipItems, data) {
               let label = data.labels[tooltipItems.index];
-              let value = data.datasets[tooltipItems.datasetIndex].data[tooltipItems.index];
-              return label + ': ' + value;
-            }
-          }
-        }
+              let value =
+                data.datasets[tooltipItems.datasetIndex].data[
+                  tooltipItems.index
+                ];
+              return label + ": " + value;
+            },
+          },
+        },
       };
       setData5(salesData);
       setOptions(options);
-
-
     }
     if (performance && performance.employees) {
-
       let salesData = {
         labels: performance.employees.map((sale) => sale._id),
         datasets: [
@@ -604,8 +748,8 @@ const Dashboard = (props) => {
             backgroundColor: performance.employees.map(() => getRandomColor()),
           },
         ],
-      }
-      setData6(salesData)
+      };
+      setData6(salesData);
     }
     if (performance && performance.riders) {
       let salesData = {
@@ -618,75 +762,85 @@ const Dashboard = (props) => {
             backgroundColor: performance.riders.map(() => getRandomColor()),
           },
         ],
-      }
-      setData7(salesData)
+      };
+      setData7(salesData);
     }
-    if (currentSalesBranch && currentSalesBranch.salesByBranch && currentSalesBranch.salesByBranch.length > 0) {
-      const labels = totalSalesBranchLabel(filter3, currentSalesBranch)
+    if (
+      currentSalesBranch &&
+      currentSalesBranch.salesByBranch &&
+      currentSalesBranch.salesByBranch.length > 0
+    ) {
+      const labels = totalSalesBranchLabel(filter3, currentSalesBranch);
 
-      const datasets = [{
-        data: labels.map((label) => {
-          let sale;
-          if (filter3 === 'today') {
-            sale = currentSalesBranch.salesByBranch.find((sale) => moment(sale._id.date + 'Z').tz('Asia/Manila').format('YYYY-MM-DD HH:mm') === label)
-          }
-          else if (filter3 === 'week') {
-            sale = currentSalesBranch.salesByBranch.find((sale) => moment(sale._id.date + 'Z').tz('Asia/Manila').format('YYYY-MM-DD') === label)
-          }
-          else if (filter3 === 'month' || filter3 === 'year') {
-            sale = currentSalesBranch.salesByBranch.find((sale) => String(sale._id.date) === label)
-          }
+      const datasets = [
+        {
+          data: labels.map((label) => {
+            let sale;
+            if (filter3 === "today") {
+              sale = currentSalesBranch.salesByBranch.find(
+                (sale) =>
+                  moment(sale._id.date + "Z")
+                    .tz("Asia/Manila")
+                    .format("YYYY-MM-DD HH:mm") === label
+              );
+            } else if (filter3 === "week") {
+              sale = currentSalesBranch.salesByBranch.find(
+                (sale) =>
+                  moment(sale._id.date + "Z")
+                    .tz("Asia/Manila")
+                    .format("YYYY-MM-DD") === label
+              );
+            } else if (filter3 === "month" || filter3 === "year") {
+              sale = currentSalesBranch.salesByBranch.find(
+                (sale) => String(sale._id.date) === label
+              );
+            }
 
-          return sale ? sale.totalSales : 0
-        })
-      }]
+            return sale ? sale.totalSales : 0;
+          }),
+        },
+      ];
       let salesData = {
         labels: labels,
-        datasets: datasets
-      }
-      setData8(salesData)
-    }
-    else {
+        datasets: datasets,
+      };
+      setData8(salesData);
+    } else {
       setData8({
         labels: [],
         datasets: [
           {
             label: "Sales",
             data: [],
-
           },
         ],
-      })
+      });
     }
-
-  }, [sales, transactions, gallons, barangay, performance, currentSalesBranch])
-
+  }, [sales, transactions, gallons, barangay, performance, currentSalesBranch]);
 
   // Function to calculate the total sales of the selected branch
   const getTotalSales = (order, walkin) => {
     if (order.length > 0 || walkin.length > 0) {
-      const totalSalesOrder = order.find((sale) => sale._id === branch)?.totalSales || 0;
-      const totalSalesWalkin = walkin.find((sale) => sale._id === branch)?.totalSales || 0;
-      setTotalSales(totalSalesOrder + totalSalesWalkin)
-      localStorage.setItem("totalSales", totalSalesOrder + totalSalesWalkin)
-
-    }
-    else {
+      const totalSalesOrder =
+        order.find((sale) => sale._id === branch)?.totalSales || 0;
+      const totalSalesWalkin =
+        walkin.find((sale) => sale._id === branch)?.totalSales || 0;
+      setTotalSales(totalSalesOrder + totalSalesWalkin);
+      localStorage.setItem("totalSales", totalSalesOrder + totalSalesWalkin);
+    } else {
       setTotalSales(0);
       localStorage.setItem("totalSales", 0);
     }
-
-  }
+  };
 
   // Change depending on the branch
   useEffect(() => {
-    if (user.role === 'admin') {
+    if (user.role === "admin") {
       if (branch) {
         if (orders && walkinSales) {
           // Get the total sales of the selected branch
-          getTotalSales(orders, walkinSales)
+          getTotalSales(orders, walkinSales);
         }
-
 
         // Get the order transactions of the selected branch
         dispatch(getOrderTransactions(branch, filter1));
@@ -701,18 +855,27 @@ const Dashboard = (props) => {
         dispatch(getSalesOrderByBarangay(branch));
 
         // Get the performance of all employees of the selected branch
-        dispatch(getStaffPerformance(branch, selectedMonth + 1, selectedYear))
+        dispatch(getStaffPerformance(branch, selectedMonth + 1, selectedYear));
 
         //Action for current branch sales
         //Gets the total sales of selected branch
         dispatch(getCurrentBranchSales(branch, filter3));
       }
     }
-  }, [orders, walkinSales, branch, filter1, filter2, filter3, user, selectedMonth, selectedYear])
+  }, [
+    orders,
+    walkinSales,
+    branch,
+    filter1,
+    filter2,
+    filter3,
+    user,
+    selectedMonth,
+    selectedYear,
+  ]);
   // Universal UseEffect
   useEffect(() => {
-    if (user.role === 'admin') {
-      
+    if (user.role === "admin") {
       // Action for sales state
       // Gets the total sales of all stores
       dispatch(allStoreSalesAction(user._id, filter4));
@@ -729,14 +892,14 @@ const Dashboard = (props) => {
       dispatch(allAdminBranches(user._id));
 
       if (error) {
-        dispatch(clearErrors())
+        dispatch(clearErrors());
       }
     }
-  }, [dispatch, error, user, filter4])
+  }, [dispatch, error, user, filter4]);
 
-  useEffect(()=>{
+  useEffect(() => {
     const fetchData = () => {
-      if (user.role === 'admin' && branch) {
+      if (user.role === "admin" && branch) {
         dispatch(getOrderTransactions(branch, filter1));
         dispatch(allProductList(branch));
         dispatch(getOrderByGallonType(branch, filter2));
@@ -744,54 +907,57 @@ const Dashboard = (props) => {
         dispatch(getStaffPerformance(branch, selectedMonth + 1, selectedYear));
         dispatch(getCurrentBranchSales(branch, filter3));
       }
-  
+
       dispatch(allStoreSalesAction(user._id, filter4));
       dispatch(getSalesWalkin());
       dispatch(getSalesOrderByBranch(user._id));
       dispatch(allAdminBranches(user._id));
     };
-    socket.off('newOrder')
-    socket.on('newOrder', ()=>{
+    socket.off("newOrder");
+    socket.on("newOrder", () => {
       fetchData();
-    })
-    return ()=>{
-      socket.off('newOrder')
-    }
-  },[user, branch, filter1, filter2, filter3, filter4, selectedMonth, selectedYear])
+    });
+    return () => {
+      socket.off("newOrder");
+    };
+  }, [
+    user,
+    branch,
+    filter1,
+    filter2,
+    filter3,
+    filter4,
+    selectedMonth,
+    selectedYear,
+  ]);
 
-  
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
   }
 
   const location = useLocation();
 
-
   useEffect(() => {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
-
   }, [location]);
-
 
   useEffect(() => {
     // Listen for 'notification' event from server
-    if (user && user.role === 'admin') {
-      socket.emit('login', { userID: user._id, role: user.role })
+    if (user && user.role === "admin") {
+      socket.emit("login", { userID: user._id, role: user.role });
     }
-    
-  }, [])
+  }, []);
   useEffect(() => {
     const storedBranchId = localStorage.getItem("branch");
     if (storedBranchId) {
       const name = storeBranch.find((branch) => branch._id === storedBranchId);
       setBranch2(name ? name.branch : "");
-    }
-    else {
+    } else {
       const name = storeBranch.find((branches) => branches._id === branch);
       setBranch2(name ? name.branch : "");
     }
-  }, [storeBranch, branch])
+  }, [storeBranch, branch]);
 
   return (
     <>
@@ -811,7 +977,7 @@ const Dashboard = (props) => {
         <Container className="mt--7" fluid>
           {/* Total Sales, Order Sales, Walk in Sales */}
           <Row>
-            <Col className="mb-5 mb-xl-4" xl="4" >
+            <Col className="mb-5 mb-xl-4" xl="4">
               <Card className="shadow card-stats mb-4 mb-xl-0">
                 <CardBody>
                   <Row className="align-items-center">
@@ -821,18 +987,25 @@ const Dashboard = (props) => {
                       </h5>
                       <CardTitle
                         tag="h2"
-                        className="text-uppercase text-black mb-0  font-weight-bolder">
+                        className="text-uppercase text-black mb-0  font-weight-bolder"
+                      >
                         Total Sales
                       </CardTitle>
-
                     </div>
                     <Col className="col-auto">
                       <CardTitle
                         tag="h1"
-                        className="text-uppercase text-primary mb-0 font-weight-bolder">
-                        {totalSales && totalSales > 0 ? `₱${totalSales}` : localStorage.getItem("totalSales") && localStorage.getItem("totalSales") > 0 ? `₱${localStorage.getItem("totalSales")}` : <span className="text-danger">₱0</span>}
+                        className="text-uppercase text-primary mb-0 font-weight-bolder"
+                      >
+                        {totalSales && totalSales > 0 ? (
+                          `₱${totalSales}`
+                        ) : localStorage.getItem("totalSales") &&
+                          localStorage.getItem("totalSales") > 0 ? (
+                          `₱${localStorage.getItem("totalSales")}`
+                        ) : (
+                          <span className="text-danger">₱0</span>
+                        )}
                       </CardTitle>
-
                     </Col>
                   </Row>
                 </CardBody>
@@ -848,18 +1021,27 @@ const Dashboard = (props) => {
                       </h5>
                       <CardTitle
                         tag="h2"
-                        className="text-uppercase text-black mb-0  font-weight-bolder">
+                        className="text-uppercase text-black mb-0  font-weight-bolder"
+                      >
                         Total Sales Ordering
                       </CardTitle>
-
                     </div>
                     <Col className="col-auto">
                       <CardTitle
                         tag="h1"
-                        className="text-uppercase text-primary mb-0 font-weight-bolder">
-                        {orders && branch && orders.find((sale) => sale._id === branch) ? `₱${orders.find((sale) => sale._id === branch).totalSales}` : <span className="text-danger">₱0</span>}
+                        className="text-uppercase text-primary mb-0 font-weight-bolder"
+                      >
+                        {orders &&
+                        branch &&
+                        orders.find((sale) => sale._id === branch) ? (
+                          `₱${
+                            orders.find((sale) => sale._id === branch)
+                              .totalSales
+                          }`
+                        ) : (
+                          <span className="text-danger">₱0</span>
+                        )}
                       </CardTitle>
-
                     </Col>
                   </Row>
                 </CardBody>
@@ -875,18 +1057,27 @@ const Dashboard = (props) => {
                       </h5>
                       <CardTitle
                         tag="h2"
-                        className="text-uppercase text-black mb-0  font-weight-bolder">
+                        className="text-uppercase text-black mb-0  font-weight-bolder"
+                      >
                         Total Sales Walk In
                       </CardTitle>
-
                     </div>
                     <Col className="col-auto">
                       <CardTitle
                         tag="h1"
-                        className="text-uppercase text-primary mb-0 font-weight-bolder">
-                        {walkinSales && branch && walkinSales.find((sale) => sale._id === branch) ? `₱${walkinSales.find((sale) => sale._id === branch).totalSales}` : <span className="text-danger">₱0</span>}
+                        className="text-uppercase text-primary mb-0 font-weight-bolder"
+                      >
+                        {walkinSales &&
+                        branch &&
+                        walkinSales.find((sale) => sale._id === branch) ? (
+                          `₱${
+                            walkinSales.find((sale) => sale._id === branch)
+                              .totalSales
+                          }`
+                        ) : (
+                          <span className="text-danger">₱0</span>
+                        )}
                       </CardTitle>
-
                     </Col>
                   </Row>
                 </CardBody>
@@ -903,10 +1094,33 @@ const Dashboard = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Performance
                       </h6>
-                      <h2 className="mb-0">Order Transactions {branch ? transactions && transactions.transactions && transactions.transactions.length === 0 && <span className="text-danger text-sm">(No results)</span> : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
+                      <h2 className="mb-0">
+                        Order Transactions{" "}
+                        {branch ? (
+                          transactions &&
+                          transactions.transactions &&
+                          transactions.transactions.length === 0 && (
+                            <span className="text-danger text-sm">
+                              (No results)
+                            </span>
+                          )
+                        ) : (
+                          <span className="text-danger text-sm">
+                            (Select a branch)
+                          </span>
+                        )}
+                      </h2>
                     </div>
                     <div className="col d-flex  justify-content-end">
-                      <h2 className="mb-0 text-primary">{filter1 === 'daily' ? new Date().toLocaleDateString() : filter1 === 'weekly' ? "Past 7 days" : filter1 === "monthly" ? "This year" : "Past 5 years"}</h2>
+                      <h2 className="mb-0 text-primary">
+                        {filter1 === "daily"
+                          ? new Date().toLocaleDateString()
+                          : filter1 === "weekly"
+                          ? "Past 7 days"
+                          : filter1 === "monthly"
+                          ? "This year"
+                          : "Past 5 years"}
+                      </h2>
                     </div>
                   </Row>
                   <Row className="align-items-center">
@@ -918,7 +1132,8 @@ const Dashboard = (props) => {
                               active: activeNav === 1,
                             })}
                             href="#pablo"
-                            onClick={(e) => toggleNavs(e, 1)}>
+                            onClick={(e) => toggleNavs(e, 1)}
+                          >
                             <span className="d-none d-md-block">Today</span>
                             <span className="d-md-none">T</span>
                           </NavLink>
@@ -929,7 +1144,8 @@ const Dashboard = (props) => {
                               active: activeNav === 2,
                             })}
                             href="#pablo"
-                            onClick={(e) => toggleNavs(e, 2)}>
+                            onClick={(e) => toggleNavs(e, 2)}
+                          >
                             <span className="d-none d-md-block">Week</span>
                             <span className="d-md-none">W</span>
                           </NavLink>
@@ -941,10 +1157,10 @@ const Dashboard = (props) => {
                             })}
                             data-toggle="tab"
                             href="#pablo"
-                            onClick={(e) => toggleNavs(e, 3)}>
+                            onClick={(e) => toggleNavs(e, 3)}
+                          >
                             <span className="d-none d-md-block">Month</span>
                             <span className="d-md-none">M</span>
-
                           </NavLink>
                         </NavItem>
                         <NavItem>
@@ -953,10 +1169,10 @@ const Dashboard = (props) => {
                               active: activeNav === 4,
                             })}
                             href="#pablo"
-                            onClick={(e) => toggleNavs(e, 4)}>
+                            onClick={(e) => toggleNavs(e, 4)}
+                          >
                             <span className="d-none d-md-block">Year</span>
                             <span className="d-md-none">Y</span>
-
                           </NavLink>
                         </NavItem>
                       </Nav>
@@ -964,12 +1180,8 @@ const Dashboard = (props) => {
                   </Row>
                 </CardHeader>
                 <CardBody>
-
                   <div className="chart">
-                    <Bar
-                      data={data2}
-                      options={options2}
-                    />
+                    <Bar data={data2} options={options2} />
                   </div>
                 </CardBody>
               </Card>
@@ -982,11 +1194,28 @@ const Dashboard = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Performance
                       </h6>
-                      <h2 className="mb-0">Total Sales: ({branch2}) {currentSalesBranch && currentSalesBranch.salesByBranch && currentSalesBranch.salesByBranch.length === 0 && <span className="text-danger text-sm">(No results)</span>}</h2>
+                      <h2 className="mb-0">
+                        Total Sales: ({branch2}){" "}
+                        {currentSalesBranch &&
+                          currentSalesBranch.salesByBranch &&
+                          currentSalesBranch.salesByBranch.length === 0 && (
+                            <span className="text-danger text-sm">
+                              (No results)
+                            </span>
+                          )}
+                      </h2>
                     </div>
 
                     <div className="col d-flex  justify-content-end">
-                      <h2 className="mb-0 text-primary">{filter3 === 'today' ? new Date().toLocaleDateString() : filter3 === 'week' ? "Past 7 days" : filter3 === "month" ? "This year" : "Past 5 years"}</h2>
+                      <h2 className="mb-0 text-primary">
+                        {filter3 === "today"
+                          ? new Date().toLocaleDateString()
+                          : filter3 === "week"
+                          ? "Past 7 days"
+                          : filter3 === "month"
+                          ? "This year"
+                          : "Past 5 years"}
+                      </h2>
                     </div>
                   </Row>
                   <Row className="align-items-center">
@@ -998,7 +1227,8 @@ const Dashboard = (props) => {
                               active: activeNav3 === 1,
                             })}
                             href="#pablo"
-                            onClick={(e) => toggleNavs3(e, 1)}>
+                            onClick={(e) => toggleNavs3(e, 1)}
+                          >
                             <span className="d-none d-md-block">Today</span>
                             <span className="d-md-none">T</span>
                           </NavLink>
@@ -1009,7 +1239,8 @@ const Dashboard = (props) => {
                               active: activeNav3 === 2,
                             })}
                             href="#pablo"
-                            onClick={(e) => toggleNavs3(e, 2)}>
+                            onClick={(e) => toggleNavs3(e, 2)}
+                          >
                             <span className="d-none d-md-block">Week</span>
                             <span className="d-md-none">W</span>
                           </NavLink>
@@ -1021,10 +1252,10 @@ const Dashboard = (props) => {
                             })}
                             data-toggle="tab"
                             href="#pablo"
-                            onClick={(e) => toggleNavs3(e, 3)}>
+                            onClick={(e) => toggleNavs3(e, 3)}
+                          >
                             <span className="d-none d-md-block">Month</span>
                             <span className="d-md-none">M</span>
-
                           </NavLink>
                         </NavItem>
                         <NavItem>
@@ -1033,10 +1264,10 @@ const Dashboard = (props) => {
                               active: activeNav3 === 4,
                             })}
                             href="#pablo"
-                            onClick={(e) => toggleNavs3(e, 4)}>
+                            onClick={(e) => toggleNavs3(e, 4)}
+                          >
                             <span className="d-none d-md-block">Year</span>
                             <span className="d-md-none">Y</span>
-
                           </NavLink>
                         </NavItem>
                       </Nav>
@@ -1056,7 +1287,6 @@ const Dashboard = (props) => {
             </Col>
           </Row>
 
-
           {/*Order Refill, Order New Container */}
           <Row>
             <Col className="mb-5 mb-xl-4" xl="12">
@@ -1068,10 +1298,17 @@ const Dashboard = (props) => {
                         Performance
                       </h6>
                       <h2 className="mb-0">Gallon Type</h2>
-
                     </div>
                     <div className="col d-flex  justify-content-end">
-                      <h2 className="mb-0 text-primary">{filter2 === 'daily' ? new Date().toLocaleDateString() : filter2 === 'weekly' ? "Past 7 days" : filter2 === "monthly" ? "This year" : "Past 5 years"}</h2>
+                      <h2 className="mb-0 text-primary">
+                        {filter2 === "daily"
+                          ? new Date().toLocaleDateString()
+                          : filter2 === "weekly"
+                          ? "Past 7 days"
+                          : filter2 === "monthly"
+                          ? "This year"
+                          : "Past 5 years"}
+                      </h2>
                     </div>
                   </Row>
                   <Row>
@@ -1083,7 +1320,8 @@ const Dashboard = (props) => {
                               active: activeNav2 === 1,
                             })}
                             href="#pablo"
-                            onClick={(e) => toggleNavs2(e, 1)}>
+                            onClick={(e) => toggleNavs2(e, 1)}
+                          >
                             <span className="d-none d-md-block">Today</span>
                             <span className="d-md-none">T</span>
                           </NavLink>
@@ -1094,7 +1332,8 @@ const Dashboard = (props) => {
                               active: activeNav2 === 2,
                             })}
                             href="#pablo"
-                            onClick={(e) => toggleNavs2(e, 2)}>
+                            onClick={(e) => toggleNavs2(e, 2)}
+                          >
                             <span className="d-none d-md-block">Week</span>
                             <span className="d-md-none">W</span>
                           </NavLink>
@@ -1106,10 +1345,10 @@ const Dashboard = (props) => {
                             })}
                             data-toggle="tab"
                             href="#pablo"
-                            onClick={(e) => toggleNavs2(e, 3)}>
+                            onClick={(e) => toggleNavs2(e, 3)}
+                          >
                             <span className="d-none d-md-block">Month</span>
                             <span className="d-md-none">M</span>
-
                           </NavLink>
                         </NavItem>
                         <NavItem>
@@ -1118,10 +1357,10 @@ const Dashboard = (props) => {
                               active: activeNav2 === 4,
                             })}
                             href="#pablo"
-                            onClick={(e) => toggleNavs2(e, 4)}>
+                            onClick={(e) => toggleNavs2(e, 4)}
+                          >
                             <span className="d-none d-md-block">Year</span>
                             <span className="d-md-none">Y</span>
-
                           </NavLink>
                         </NavItem>
                       </Nav>
@@ -1138,17 +1377,36 @@ const Dashboard = (props) => {
                               Type
                             </h6>
 
-                            <h2 className="mb-0">Refill {branch ? (gallons && gallons.orders && gallons.orders.length === 0 ? <span className="text-danger text-sm">(No results)</span> : gallons && gallons.orders && gallons.orders[0].Refill.length === 0 ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
+                            <h2 className="mb-0">
+                              Refill{" "}
+                              {branch ? (
+                                gallons &&
+                                gallons.orders &&
+                                gallons.orders.length === 0 ? (
+                                  <span className="text-danger text-sm">
+                                    (No results)
+                                  </span>
+                                ) : gallons &&
+                                  gallons.orders &&
+                                  gallons.orders[0].Refill.length === 0 ? (
+                                  <span className="text-danger text-sm">
+                                    (No results)
+                                  </span>
+                                ) : (
+                                  ""
+                                )
+                              ) : (
+                                <span className="text-danger text-sm">
+                                  (Select a branch)
+                                </span>
+                              )}
+                            </h2>
                           </div>
-
                         </Row>
                       </CardHeader>
                       <CardBody>
                         <div className="chart">
-                          <Bar
-                            data={data3}
-                            options={options2}
-                          />
+                          <Bar data={data3} options={options2} />
                         </div>
                       </CardBody>
                     </Card>
@@ -1159,19 +1417,37 @@ const Dashboard = (props) => {
                             <h6 className="text-uppercase text-muted ls-1 mb-1">
                               Type
                             </h6>
-                            <h2 className="mb-0">New Container {branch ? (gallons && gallons.orders && gallons.orders.length === 0 ? <span className="text-danger text-sm">(No results)</span> : gallons && gallons.orders && gallons.orders[0]["New Container"].length === 0 ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
-
+                            <h2 className="mb-0">
+                              New Container{" "}
+                              {branch ? (
+                                gallons &&
+                                gallons.orders &&
+                                gallons.orders.length === 0 ? (
+                                  <span className="text-danger text-sm">
+                                    (No results)
+                                  </span>
+                                ) : gallons &&
+                                  gallons.orders &&
+                                  gallons.orders[0]["New Container"].length ===
+                                    0 ? (
+                                  <span className="text-danger text-sm">
+                                    (No results)
+                                  </span>
+                                ) : (
+                                  ""
+                                )
+                              ) : (
+                                <span className="text-danger text-sm">
+                                  (Select a branch)
+                                </span>
+                              )}
+                            </h2>
                           </div>
-
                         </Row>
                       </CardHeader>
                       <CardBody>
-
                         <div className="chart">
-                          <Bar
-                            data={data4}
-                            options={options2}
-                          />
+                          <Bar data={data4} options={options2} />
                         </div>
                       </CardBody>
                     </Card>
@@ -1191,14 +1467,25 @@ const Dashboard = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Inventory
                       </h6>
-                      <h3 className="mb-0">Product Stock {branch ? products && products.length === 0 && <span className="text-danger text-sm">(No results)</span> : <span className="text-danger text-sm">(Select a branch)</span>}</h3>
+                      <h3 className="mb-0">
+                        Product Stock{" "}
+                        {branch ? (
+                          products &&
+                          products.length === 0 && (
+                            <span className="text-danger text-sm">
+                              (No results)
+                            </span>
+                          )
+                        ) : (
+                          <span className="text-danger text-sm">
+                            (Select a branch)
+                          </span>
+                        )}
+                      </h3>
                     </div>
                     <div className="col text-right">
                       <Link to="/admin/product">
-                        <Button
-                          color="primary"
-                          href="#pablo"
-                          size="sm">
+                        <Button color="primary" href="#pablo" size="sm">
                           See all
                         </Button>
                       </Link>
@@ -1210,25 +1497,26 @@ const Dashboard = (props) => {
                     <tr>
                       <th scope="col">Product</th>
                       <th scope="col">Stocks</th>
-
                     </tr>
                   </thead>
                   <tbody className="position-relative h-100">
-                    {products && products.map((product) => {
-                      const activeStocks = product.stocks.filter((stock) => !stock.deleted);
+                    {products &&
+                      products.map((product) => {
+                        const activeStocks = product.stocks.filter(
+                          (stock) => !stock.deleted
+                        );
 
-                      const totalQuantity = activeStocks.reduce(
-                        (acc, stock) => acc + stock.quantity,
-                        0
-                      );
-                      return (
-                        <tr>
-                          <th>{product.typesgallon.typeofGallon}</th>
-                          <td>{totalQuantity}</td>
-
-                        </tr>
-                      )
-                    })}
+                        const totalQuantity = activeStocks.reduce(
+                          (acc, stock) => acc + stock.quantity,
+                          0
+                        );
+                        return (
+                          <tr>
+                            <th>{product.typesgallon.typeofGallon}</th>
+                            <td>{totalQuantity}</td>
+                          </tr>
+                        );
+                      })}
                   </tbody>
                 </Table>
               </Card>
@@ -1241,35 +1529,68 @@ const Dashboard = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Performance
                       </h6>
-                      <h2 className="mb-0">Sales By Barangay {branch ? ((barangay && Object.keys(barangay).length === 0) ? <span className="text-danger text-sm">(No results)</span> : (barangay.orders && barangay.orders.length === 0) ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
+                      <h2 className="mb-0">
+                        Sales By Barangay{" "}
+                        {branch ? (
+                          barangay && Object.keys(barangay).length === 0 ? (
+                            <span className="text-danger text-sm">
+                              (No results)
+                            </span>
+                          ) : barangay.orders &&
+                            barangay.orders.length === 0 ? (
+                            <span className="text-danger text-sm">
+                              (No results)
+                            </span>
+                          ) : (
+                            ""
+                          )
+                        ) : (
+                          <span className="text-danger text-sm">
+                            (Select a branch)
+                          </span>
+                        )}
+                      </h2>
                     </div>
                   </Row>
-
                 </CardHeader>
                 <CardBody>
                   <div className="d-flex align-items-center justify-content-center">
                     <div className="chart">
                       <Pie data={data5} options={options} />
-
                     </div>
                     <div className="mt-5">
-                      {barangay && barangay.orders && barangay.orders.map((item, index) => (
-                        <div key={index} className="w-100 px-4">
-                          <div className="d-flex w-100 justify-content-center align-items-center">
-                            <div className="mr-2 block mb-3 rounded-circle" style={{ width: '10px', height: '10px', backgroundColor: `${colors[index]}` }}></div>
-                            <p className="d-flex w-100 justify-content-between text-sm font-medium text-black">
-                              <span> {item._id}</span>
-                              <span className="ml-3"> {((item.count / barangay.totalOrders) * 100).toFixed(2)}%</span>
-                              <span className="ml-3">({item.count}) </span>
-                            </p>
+                      {barangay &&
+                        barangay.orders &&
+                        barangay.orders.map((item, index) => (
+                          <div key={index} className="w-100 px-4">
+                            <div className="d-flex w-100 justify-content-center align-items-center">
+                              <div
+                                className="mr-2 block mb-3 rounded-circle"
+                                style={{
+                                  width: "10px",
+                                  height: "10px",
+                                  backgroundColor: `${colors[index]}`,
+                                }}
+                              ></div>
+                              <p className="d-flex w-100 justify-content-between text-sm font-medium text-black">
+                                <span> {item._id}</span>
+                                <span className="ml-3">
+                                  {" "}
+                                  {(
+                                    (item.count / barangay.totalOrders) *
+                                    100
+                                  ).toFixed(2)}
+                                  %
+                                </span>
+                                <span className="ml-3">({item.count}) </span>
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
                     </div>
                   </div>
                 </CardBody>
               </Card>
-
             </Col>
           </Row>
           {/* Employee Accepted orders and Rider Delivered orders */}
@@ -1283,7 +1604,6 @@ const Dashboard = (props) => {
                         Performance
                       </h6>
                       <h2 className="mb-0">Staff Performance Ranking</h2>
-
                     </div>
                     <Col className="d-flex justify-content-end z-3" xl="6">
                       <Dropdown>
@@ -1293,7 +1613,13 @@ const Dashboard = (props) => {
 
                         <Dropdown.Menu>
                           {months.map((month, index) => (
-                            <Dropdown.Item key={index} eventKey={index + 1} onClick={() => handleMonthFilter(month, index)}>{month}</Dropdown.Item>
+                            <Dropdown.Item
+                              key={index}
+                              eventKey={index + 1}
+                              onClick={() => handleMonthFilter(month, index)}
+                            >
+                              {month}
+                            </Dropdown.Item>
                           ))}
                         </Dropdown.Menu>
                       </Dropdown>
@@ -1304,14 +1630,18 @@ const Dashboard = (props) => {
 
                         <Dropdown.Menu>
                           {years.map((year, index) => (
-                            <Dropdown.Item key={index} eventKey={index + 1} onClick={() => handleYearFilter(year, index)}>{year}</Dropdown.Item>
+                            <Dropdown.Item
+                              key={index}
+                              eventKey={index + 1}
+                              onClick={() => handleYearFilter(year, index)}
+                            >
+                              {year}
+                            </Dropdown.Item>
                           ))}
                         </Dropdown.Menu>
                       </Dropdown>
-
                     </Col>
                   </Row>
-
                 </CardHeader>
                 <CardBody>
                   <CardDeck className="mb-3">
@@ -1322,40 +1652,103 @@ const Dashboard = (props) => {
                             <h6 className="text-uppercase text-muted ls-1 mb-1">
                               Staff Type
                             </h6>
-                            <h2 className="mb-0">Employee {branch ? (performance && Object.keys(performance).length === 0 ?
-                              <span className="text-danger text-sm">(No results)</span> : (performance.employees && performance.employees.length === 0) ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
+                            <h2 className="mb-0">
+                              Employee{" "}
+                              {branch ? (
+                                performance &&
+                                Object.keys(performance).length === 0 ? (
+                                  <span className="text-danger text-sm">
+                                    (No results)
+                                  </span>
+                                ) : performance.employees &&
+                                  performance.employees.length === 0 ? (
+                                  <span className="text-danger text-sm">
+                                    (No results)
+                                  </span>
+                                ) : (
+                                  ""
+                                )
+                              ) : (
+                                <span className="text-danger text-sm">
+                                  (Select a branch)
+                                </span>
+                              )}
+                            </h2>
                           </Col>
-
                         </Row>
-
                       </CardHeader>
 
                       <CardBody>
-                        <Table className="align-items-center table-flush" responsive>
+                        <Table
+                          className="align-items-center table-flush"
+                          responsive
+                        >
                           <thead className="thead-light">
                             <tr>
-                              <th scope="col" className="text-center">Rank</th>
+                              <th scope="col" className="text-center">
+                                Rank
+                              </th>
                               <th scope="col">Name</th>
                               <th scope="col">Accepted Orders</th>
-
                             </tr>
                           </thead>
                           <tbody className="position-relative h-100">
-                            {performance && performance.employees && performance.employees
-                              .sort((a, b) => b.count - a.count)
-                              .map((employee, index) => {
-                                return (
-                                  <tr key={index}>
-                                    <th className="text-center">{((index + 1) === 1) ? <img src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199793/AQUATIC_DRAGON/1_hxgypi.png" style={{ width: '50px', height: 'auto' }} /> : ((index + 1) === 2) ? <img src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199794/AQUATIC_DRAGON/2_zz2j3b.png" style={{ width: '50px', height: 'auto' }} /> : ((index + 1) === 3) ? <img src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199794/AQUATIC_DRAGON/3_xq7e4w.png" style={{ width: '50px', height: 'auto' }} /> : <span style={{ fontSize: '20px', display: 'inline-block', verticalAlign: 'middle' }}>{index + 1}</span>}</th>
-                                    <th style={{ fontSize: '16px' }}>{employee.name}</th>
-                                    <td style={{ fontSize: '16px' }}>{employee.count}</td>
-                                  </tr>
-                                );
-                              })}
+                            {performance &&
+                              performance.employees &&
+                              performance.employees
+                                .sort((a, b) => b.count - a.count)
+                                .map((employee, index) => {
+                                  return (
+                                    <tr key={index}>
+                                      <th className="text-center">
+                                        {index + 1 === 1 ? (
+                                          <img
+                                            src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199793/AQUATIC_DRAGON/1_hxgypi.png"
+                                            style={{
+                                              width: "50px",
+                                              height: "auto",
+                                            }}
+                                          />
+                                        ) : index + 1 === 2 ? (
+                                          <img
+                                            src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199794/AQUATIC_DRAGON/2_zz2j3b.png"
+                                            style={{
+                                              width: "50px",
+                                              height: "auto",
+                                            }}
+                                          />
+                                        ) : index + 1 === 3 ? (
+                                          <img
+                                            src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199794/AQUATIC_DRAGON/3_xq7e4w.png"
+                                            style={{
+                                              width: "50px",
+                                              height: "auto",
+                                            }}
+                                          />
+                                        ) : (
+                                          <span
+                                            style={{
+                                              fontSize: "20px",
+                                              display: "inline-block",
+                                              verticalAlign: "middle",
+                                            }}
+                                          >
+                                            {index + 1}
+                                          </span>
+                                        )}
+                                      </th>
+                                      <th style={{ fontSize: "16px" }}>
+                                        {employee.name}
+                                      </th>
+                                      <td style={{ fontSize: "16px" }}>
+                                        {employee.count}
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
                           </tbody>
                         </Table>
                       </CardBody>
-
                     </Card>
                     <Card className="shadow">
                       <CardHeader className="bg-transparent">
@@ -1364,37 +1757,101 @@ const Dashboard = (props) => {
                             <h6 className="text-uppercase text-muted ls-1 mb-1">
                               Staff Type
                             </h6>
-                            <h2 className="mb-0">Rider {branch ? (performance && Object.keys(performance).length === 0 ?
-                              <span className="text-danger text-sm">(No results)</span> : (performance.riders && performance.riders.length === 0) ? <span className="text-danger text-sm">(No results)</span> : "") : <span className="text-danger text-sm">(Select a branch)</span>}</h2>
+                            <h2 className="mb-0">
+                              Rider{" "}
+                              {branch ? (
+                                performance &&
+                                Object.keys(performance).length === 0 ? (
+                                  <span className="text-danger text-sm">
+                                    (No results)
+                                  </span>
+                                ) : performance.riders &&
+                                  performance.riders.length === 0 ? (
+                                  <span className="text-danger text-sm">
+                                    (No results)
+                                  </span>
+                                ) : (
+                                  ""
+                                )
+                              ) : (
+                                <span className="text-danger text-sm">
+                                  (Select a branch)
+                                </span>
+                              )}
+                            </h2>
                           </Col>
-
                         </Row>
                       </CardHeader>
                       <CardBody>
-                        <Table className="align-items-center table-flush" responsive>
+                        <Table
+                          className="align-items-center table-flush"
+                          responsive
+                        >
                           <thead className="thead-light">
                             <tr>
-                              <th scope="col" className="text-center">Rank</th>
+                              <th scope="col" className="text-center">
+                                Rank
+                              </th>
                               <th scope="col">Name</th>
                               <th scope="col">Delivered Orders</th>
-
                             </tr>
                           </thead>
                           <tbody className="position-relative h-100">
-                            {performance && performance.riders && performance.riders
-                              .sort((a, b) => b.count - a.count)
-                              .map((rider, index) => {
-                                return (
-                                  <tr key={index}>
-                                    <th className="text-center">{((index + 1) === 1) ? <img src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199793/AQUATIC_DRAGON/1_hxgypi.png" style={{ width: '50px', height: 'auto' }} /> : ((index + 1) === 2) ? <img src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199794/AQUATIC_DRAGON/2_zz2j3b.png" style={{ width: '50px', height: 'auto' }} /> : ((index + 1) === 3) ? <img src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199794/AQUATIC_DRAGON/3_xq7e4w.png" style={{ width: '50px', height: 'auto' }} /> : <span style={{ fontSize: '20px', display: 'inline-block', verticalAlign: 'middle' }}>{index + 1}</span>}</th>
-                                    <th style={{ fontSize: '16px' }}>{rider.name}</th>
-                                    <td style={{ fontSize: '16px' }}>{rider.count}</td>
-                                  </tr>
-                                );
-                              })}
+                            {performance &&
+                              performance.riders &&
+                              performance.riders
+                                .sort((a, b) => b.count - a.count)
+                                .map((rider, index) => {
+                                  return (
+                                    <tr key={index}>
+                                      <th className="text-center">
+                                        {index + 1 === 1 ? (
+                                          <img
+                                            src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199793/AQUATIC_DRAGON/1_hxgypi.png"
+                                            style={{
+                                              width: "50px",
+                                              height: "auto",
+                                            }}
+                                          />
+                                        ) : index + 1 === 2 ? (
+                                          <img
+                                            src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199794/AQUATIC_DRAGON/2_zz2j3b.png"
+                                            style={{
+                                              width: "50px",
+                                              height: "auto",
+                                            }}
+                                          />
+                                        ) : index + 1 === 3 ? (
+                                          <img
+                                            src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199794/AQUATIC_DRAGON/3_xq7e4w.png"
+                                            style={{
+                                              width: "50px",
+                                              height: "auto",
+                                            }}
+                                          />
+                                        ) : (
+                                          <span
+                                            style={{
+                                              fontSize: "20px",
+                                              display: "inline-block",
+                                              verticalAlign: "middle",
+                                            }}
+                                          >
+                                            {index + 1}
+                                          </span>
+                                        )}
+                                      </th>
+                                      <th style={{ fontSize: "16px" }}>
+                                        {rider.name}
+                                      </th>
+                                      <td style={{ fontSize: "16px" }}>
+                                        {rider.count}
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
                           </tbody>
                         </Table>
-
                       </CardBody>
                     </Card>
                   </CardDeck>
@@ -1402,8 +1859,6 @@ const Dashboard = (props) => {
               </Card>
             </Col>
           </Row>
-
-
 
           {/* Total Sales By Branch */}
           <Row>
@@ -1415,7 +1870,14 @@ const Dashboard = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Performance
                       </h6>
-                      <h2 className="mb-0">Total Sales By Branch {sales && sales.length === 0 && <span className="text-danger text-sm">(No results)</span>}</h2>
+                      <h2 className="mb-0">
+                        Total Sales By Branch{" "}
+                        {sales && sales.length === 0 && (
+                          <span className="text-danger text-sm">
+                            (No results)
+                          </span>
+                        )}
+                      </h2>
                     </div>
                   </Row>
                   <Row className="align-items-center">
@@ -1427,7 +1889,8 @@ const Dashboard = (props) => {
                               active: activeNav4 === 1,
                             })}
                             href="#pablo"
-                            onClick={(e) => toggleNavs4(e, 1)}>
+                            onClick={(e) => toggleNavs4(e, 1)}
+                          >
                             <span className="d-none d-md-block">Today</span>
                             <span className="d-md-none">T</span>
                           </NavLink>
@@ -1438,7 +1901,8 @@ const Dashboard = (props) => {
                               active: activeNav4 === 2,
                             })}
                             href="#pablo"
-                            onClick={(e) => toggleNavs4(e, 2)}>
+                            onClick={(e) => toggleNavs4(e, 2)}
+                          >
                             <span className="d-none d-md-block">Week</span>
                             <span className="d-md-none">W</span>
                           </NavLink>
@@ -1450,10 +1914,10 @@ const Dashboard = (props) => {
                             })}
                             data-toggle="tab"
                             href="#pablo"
-                            onClick={(e) => toggleNavs4(e, 3)}>
+                            onClick={(e) => toggleNavs4(e, 3)}
+                          >
                             <span className="d-none d-md-block">Month</span>
                             <span className="d-md-none">M</span>
-
                           </NavLink>
                         </NavItem>
                         <NavItem>
@@ -1462,10 +1926,10 @@ const Dashboard = (props) => {
                               active: activeNav4 === 4,
                             })}
                             href="#pablo"
-                            onClick={(e) => toggleNavs4(e, 4)}>
+                            onClick={(e) => toggleNavs4(e, 4)}
+                          >
                             <span className="d-none d-md-block">Year</span>
                             <span className="d-md-none">Y</span>
-
                           </NavLink>
                         </NavItem>
                       </Nav>
@@ -1473,21 +1937,20 @@ const Dashboard = (props) => {
                   </Row>
                 </CardHeader>
                 <CardBody>
-
                   <div className="chart">
                     <Bar
                       data={data}
                       options={{
-                        ...options2, scales: {
+                        ...options2,
+                        scales: {
                           yAxes: [{ stacked: false }],
-                          xAxes: [{ stacked: false }]
-                        }
+                          xAxes: [{ stacked: false }],
+                        },
                       }}
                     />
                   </div>
                 </CardBody>
               </Card>
-
             </Col>
           </Row>
 

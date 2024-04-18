@@ -16,7 +16,10 @@ const storeBarangayHealthSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-
+  expiryDate: {
+    type: Date,
+    required: true,
+  },
   certPotability: {
     public_id: {
       type: String,

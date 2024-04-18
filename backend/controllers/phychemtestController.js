@@ -6,6 +6,8 @@ const mongoose = require("mongoose");
 exports.createPhyChemTest = async (req, res, next) => {
   try {
     const { dateTested } = req.body;
+    const expiryDate = new Date(dateTested);
+    expiryDate.setMonth(expiryDate.getMonth() + 6);
     const result = await new Promise((resolve, reject) => {
       cloudinary.v2.uploader.upload(
         req.body.certImage,

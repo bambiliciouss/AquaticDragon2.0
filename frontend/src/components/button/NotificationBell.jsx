@@ -3,8 +3,9 @@ import Dropdown from 'react-bootstrap/Dropdown'
 import Badge from 'react-bootstrap/Badge';
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell } from '@fortawesome/free-solid-svg-icons';
+import { faBell,faHourglassHalf, faTruckFast } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux'
+
 import socket from '../../socket'
 const NotificationBell = ({ notifications, unreadCount, toggleDropdown }) => {
     const { user } = useSelector(state => state.auth)
@@ -50,10 +51,26 @@ const NotificationBell = ({ notifications, unreadCount, toggleDropdown }) => {
         toggleDropdown();
         setIsOpen((prevIsOpen) => !prevIsOpen);
     }, [toggleDropdown]);
-    const markAsRead = (id, orderid) => {
+    const markAsRead = (id, orderid,renewal, documentType) => {
         if (user.role === 'admin') {
-            socket.emit('readNotification', { adminId: user._id, notificationId: id })
-            navigate(`/update/order/${orderid}`)
+            if (renewal){
+                socket.emit('readRenewalNotification', { adminId: user._id, notificationId: id })
+                if (documentType === 'businessPermitID'){
+                    navigate(`/update/store/businesspermit/${orderid}`)
+                }
+                if (documentType === 'PhyChemID'){
+                    navigate(`/physicalchemtest/update/${orderid}`)
+                }
+                if (documentType === 'PotabilityID'){
+                    navigate(`/update/store/barangayhealth/${orderid}`)
+                }
+                
+            }
+            else{
+                socket.emit('readNotification', { adminId: user._id, notificationId: id })
+                navigate(`/update/order/${orderid}`)
+            }
+            
         }
         if (user.role === 'employee') {
             socket.emit('readNotification', { adminId: user._id, notificationId: id })
@@ -98,8 +115,13 @@ const NotificationBell = ({ notifications, unreadCount, toggleDropdown }) => {
 
             <Dropdown.Menu as={CustomMenu} className="custom-dropdown-menu">
                 {notifications.length > 0 ? notifications.map((notification, index) => (
-                    <Dropdown.Item key={index} eventKey={index} onClick={() => markAsRead(notification.notificationId, notification.order)}>
-                        ({notification.title}): {notification.message}
+                    <Dropdown.Item key={index} eventKey={index} onClick={() => markAsRead(notification.notificationId, notification.order, notification.renewal, notification.documentType ? notification.documentType : '')}>
+                        {notification.renewal ? 
+                        (<>
+                        <p className="text-danger" style={{fontWeight: 'bold'}}><FontAwesomeIcon icon={faHourglassHalf} size="lg" className="text-danger" /> ({notification.title})</p>{notification.message}
+                        </>):(<>
+                            <p className="text-primary" style={{fontWeight: 'bold'}}><FontAwesomeIcon icon={faTruckFast} size="lg" className="text-primary" /> ({notification.title})</p> {notification.message}
+                        </>)}
                     </Dropdown.Item>
                 )) : <Dropdown.Item disabled>No notifications</Dropdown.Item>}
             </Dropdown.Menu>

@@ -30,6 +30,9 @@ exports.createBusinessPermit = async (req, res, next) => {
     const storeId = req.params.id;
     const userId = req.user.id;
 
+    // Calculate the expiry date
+    const expiryDate = new Date(dateIssued);
+    expiryDate.setFullYear(expiryDate.getFullYear() + 1);
     // Create the business permit
     const businessPermit = await BusinessPermit.create({
       user: userId,
@@ -40,6 +43,7 @@ exports.createBusinessPermit = async (req, res, next) => {
       },
 
       dateIssued,
+      expiryDate
     });
 
     // Send response

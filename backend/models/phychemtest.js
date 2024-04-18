@@ -27,7 +27,10 @@ const phychemTestSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-
+  expiryDate: {
+    type: Date,
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
