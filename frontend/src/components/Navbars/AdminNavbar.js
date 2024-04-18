@@ -53,9 +53,10 @@ const AdminNavbar = (props) => {
     swal("Logout Sucessfully", "", "success");
   };
   const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [riderNotifications, setRiderNotifications] = useState([]);
   const [riderUnreadCount, setRiderUnreadCount] = useState(0);
-  const [unreadCount, setUnreadCount] = useState(0);
+
   const [renewalNotifications, setRenewalNotifications] = useState([]);
   const [renewalUnreadCount, setRenewalUnreadCount] = useState(0);
   const [orderCount, setOrderCount] = useState(0);
@@ -82,6 +83,7 @@ const AdminNavbar = (props) => {
             notificationId: notification._id,
             order: notification.documentType === 'PotabilityID' ? notification.PotabilityID : notification.documentType === 'businessPermitID' ? notification.businessPermitID : notification.PhyChemID,
             documentType: notification.documentType,
+            createdAt: notification.createdAt,
             renewal: true,
           },
         ]);
@@ -114,6 +116,7 @@ const AdminNavbar = (props) => {
             title: item.title,
             notificationId: item._id,
             order: item.orders._id,
+            createdAt: item.createdAt,
             renewal: false,
           },
         ]);

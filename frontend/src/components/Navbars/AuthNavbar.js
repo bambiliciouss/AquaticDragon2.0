@@ -33,7 +33,7 @@ import {
   Button,
   DropdownItem,
 } from "reactstrap";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useMemo} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../actions/userActions";
 import { useNavigate } from "react-router-dom";
@@ -47,10 +47,12 @@ const AdminNavbar = () => {
   const { cartProductItems } = useSelector((state) => state.cartProduct);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [customerNotifications, setCustomerNotifications] = useState([]);
+  const [customerUnreadCount, setCustomerUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  
-
+  const [renewalNotifications, setRenewalNotifications] = useState([]);
+  const [renewalUnreadCount, setRenewalUnreadCount] = useState(0);
 
   const [orderCount, setOrderCount] = useState(0);
 
@@ -84,8 +86,49 @@ const AdminNavbar = () => {
     );
   };
   const toggleDropdown = () => {
-    setUnreadCount(0); // Reset unread count when dropdown is opened
+    if (user && user.role === 'admin'){
+      setUnreadCount(0); // Reset unread count when dropdown is opened
+      setRenewalUnreadCount(0);
+    }
+    else if (user && user.role === 'user'){
+      setCustomerUnreadCount(0);
+   
+    }
+    
   };
+  useEffect(()=>{
+    socket.on('triggerRenewalNotification', ()=>{
+      socket.emit('fetchRenewalNotification', {adminId: user._id})
+    })
+    return ()=>{
+      socket.off('triggerRenewalNotification')
+    }
+  },[])
+  useEffect(() => {
+    socket.on("notifyAdmin", (data) => {
+      console.log("notifyAdmin", data);
+      setRenewalNotifications([]);
+      setRenewalUnreadCount(0);
+      data.forEach((notification) => {
+        setRenewalNotifications((prevNotifications) => [
+          ...prevNotifications,
+          {
+            message: notification.message,
+            title: notification.title,
+            notificationId: notification._id,
+            order: notification.documentType === 'PotabilityID' ? notification.PotabilityID : notification.documentType === 'businessPermitID' ? notification.businessPermitID : notification.PhyChemID,
+            documentType: notification.documentType,
+            createdAt: notification.createdAt,
+            renewal: true,
+          },
+        ]);
+        setRenewalUnreadCount((prevCount) => prevCount + 1);
+      });
+    });
+    return () => {
+      socket.off("notifyAdmin");
+    };
+  }, []);
   useEffect(()=>{
     if (user && user.role === 'user'){
       socket.emit('login', {userID: user._id, role: user.role})
@@ -94,12 +137,12 @@ const AdminNavbar = () => {
     socket.off('customerNotification');
     socket.on('customerNotification', (data) => {
       console.log('riderNotification', data);
-      setNotifications([])
-      setUnreadCount(0);
+      setCustomerNotifications([])
+      setCustomerUnreadCount(0);
       data.forEach((item, index) => {
      
-        setNotifications(prevNotifications => [...prevNotifications, { message: item.message, title: item.title, notificationId: item._id, order: item.order }]);
-        setUnreadCount(prevCount => prevCount + 1);
+        setCustomerNotifications(prevNotifications => [...prevNotifications, { message: item.message, title: item.title, notificationId: item._id, order: item.order, createdAt: item.createdAt}]);
+        setCustomerUnreadCount(prevCount => prevCount + 1);
       
       });
       if (data.length > 0){
@@ -107,12 +150,50 @@ const AdminNavbar = () => {
       }
     })
   },[])
+  useEffect(() => {
+    if (user && user.role === 'admin'){
+      socket.emit('login', { userID: user._id, role: user.role })
+    }
+    
+    socket.off("notification");
+    socket.on("notification", (data) => {
+      // Broadcast the received message to all connected clients
 
+      setNotifications([]);
+      setUnreadCount(0);
+      data.forEach((item, index) => {
+        const refill = item.orders.orderItems.length;
+
+        const newItem = item.orders.orderProducts.length;
+
+        const fullMessage = `${refill} refill, ${newItem} new container`;
+
+        setNotifications((prevNotifications) => [
+          ...prevNotifications,
+          {
+            message: fullMessage,
+            title: item.title,
+            notificationId: item._id,
+            order: item.orders._id,
+            renewal: false,
+            createdAt: item.createdAt,
+          },
+        ]);
+        setUnreadCount((prevCount) => prevCount + 1);
+      });
+
+      if (data.length > 0) {
+        setOrderCount(data.length);
+      }
+    });
+  }, []);
   useEffect(()=>{
     if (orderCount){
       toast.success(`You have ${orderCount} new notification(s)`)
     }
   },[orderCount])
+  const combinedNotifications = useMemo(() => [...renewalNotifications, ...notifications], [renewalNotifications, notifications]);
+  const combinedUnreadCount = useMemo(() => renewalUnreadCount + unreadCount, [renewalUnreadCount, unreadCount]);
   return (
     <>
       <Navbar
@@ -262,7 +343,8 @@ const AdminNavbar = () => {
                   <span className="nav-link-inner--text">Profile</span>
                 </NavLink>
               </NavItem> */}
-              <NotificationBell notifications={notifications} unreadCount={unreadCount} toggleDropdown={toggleDropdown} />
+              {user && user.role === 'user' && <NotificationBell notifications={customerNotifications} unreadCount={customerUnreadCount} toggleDropdown={toggleDropdown} />}
+              {user && user.role === 'admin' && <NotificationBell notifications={combinedNotifications} unreadCount={combinedUnreadCount} toggleDropdown={toggleDropdown} />}
             </Nav>
           </UncontrolledCollapse>
         </Container>

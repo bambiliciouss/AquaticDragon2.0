@@ -22,7 +22,11 @@ const customerNotificationSchema = new mongoose.Schema({
     read: {
         type: Boolean,
         default: false,
-    }
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
 });
 
 
