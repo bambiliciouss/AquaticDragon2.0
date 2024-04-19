@@ -80,8 +80,12 @@ import {
   getStaffPerformance,
   clearErrors,
   getCurrentBranchSales,
+  getAllUserReviewsByBranch,
 } from "../../actions/adminAction"; // Actions for sales, walkin sales, order sales, order transactions, order gallon type, barangay sales, staff performance
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faStar
+} from "@fortawesome/free-solid-svg-icons";
 import { allAdminBranches } from "actions/storebranchActions";
 import { useDispatch, useSelector } from "react-redux";
 const Dashboard = (props) => {
@@ -97,6 +101,7 @@ const Dashboard = (props) => {
   const { products } = useSelector((state) => state.allProducts); // Get the inventory of all products
   const { orders: barangay } = useSelector((state) => state.adminSalesBarangay); // Get the sales of all barangays
   const { performance } = useSelector((state) => state.adminStaffPerformance); // Get the performance of all employees
+  const { reviews } = useSelector((state) => state.adminReview);
   const { sales: currentSalesBranch } = useSelector(
     (state) => state.adminCurrentBranchSales
   ); // Get the total sales of selected branch
@@ -120,6 +125,13 @@ const Dashboard = (props) => {
   for (let year = 2024; year <= currentYear; year++) {
     years.push(year);
   }
+  const [reviewSelectedYear, setReviewSelectedYear] = useState(currentYear);
+  const [reviewSelectedMonth, setReviewSelectedMonth] = useState(
+    new Date().getMonth()
+  );
+  const [reviewMonthName, setReviewMonthName] = useState(
+    months[reviewSelectedMonth]
+  );
   const [selectedYear, setSelectedYear] = useState(currentYear); // Selected year (number)
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth()); // Selected month (number)
   const [monthName, setMonthName] = useState(months[selectedMonth]); // Selected month name (String)
@@ -312,8 +324,16 @@ const Dashboard = (props) => {
 
     setSelectedMonth(index);
   };
+  const handleReviewMonthFilter = (month, index) => {
+    setReviewMonthName(month);
+
+    setReviewSelectedMonth(index);
+  };
   const handleYearFilter = (year) => {
     setSelectedYear(year);
+  };
+  const handleReviewYearFilter = (year) => {
+    setReviewSelectedYear(year);
   };
 
   // Random color generator from the same hue
@@ -857,6 +877,9 @@ const Dashboard = (props) => {
         // Get the performance of all employees of the selected branch
         dispatch(getStaffPerformance(branch, selectedMonth + 1, selectedYear));
 
+        //Get all reviews by branch
+        dispatch(getAllUserReviewsByBranch(branch, reviewSelectedMonth + 1, reviewSelectedYear));
+
         //Action for current branch sales
         //Gets the total sales of selected branch
         dispatch(getCurrentBranchSales(branch, filter3));
@@ -872,6 +895,8 @@ const Dashboard = (props) => {
     user,
     selectedMonth,
     selectedYear,
+    reviewSelectedMonth,
+    reviewSelectedYear,
   ]);
   // Universal UseEffect
   useEffect(() => {
@@ -906,6 +931,7 @@ const Dashboard = (props) => {
         dispatch(getSalesOrderByBarangay(branch));
         dispatch(getStaffPerformance(branch, selectedMonth + 1, selectedYear));
         dispatch(getCurrentBranchSales(branch, filter3));
+        dispatch(getAllUserReviewsByBranch(branch));
       }
 
       dispatch(allStoreSalesAction(user._id, filter4));
@@ -1286,7 +1312,6 @@ const Dashboard = (props) => {
               </Card>
             </Col>
           </Row>
-
           {/*Order Refill, Order New Container */}
           <Row>
             <Col className="mb-5 mb-xl-4" xl="12">
@@ -1456,7 +1481,6 @@ const Dashboard = (props) => {
               </Card>
             </Col>
           </Row>
-
           {/* Product Inventory, Barangays */}
           <Row>
             <Col className="mb-5 mb-xl-4" xl="6">
@@ -1679,75 +1703,77 @@ const Dashboard = (props) => {
                       </CardHeader>
 
                       <CardBody>
-                        <Table
-                          className="align-items-center table-flush"
-                          responsive
-                        >
-                          <thead className="thead-light">
-                            <tr>
-                              <th scope="col" className="text-center">
-                                Rank
-                              </th>
-                              <th scope="col">Name</th>
-                              <th scope="col">Accepted Orders</th>
-                            </tr>
-                          </thead>
-                          <tbody className="position-relative h-100">
-                            {performance &&
-                              performance.employees &&
-                              performance.employees
-                                .sort((a, b) => b.count - a.count)
-                                .map((employee, index) => {
-                                  return (
-                                    <tr key={index}>
-                                      <th className="text-center">
-                                        {index + 1 === 1 ? (
-                                          <img
-                                            src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199793/AQUATIC_DRAGON/1_hxgypi.png"
-                                            style={{
-                                              width: "50px",
-                                              height: "auto",
-                                            }}
-                                          />
-                                        ) : index + 1 === 2 ? (
-                                          <img
-                                            src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199794/AQUATIC_DRAGON/2_zz2j3b.png"
-                                            style={{
-                                              width: "50px",
-                                              height: "auto",
-                                            }}
-                                          />
-                                        ) : index + 1 === 3 ? (
-                                          <img
-                                            src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199794/AQUATIC_DRAGON/3_xq7e4w.png"
-                                            style={{
-                                              width: "50px",
-                                              height: "auto",
-                                            }}
-                                          />
-                                        ) : (
-                                          <span
-                                            style={{
-                                              fontSize: "20px",
-                                              display: "inline-block",
-                                              verticalAlign: "middle",
-                                            }}
-                                          >
-                                            {index + 1}
-                                          </span>
-                                        )}
-                                      </th>
-                                      <th style={{ fontSize: "16px" }}>
-                                        {employee.name}
-                                      </th>
-                                      <td style={{ fontSize: "16px" }}>
-                                        {employee.count}
-                                      </td>
-                                    </tr>
-                                  );
-                                })}
-                          </tbody>
-                        </Table>
+                        <div style={{ maxHeight: "300px", overflowY: "auto" }}>
+                          <Table
+                            className="align-items-center table-flush"
+                            responsive
+                          >
+                            <thead className="thead-light">
+                              <tr>
+                                <th scope="col" className="text-center">
+                                  Rank
+                                </th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Accepted Orders</th>
+                              </tr>
+                            </thead>
+                            <tbody className="position-relative h-100">
+                              {performance &&
+                                performance.employees &&
+                                performance.employees
+                                  .sort((a, b) => b.count - a.count)
+                                  .map((employee, index) => {
+                                    return (
+                                      <tr key={index}>
+                                        <th className="text-center">
+                                          {index + 1 === 1 ? (
+                                            <img
+                                              src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199793/AQUATIC_DRAGON/1_hxgypi.png"
+                                              style={{
+                                                width: "50px",
+                                                height: "auto",
+                                              }}
+                                            />
+                                          ) : index + 1 === 2 ? (
+                                            <img
+                                              src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199794/AQUATIC_DRAGON/2_zz2j3b.png"
+                                              style={{
+                                                width: "50px",
+                                                height: "auto",
+                                              }}
+                                            />
+                                          ) : index + 1 === 3 ? (
+                                            <img
+                                              src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199794/AQUATIC_DRAGON/3_xq7e4w.png"
+                                              style={{
+                                                width: "50px",
+                                                height: "auto",
+                                              }}
+                                            />
+                                          ) : (
+                                            <span
+                                              style={{
+                                                fontSize: "20px",
+                                                display: "inline-block",
+                                                verticalAlign: "middle",
+                                              }}
+                                            >
+                                              {index + 1}
+                                            </span>
+                                          )}
+                                        </th>
+                                        <th style={{ fontSize: "16px" }}>
+                                          {employee.name}
+                                        </th>
+                                        <td style={{ fontSize: "16px" }}>
+                                          {employee.count}
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                            </tbody>
+                          </Table>
+                        </div>
                       </CardBody>
                     </Card>
                     <Card className="shadow">
@@ -1783,75 +1809,77 @@ const Dashboard = (props) => {
                         </Row>
                       </CardHeader>
                       <CardBody>
-                        <Table
-                          className="align-items-center table-flush"
-                          responsive
-                        >
-                          <thead className="thead-light">
-                            <tr>
-                              <th scope="col" className="text-center">
-                                Rank
-                              </th>
-                              <th scope="col">Name</th>
-                              <th scope="col">Delivered Orders</th>
-                            </tr>
-                          </thead>
-                          <tbody className="position-relative h-100">
-                            {performance &&
-                              performance.riders &&
-                              performance.riders
-                                .sort((a, b) => b.count - a.count)
-                                .map((rider, index) => {
-                                  return (
-                                    <tr key={index}>
-                                      <th className="text-center">
-                                        {index + 1 === 1 ? (
-                                          <img
-                                            src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199793/AQUATIC_DRAGON/1_hxgypi.png"
-                                            style={{
-                                              width: "50px",
-                                              height: "auto",
-                                            }}
-                                          />
-                                        ) : index + 1 === 2 ? (
-                                          <img
-                                            src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199794/AQUATIC_DRAGON/2_zz2j3b.png"
-                                            style={{
-                                              width: "50px",
-                                              height: "auto",
-                                            }}
-                                          />
-                                        ) : index + 1 === 3 ? (
-                                          <img
-                                            src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199794/AQUATIC_DRAGON/3_xq7e4w.png"
-                                            style={{
-                                              width: "50px",
-                                              height: "auto",
-                                            }}
-                                          />
-                                        ) : (
-                                          <span
-                                            style={{
-                                              fontSize: "20px",
-                                              display: "inline-block",
-                                              verticalAlign: "middle",
-                                            }}
-                                          >
-                                            {index + 1}
-                                          </span>
-                                        )}
-                                      </th>
-                                      <th style={{ fontSize: "16px" }}>
-                                        {rider.name}
-                                      </th>
-                                      <td style={{ fontSize: "16px" }}>
-                                        {rider.count}
-                                      </td>
-                                    </tr>
-                                  );
-                                })}
-                          </tbody>
-                        </Table>
+                        <div style={{ maxHeight: "300px", overflowY: "auto" }}>
+                          <Table
+                            className="align-items-center table-flush"
+                            responsive
+                          >
+                            <thead className="thead-light">
+                              <tr>
+                                <th scope="col" className="text-center">
+                                  Rank
+                                </th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Delivered Orders</th>
+                              </tr>
+                            </thead>
+                            <tbody className="position-relative h-100">
+                              {performance &&
+                                performance.riders &&
+                                performance.riders
+                                  .sort((a, b) => b.count - a.count)
+                                  .map((rider, index) => {
+                                    return (
+                                      <tr key={index}>
+                                        <th className="text-center">
+                                          {index + 1 === 1 ? (
+                                            <img
+                                              src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199793/AQUATIC_DRAGON/1_hxgypi.png"
+                                              style={{
+                                                width: "50px",
+                                                height: "auto",
+                                              }}
+                                            />
+                                          ) : index + 1 === 2 ? (
+                                            <img
+                                              src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199794/AQUATIC_DRAGON/2_zz2j3b.png"
+                                              style={{
+                                                width: "50px",
+                                                height: "auto",
+                                              }}
+                                            />
+                                          ) : index + 1 === 3 ? (
+                                            <img
+                                              src="https://res.cloudinary.com/dtrr0ihcb/image/upload/v1713199794/AQUATIC_DRAGON/3_xq7e4w.png"
+                                              style={{
+                                                width: "50px",
+                                                height: "auto",
+                                              }}
+                                            />
+                                          ) : (
+                                            <span
+                                              style={{
+                                                fontSize: "20px",
+                                                display: "inline-block",
+                                                verticalAlign: "middle",
+                                              }}
+                                            >
+                                              {index + 1}
+                                            </span>
+                                          )}
+                                        </th>
+                                        <th style={{ fontSize: "16px" }}>
+                                          {rider.name}
+                                        </th>
+                                        <td style={{ fontSize: "16px" }}>
+                                          {rider.count}
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                            </tbody>
+                          </Table>
+                        </div>
                       </CardBody>
                     </Card>
                   </CardDeck>
@@ -1859,7 +1887,104 @@ const Dashboard = (props) => {
               </Card>
             </Col>
           </Row>
+          {/* Comments */}
+          <Row>
+            <Col className="mb-5 mb-xl-4" xl="12">
+              <Card className="shadow">
+                <CardHeader>
+                  <Row className="align-items-center mb-3">
+                    <div className="col">
+                      <h6 className="text-uppercase text-muted ls-1 mb-1">
+                        Feedback
+                      </h6>
+                      <h2 className="mb-0">Customer Reviews</h2>
+                      <h2 className="mb-0">Average Rating {reviews && reviews.length > 0 ?( <>{reviews.reduce((acc,item)=>acc + item._id.rating,0)/(reviews.length).toFixed(2)} <FontAwesomeIcon icon={faStar} size="sm" color="#FFD700"/></> ): "No reviews yet"}</h2>
+                    </div>
+                    <Col className="d-flex justify-content-end z-3" xl="6">
+                      <Dropdown>
+                        <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                          {reviewMonthName ? reviewMonthName : "Select Month"}
+                        </Dropdown.Toggle>
 
+                        <Dropdown.Menu>
+                          {months.map((month, index) => (
+                            <Dropdown.Item
+                              key={index}
+                              eventKey={index + 1}
+                              onClick={() =>
+                                handleReviewMonthFilter(month, index)
+                              }
+                            >
+                              {month}
+                            </Dropdown.Item>
+                          ))}
+                        </Dropdown.Menu>
+                      </Dropdown>
+                      <Dropdown>
+                        <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                          {reviewSelectedYear ? reviewSelectedYear : "Select Year"}
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                          {years.map((year, index) => (
+                            <Dropdown.Item
+                              key={index}
+                              eventKey={index + 1}
+                              onClick={() =>
+                                handleReviewYearFilter(year, index)
+                              }
+                            >
+                              {year}
+                            </Dropdown.Item>
+                          ))}
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </Col>
+                  </Row>
+                </CardHeader>
+                <CardBody>
+                  <div style={{ maxHeight: "300px", overflowY: "auto" }}>
+                    <Table
+                      className="align-items-center table-flush"
+                      responsive
+                    >
+                      <thead className="thead-light">
+                        <tr>
+                          <th scope="col" className="text-center">
+                            User
+                          </th>
+                          <th scope="col">Comment</th>
+                          <th scope="col">Ratings</th>
+                          <th scope="col">Store Branch</th>
+                        </tr>
+                      </thead>
+
+                      <tbody className="position-relative h-100">
+                        {reviews &&
+                          reviews.map((review, index) => {
+                            return (
+                              <tr key={index}>
+                                <th className="text-center">{review._id.userID}</th>
+                                <th style={{ fontSize: "16px" }}>
+                                  {review._id.comment}
+                                </th>
+                                <th style={{ fontSize: "16px" }}>
+                                  {review._id.rating}
+                                </th>
+                                <th style={{ fontSize: "16px" }}>
+                                  {review._id.branchName}
+                                </th>
+                              </tr>
+                            );
+                          })}
+                      </tbody>
+                    </Table>
+                  </div>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+          zx
           {/* Total Sales By Branch */}
           <Row>
             <Col className="mb-5 mb-xl-4" xl="12">
@@ -1953,7 +2078,6 @@ const Dashboard = (props) => {
               </Card>
             </Col>
           </Row>
-
           {/* Template */}
           {/* <Row>
           <Col xl="4">

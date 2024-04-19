@@ -64,9 +64,31 @@ import {
     GET_SINGLE_REVIEW_REQUEST,
     GET_SINGLE_REVIEW_SUCCESS,
     GET_SINGLE_REVIEW_FAIL,
+    GET_ADMIN_REVIEW_REQUEST,
+    GET_ADMIN_REVIEW_SUCCESS,
+    GET_ADMIN_REVIEW_FAIL,
     CLEAR_ERRORS,
 } from "../constants/adminConstants";
 import axios from 'axios'
+
+export const getAllUserReviewsByBranch = (id, month='1', year='2024') => async (dispatch) => {
+    try {
+        dispatch({ type: GET_ADMIN_REVIEW_REQUEST });
+        const { data } = await axios.get(`/api/v1/admin/reviews/${id}/?month=${month}&year=${year}`);
+        dispatch({
+            type: GET_ADMIN_REVIEW_SUCCESS,
+            payload: data.reviews,
+        });
+    } catch (error) {
+        dispatch({
+            type: GET_ADMIN_REVIEW_FAIL,
+            payload: error.response
+                ? error.response.data.message
+                : "Unknown error occurred",
+        });
+    }
+
+}
 
 export const updateSingleReview = (id, reviewData) => async (dispatch) => {
     try {

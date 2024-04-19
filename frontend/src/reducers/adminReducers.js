@@ -55,8 +55,39 @@ import {
   GET_SINGLE_REVIEW_REQUEST,
   GET_SINGLE_REVIEW_SUCCESS,
   GET_SINGLE_REVIEW_FAIL,
+  GET_ADMIN_REVIEW_REQUEST,
+  GET_ADMIN_REVIEW_SUCCESS,
+  GET_ADMIN_REVIEW_FAIL,
   CLEAR_ERRORS,
 } from "../constants/adminConstants";
+
+export const adminReviewReducer = (state = { reviews: [] }, action) => {
+    switch (action.type) {
+        case GET_ADMIN_REVIEW_REQUEST:
+        return {
+            loading: true,
+            reviews: [],
+        };
+        case GET_ADMIN_REVIEW_SUCCESS:
+        return {
+            loading: false,
+            reviews: action.payload,
+        };
+        case GET_ADMIN_REVIEW_FAIL:
+        return {
+            loading: false,
+            error: action.payload,
+        };
+        case CLEAR_ERRORS:
+        return {
+            ...state,
+            error: null,
+        };
+        default:
+        return state;
+    }
+    
+}
 
 export const reviewReducer = (state = { reviews: [] }, action) => {
   switch (action.type) {

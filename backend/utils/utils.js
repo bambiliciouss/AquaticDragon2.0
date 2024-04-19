@@ -79,7 +79,7 @@ exports.notifyAdmin = async (io) => {
     // Calculate the date 1 week before the expiry date
     const oneWeekBeforeExpiry = new Date(cert.expiryDate);
     oneWeekBeforeExpiry.setDate(oneWeekBeforeExpiry.getDate() - 7);
-    today = oneWeekBeforeExpiry;
+    // today = oneWeekBeforeExpiry;
     // Check if today's date is equal to one week before the expiry date
     if (
       today.toISOString().slice(0, 10) ===

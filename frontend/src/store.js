@@ -136,6 +136,7 @@ import {
 } from "reducers/superadminReducers";
 import { employeeBranchReducer } from "reducers/adminReducers";
 import { reviewReducer } from "reducers/adminReducers";
+import { adminReviewReducer } from "reducers/adminReducers";
 
 const reducers = combineReducers({
   adminStoreSales: allStoreSalesReducer,
@@ -153,6 +154,7 @@ const reducers = combineReducers({
   employeeOrderSales: employeeOrderSalesReducer,
 
   review: reviewReducer,
+  adminReview: adminReviewReducer,
 
   auth: authReducer,
   user: userReducer,
