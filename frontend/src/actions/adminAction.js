@@ -49,9 +49,127 @@ import {
     EMPLOYEE_ORDER_SALES_REQUEST,
     EMPLOYEE_ORDER_SALES_SUCCESS,
     EMPLOYEE_ORDER_SALES_FAIL,
+    CREATE_REVIEW_REQUEST,
+    CREATE_REVIEW_SUCCESS,
+    CREATE_REVIEW_FAIL,
+    UPDATE_REVIEW_REQUEST,
+    UPDATE_REVIEW_SUCCESS,
+    UPDATE_REVIEW_FAIL,
+    DELETE_REVIEW_REQUEST,
+    DELETE_REVIEW_SUCCESS,
+    DELETE_REVIEW_FAIL,
+    GET_REVIEW_REQUEST,
+    GET_REVIEW_SUCCESS,
+    GET_REVIEW_FAIL,
+    GET_SINGLE_REVIEW_REQUEST,
+    GET_SINGLE_REVIEW_SUCCESS,
+    GET_SINGLE_REVIEW_FAIL,
     CLEAR_ERRORS,
 } from "../constants/adminConstants";
 import axios from 'axios'
+
+export const updateSingleReview = (id, reviewData) => async (dispatch) => {
+    try {
+        dispatch({ type: UPDATE_REVIEW_REQUEST });
+        const config = {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        };
+        const { data } = await axios.put(`/api/v1/user/review/${id}`, reviewData, config);
+        dispatch({
+            type: UPDATE_REVIEW_SUCCESS,
+            payload: data.success,
+        });
+    } catch (error) {
+        dispatch({
+            type: UPDATE_REVIEW_FAIL,
+            payload: error.response
+                ? error.response.data.message
+                : "Unknown error occurred",
+        });
+    }
+
+
+}
+export const getSingleReview = (id) => async (dispatch) => {
+    try {
+        dispatch({ type: GET_SINGLE_REVIEW_REQUEST });
+        const { data } = await axios.get(`/api/v1/user/review/${id}`);
+        dispatch({
+            type: GET_SINGLE_REVIEW_SUCCESS,
+            payload: data.review,
+        });
+        
+    } catch (error) {
+        dispatch({
+            type: GET_SINGLE_REVIEW_FAIL,
+            payload: error.response
+                ? error.response.data.message
+                : "Unknown error occurred",
+        });
+    }
+
+}
+export const createReview = (reviewData) => async (dispatch) => {
+    try {
+        dispatch({ type: CREATE_REVIEW_REQUEST });
+        const config = {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        };
+        const { data } = await axios.post(`/api/v1/create/review`, reviewData, config);
+        dispatch({
+            type: CREATE_REVIEW_SUCCESS,
+            payload: data.success,
+        });
+    } catch (error) {
+        dispatch({
+            type: CREATE_REVIEW_FAIL,
+            payload: error.response
+                ? error.response.data.message
+                : "Unknown error occurred",
+        });
+    }
+
+}
+
+export const  getUserReviews = (id, order) => async (dispatch) => {
+    try {
+        dispatch({ type: GET_REVIEW_REQUEST });
+        const { data } = await axios.get(`/api/v1/user/reviews/${id}/${order}`);
+        dispatch({
+            type: GET_REVIEW_SUCCESS,
+            payload: data.reviews,
+        });
+    } catch (error) {
+        dispatch({
+            type: GET_REVIEW_FAIL,
+            payload: error.response
+                ? error.response.data.message
+                : "Unknown error occurred",
+        });
+    }
+}
+export const deleteReview = (comment) => async (dispatch) => {
+    try {
+        dispatch({ type: DELETE_REVIEW_REQUEST });
+        const { data } = await axios.delete(`/api/v1/user/review/${comment}`);
+        dispatch({
+            type: DELETE_REVIEW_SUCCESS,
+            payload: data.success,
+        });
+    } catch (error) {
+        dispatch({
+            type: DELETE_REVIEW_FAIL,
+            payload: error.response
+                ? error.response.data.message
+                : "Unknown error occurred",
+        });
+    }
+
+}
 export const allStoreSalesAction = (id, filter="") => async (dispatch) => {
     try {
         dispatch({ type: ALL_STORE_SALES_REQUEST });

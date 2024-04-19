@@ -96,6 +96,9 @@ const AdminNavbar = (props) => {
   }, []);
 
   useEffect(() => {
+    if (user && user.role === 'admin'){
+      socket.emit('login', {userID: user._id, role: user.role})
+    }
     socket.off("notification");
     socket.on("notification", (data) => {
       // Broadcast the received message to all connected clients

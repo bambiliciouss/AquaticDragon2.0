@@ -942,12 +942,12 @@ const Dashboard = (props) => {
     document.scrollingElement.scrollTop = 0;
   }, [location]);
 
-  useEffect(() => {
-    // Listen for 'notification' event from server
-    if (user && user.role === "admin") {
-      socket.emit("login", { userID: user._id, role: user.role });
-    }
-  }, []);
+  // useEffect(() => {
+  //   // Listen for 'notification' event from server
+  //   if (user && user.role === "admin") {
+  //     socket.emit("login", { userID: user._id, role: user.role });
+  //   }
+  // }, []);
   useEffect(() => {
     const storedBranchId = localStorage.getItem("branch");
     if (storedBranchId) {

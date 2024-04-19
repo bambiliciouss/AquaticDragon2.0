@@ -16,6 +16,7 @@ const phyChemTest = require("./routes/phychemtest");
 const businesspermit = require("./routes/businesspermit");
 const storeaddress = require("./routes/storeaddress");
 const superadmin = require("./routes/superadmin");
+const review = require('./routes/review')
 const errorMiddleware = require("./middlewares/errors");
 
 app.use(cookieParser());
@@ -27,6 +28,9 @@ app.use(cors({
     origin: 'http://localhost:3000',
     credentials: true
 }));
+
+
+app.use("/api/v1", review);
 app.use("/api/v1", auth);
 app.use("/api/v1", gallon);
 app.use("/api/v1", storeBranch);
