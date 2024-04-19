@@ -379,10 +379,10 @@ export const getStaffPerformance = (id, month='1', year='2024') => async (dispat
     }
 }
 
-export const getCurrentBranchSales = (id, filter="month") => async (dispatch) => {
+export const getCurrentBranchSales = (id, filter="today") => async (dispatch) => {
     try {
         dispatch({ type: CURRENT_STORE_SALES_REQUEST });
-        const { data } = await axios.get(`/api/v1/admin/store/sales/${id}/?filter=${filter}`);
+        const { data } = await axios.get(`/api/v1/admin/all/current/sales/${id}/?filter=${filter}`);
         dispatch({
             type: CURRENT_STORE_SALES_SUCCESS,
             payload: data,

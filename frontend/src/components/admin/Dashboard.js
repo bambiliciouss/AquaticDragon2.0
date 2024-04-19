@@ -430,8 +430,8 @@ const Dashboard = (props) => {
   };
   const totalSalesBranchLabel = (filter, data) => {
     if (filter === "today") {
-      return data.salesByBranch.map((sale) =>
-        moment(sale._id.date + "Z")
+      return data.totalSales.map((sale) =>
+        moment(sale._id + "Z")
           .tz("Asia/Manila")
           .format("YYYY-MM-DD HH:mm")
       );
@@ -787,36 +787,37 @@ const Dashboard = (props) => {
     }
     if (
       currentSalesBranch &&
-      currentSalesBranch.salesByBranch &&
-      currentSalesBranch.salesByBranch.length > 0
+      currentSalesBranch.totalSales &&
+      currentSalesBranch.totalSales.length > 0
     ) {
       const labels = totalSalesBranchLabel(filter3, currentSalesBranch);
-
+      let acc=0;
       const datasets = [
         {
           data: labels.map((label) => {
             let sale;
+            
             if (filter3 === "today") {
-              sale = currentSalesBranch.salesByBranch.find(
+              sale = currentSalesBranch.totalSales.find(
                 (sale) =>
-                  moment(sale._id.date + "Z")
+                  moment(sale._id + "Z")
                     .tz("Asia/Manila")
                     .format("YYYY-MM-DD HH:mm") === label
               );
             } else if (filter3 === "week") {
-              sale = currentSalesBranch.salesByBranch.find(
+              sale = currentSalesBranch.totalSales.find(
                 (sale) =>
-                  moment(sale._id.date + "Z")
+                  moment(sale._id + "Z")
                     .tz("Asia/Manila")
                     .format("YYYY-MM-DD") === label
               );
             } else if (filter3 === "month" || filter3 === "year") {
-              sale = currentSalesBranch.salesByBranch.find(
-                (sale) => String(sale._id.date) === label
+              sale = currentSalesBranch.totalSales.find(
+                (sale) => String(sale._id) === label
               );
             }
-
-            return sale ? sale.totalSales : 0;
+            acc = sale ? sale.totalSales + acc : acc + 0;
+            return sale ? acc : 0;
           }),
         },
       ];
@@ -1984,7 +1985,7 @@ const Dashboard = (props) => {
               </Card>
             </Col>
           </Row>
-          zx
+          
           {/* Total Sales By Branch */}
           <Row>
             <Col className="mb-5 mb-xl-4" xl="12">
