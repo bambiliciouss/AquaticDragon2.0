@@ -491,40 +491,49 @@ const Dashboard = (props) => {
           )
         ),
       ];
-      let acc = {};
+     
       //Generate labels
       const labels = getAllSalesLabels(filter4, sales);
-      const datasets = branches.map((status) => ({
-        label: status,
-        data: labels.map((label) => {
-          let sale;
-          if (filter4 === "today") {
-            sale = sales.totalSales.find(
-              (transaction) =>
-                moment(transaction._id + "Z")
-                  .tz("Asia/Manila")
-                  .format("YYYY-MM-DD HH:mm") === label
-            );
-          } else if (filter4 === "week") {
-            sale = sales.totalSales.find(
-              (transaction) =>
-                moment(transaction._id + "Z")
-                  .tz("Asia/Manila")
-                  .format("YYYY-MM-DD") === label
-            );
-          } else if (filter4 === "month" || filter4 === "year") {
-            sale = sales.totalSales.find(
-              (transaction) => String(transaction._id) === label
-            );
-          }
-          const order = sale && sale.branches.find((order) => order.branch === status);
-          if (order){
-            acc[status] = (acc[status] || 0) + order.totalSales
-          }
-          return acc[status] || 0;
-        }),
-        backgroundColor: getRandomColor(),
-      }));
+      const datasets = branches.map((status) => {
+        let acc = {}; // Move the acc object inside the map function
+        return {
+          label: status,
+          data: labels.map((label) => {
+            let sale;
+            if (filter4 === "today") {
+              sale = sales.totalSales.find(
+                (transaction) =>
+                  moment(transaction._id + "Z")
+                    .tz("Asia/Manila")
+                    .format("YYYY-MM-DD HH:mm") === label
+              );
+            } else if (filter4 === "week") {
+              sale = sales.totalSales.find(
+                (transaction) =>
+                  moment(transaction._id + "Z")
+                    .tz("Asia/Manila")
+                    .format("YYYY-MM-DD") === label
+              );
+            } else if (filter4 === "month" || filter4 === "year") {
+              sale = sales.totalSales.find(
+                (transaction) => String(transaction._id) === label
+              );
+            }
+            // const order = sale && sale.branches.find((order) => order.branch === status);
+            if (sale){
+              sale.branches.forEach((branch)=>{
+                if (branch.branch === status){
+                  acc[status] = (acc[status] || 0) + branch.totalSales
+                }
+              })
+            }
+           
+            
+            return acc[status] || 0;
+          }),
+          backgroundColor: getRandomColor(),
+        };
+      });
       let salesData = {
         labels,
         datasets,
@@ -1908,10 +1917,10 @@ const Dashboard = (props) => {
                         Average Rating{" "}
                         {reviews && reviews.length > 0 ? (
                           <>
-                            {reviews.reduce(
+                            {(reviews.reduce(
                               (acc, item) => acc + item._id.rating,
                               0
-                            ) / reviews.length.toFixed(2)}{" "}
+                            ) / reviews.length).toFixed(1)}{" "}
                             <FontAwesomeIcon
                               icon={faStar}
                               size="sm"

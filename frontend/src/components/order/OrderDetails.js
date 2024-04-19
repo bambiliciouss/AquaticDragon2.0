@@ -189,7 +189,7 @@ const OrderDetails = () => {
           <Card className="bg-secondary shadow">
             <CardHeader className="bg-white border-0">
               <Row className="align-items-center">
-                <Col xs="9">
+                <Col lg="6" xl="9">
                   <h3 className="mb-0">Order Details</h3>
                 </Col>
                 {user &&
@@ -198,7 +198,7 @@ const OrderDetails = () => {
                   orderStatus.some(
                     (status) => status.orderLevel === "Delivered"
                   ) && (
-                    <Col md="3">
+                    <Col lg="6" xl="3">
                       <Button
                         block
                         className="mb-3"
