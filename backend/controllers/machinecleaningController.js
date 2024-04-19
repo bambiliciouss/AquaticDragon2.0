@@ -5,34 +5,22 @@ const mongoose = require("mongoose");
 
 exports.createMachineCleaningRecord = async (req, res, next) => {
   try {
-    const result = await new Promise((resolve, reject) => {
-      cloudinary.v2.uploader.upload(
-        req.body.cleaningImage,
-        {
-          folder: "machinecleaning",
-          width: 150,
-          crop: "scale",
-        },
-        (err, res) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(res);
-          }
-        }
-      );
-    });
     const storeId = req.params.id;
-    const { notes } = req.body;
+    const { dateIssued } = req.body;
+    const dateIssuedObj = new Date(dateIssued);
 
+    // Create a new Date object for the expiry date
+    const expiryDate = new Date(dateIssuedObj);
+
+    // Add 6 months to the expiry date
+    expiryDate.setMonth(expiryDate.getMonth() + 6);
+    const selectedItems = JSON.parse(req.body.selectedItems);
     const machinecleaning = await MachineCleaning.create({
       user: req.user.id,
       storebranch: storeId,
-      cleaningImage: {
-        public_id: result.public_id,
-        url: result.secure_url,
-      },
-      notes,
+      checklist: selectedItems,
+      dateIssued: new Date(dateIssued),
+      expiryDate
     });
 
     res.status(201).json({
@@ -120,31 +108,14 @@ exports.getAllStoreMachineCleaningDetails = async (req, res, next) => {
 // };
 
 exports.updateStoreMachineCleaning = async (req, res, next) => {
+  const { dateIssued } = req.body;
+  console.log("req.body", dateIssued);
   const newStoreData = {
-    notes: req.body.notes,
+    checklist: JSON.parse(req.body.selectedItems),
+    dateIssued: new Date(req.body.dateIssued),
   };
 
   try {
-    if (req.body.cleaningImage && req.body.cleaningImage !== "") {
-      const machine = await MachineCleaning.findById(req.params.id);
-      const image_id = machine.cleaningImage.public_id;
-      const res = await cloudinary.uploader.destroy(image_id);
-      const result = await cloudinary.v2.uploader.upload(
-        req.body.cleaningImage,
-        {
-          folder: "machinecleaning",
-          width: 150,
-          crop: "scale",
-        },
-        (err) => {
-          console.log(err);
-        }
-      );
-      newStoreData.cleaningImage = {
-        public_id: result.public_id,
-        url: result.secure_url,
-      };
-    }
     const machineCleaning = await MachineCleaning.findByIdAndUpdate(
       req.params.id,
       newStoreData,
@@ -159,6 +130,7 @@ exports.updateStoreMachineCleaning = async (req, res, next) => {
       message: "pasok bhie",
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

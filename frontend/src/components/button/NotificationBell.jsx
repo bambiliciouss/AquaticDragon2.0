@@ -70,6 +70,9 @@ const NotificationBell = ({ notifications, unreadCount, toggleDropdown }) => {
         if (documentType === "PotabilityID") {
           navigate(`/update/store/barangayhealth/${orderid}`);
         }
+        if (documentType === "MachineCleaningID") {
+          navigate(`/update/store/machincecleaning/${orderid}`);
+        }
       } else {
         socket.emit("readNotification", {
           adminId: user._id,

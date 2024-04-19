@@ -7,7 +7,7 @@ import MetaData from "components/layout/MetaData";
 import AdminNavbar from "components/Navbars/AdminNavbar";
 import Header2 from "components/Headers/Header2";
 import AdminFooter from "components/Footers/AdminFooter.js";
-
+import { useForm } from "react-hook-form"; // Import the useForm hook
 import swal from "sweetalert";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -33,6 +33,8 @@ import {
   InputGroupText,
   InputGroup,
   Form,
+  Label,
+  Input,
 } from "reactstrap";
 
 import {
@@ -44,6 +46,7 @@ import {
 import {
   UPDATE_MACHINECLEANING_RESET,
   DELETE_MACHINECLEANING_RESET,
+  SINGLE_MACHINECLEANING_RESET,
 } from "../../constants/machinecleaningConstants";
 
 const UpdateMachineCleaning = () => {
@@ -65,15 +68,38 @@ const UpdateMachineCleaning = () => {
   const [cleaningImagePreview, setCleaningImagePreview] = useState(
     "/images/default_avatar.jpg"
   );
-
+  const [dateIssued, setDateIssued] = useState(new Date());
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    setValue
+  } = useForm();
+  const [selectedItems, setSelectedItems] = useState({
+    cleanTank: false,
+    cleanPipeline: false,
+    cleanSedimentFilters: false,
+    cleanBrineTank: false,
+    replaceTank: false,
+    replaceBoosterPump: false,
+    replacePipelines: false,
+    replaceSedimentFilter: false,
+  });
+  const handleCheckboxChange = (event) => {
+    setSelectedItems({
+      ...selectedItems,
+      [event.target.name]: event.target.checked,
+    });
+  };
   useEffect(() => {
     //setRole("rider");
 
     if (machinecleaningdetails && machinecleaningdetails._id !== id) {
       dispatch(singleMachineCleaningRecord(id));
     } else {
-      setNotes(machinecleaningdetails.notes);
-      setCleaningImagePreview(machinecleaningdetails.cleaningImage.url);
+      setSelectedItems(machinecleaningdetails.checklist);
+      setDateIssued(new Date(machinecleaningdetails.dateIssued));
       setStoreId(machinecleaningdetails.storebranch);
     }
 
@@ -90,6 +116,9 @@ const UpdateMachineCleaning = () => {
       dispatch({
         type: UPDATE_MACHINECLEANING_RESET,
       });
+      dispatch({
+        type: SINGLE_MACHINECLEANING_RESET
+      })
     }
 
     if (isDeleted) {
@@ -97,13 +126,24 @@ const UpdateMachineCleaning = () => {
       dispatch({ type: DELETE_MACHINECLEANING_RESET });
     }
   }, [dispatch, error, isUpdated, navigate, machinecleaningdetails, isDeleted]);
-
+  useEffect(() => {
+    setValue("cleanTank", selectedItems.cleanTank);
+    setValue("cleanPipeline", selectedItems.cleanPipeline);
+    setValue("cleanSedimentFilters", selectedItems.cleanSedimentFilters);
+    setValue("cleanBrineTank", selectedItems.cleanBrineTank);
+    setValue("replaceBoosterPump", selectedItems.replaceBoosterPump);
+    setValue("replaceTank", selectedItems.replaceTank);
+    setValue("replacePipelines", selectedItems.replacePipelines);
+    setValue("replaceSedimentFilter", selectedItems.replaceSedimentFilter);
+    setValue("dateIssued", dateIssued.toISOString().split("T")[0]);
+  }, [selectedItems, dateIssued, setValue]);
   const submitHandler = (e) => {
-    e.preventDefault();
+    
 
     const formData = new FormData();
-    formData.append("notes", notes);
-    formData.append("cleaningImage", cleaningImage);
+    console.log('dateIssued', e.dateIssued)
+    formData.set("dateIssued", e.dateIssued);
+    formData.set("selectedItems", JSON.stringify(selectedItems));
 
     dispatch(updateMachineCleaning(machinecleaningdetails._id, formData));
     //console.log(formData)
@@ -124,8 +164,8 @@ const UpdateMachineCleaning = () => {
   // };
   const onChange = (e) => {
     const file = e.target.files[0];
-    const allowedImageTypes = ['image/png', 'image/jpeg', 'image/jpg']; // Allowed image file types
-  
+    const allowedImageTypes = ["image/png", "image/jpeg", "image/jpg"]; // Allowed image file types
+
     if (e.target.name === "cleaningImage") {
       if (file && allowedImageTypes.includes(file.type)) {
         const reader = new FileReader();
@@ -135,14 +175,13 @@ const UpdateMachineCleaning = () => {
             setCleaningImage(reader.result);
           }
         };
-  
+
         reader.readAsDataURL(e.target.files[0]);
       } else {
         swal("Please select a valid image file (PNG, JPEG, JPG).", "", "error");
-        e.target.value = null; 
+        e.target.value = null;
       }
-    } 
-  
+    }
   };
   return (
     <>
@@ -172,64 +211,140 @@ const UpdateMachineCleaning = () => {
                         </Row>
                       </CardHeader>
                       <CardBody>
-                        <Form
-                          onSubmit={submitHandler}
-                          encType="multipart/form-data">
+                        <Form role="form" onSubmit={handleSubmit(submitHandler)}>
                           <Row>
-                            <Col lg="3">
-                              <label className="form-control-label">
-                                Documentation
-                              </label>
+                            <Col md="12">
+                              <h5>Cleaning Checklist</h5>
+                              <FormGroup check>
+                                <Label check>
+                                  <Input
+                                    type="checkbox"
+                                    name="cleanTank"
+                                    checked={selectedItems.cleanTank}
+                                    onChange={handleCheckboxChange}
+                                  />{" "}
+                                  Tank
+                                </Label>
+                              </FormGroup>
+                              <FormGroup check>
+                                <Label check>
+                                  <Input
+                                    type="checkbox"
+                                    name="cleanPipeline"
+                                    checked={selectedItems.cleanPipeline}
+                                    onChange={handleCheckboxChange}
+                                  />{" "}
+                                  Pipeline
+                                </Label>
+                              </FormGroup>
+                              <FormGroup check>
+                                <Label check>
+                                  <Input
+                                    type="checkbox"
+                                    name="cleanSedimentFilters"
+                                    checked={selectedItems.cleanSedimentFilters}
+                                    onChange={handleCheckboxChange}
+                                  />{" "}
+                                  Sediment Filters
+                                </Label>
+                              </FormGroup>
+                              <FormGroup check>
+                                <Label check>
+                                  <Input
+                                    type="checkbox"
+                                    name="cleanBrineTank"
+                                    checked={selectedItems.cleanBrineTank}
+                                    onChange={handleCheckboxChange}
+                                  />{" "}
+                                  Brine Tank
+                                </Label>
+                              </FormGroup>
 
-                              <div className="text-center">
-                                <img
-                                  className="avatar border-gray"
-                                  style={{
-                                    width: "200px",
-                                    height: "200px",
-                                    borderRadius: "50%",
-                                  }}
-                                  src={cleaningImagePreview}
-                                  alt="documentation"
-                                />
-                              </div>
-
-                              <div className="custom-file">
-                                <input
-                                  type="file"
-                                  className="custom-file-input"
-                                  name="cleaningImage"
-                                  accept="images/*"
-                                  onChange={onChange}
-                                />
-                                <label
-                                  htmlFor="customFile"
-                                  className="custom-file-label">
-                                  Choose Image
-                                </label>
-                              </div>
-                            </Col>
-                            <Col lg="9">
-                              <Row>
-                                <Col lg="12">
-                                  <FormGroup>
-                                    <label className="form-control-label">
-                                      Notes
-                                    </label>
-                                    <textarea
-                                      type="text"
-                                      className="form-control"
-                                      placeholder="Add notes here"
-                                      value={notes}
-                                      onChange={(e) => setNotes(e.target.value)}
-                                      rows={11}
-                                    />
-                                  </FormGroup>
-                                </Col>
-                              </Row>
+                              <h5>Replacement Checklist</h5>
+                              <FormGroup check>
+                                <Label check>
+                                  <Input
+                                    type="checkbox"
+                                    name="replaceBoosterPump"
+                                    checked={selectedItems.replaceBoosterPump}
+                                    onChange={handleCheckboxChange}
+                                  />{" "}
+                                  Booster Pump
+                                </Label>
+                              </FormGroup>
+                              <FormGroup check>
+                                <Label check>
+                                  <Input
+                                    type="checkbox"
+                                    name="replaceTank"
+                                    checked={selectedItems.replaceTank}
+                                    onChange={handleCheckboxChange}
+                                  />{" "}
+                                  Tank
+                                </Label>
+                              </FormGroup>
+                              <FormGroup check>
+                                <Label check>
+                                  <Input
+                                    type="checkbox"
+                                    name="replacePipelines"
+                                    checked={selectedItems.replacePipelines}
+                                    onChange={handleCheckboxChange}
+                                  />{" "}
+                                  Pipelines
+                                </Label>
+                              </FormGroup>
+                              <FormGroup check>
+                                <Label check>
+                                  <Input
+                                    type="checkbox"
+                                    name="replaceSedimentFilter"
+                                    checked={
+                                      selectedItems.replaceSedimentFilter
+                                    }
+                                    onChange={handleCheckboxChange}
+                                  />{" "}
+                                  Sediment Filter
+                                </Label>
+                              </FormGroup>
                             </Col>
                           </Row>
-
+                          <Row className="mt-3">
+                            <Col md="12">
+                              <FormGroup>
+                                <span style={{ fontWeight: "bold" }}>
+                                  Date Issued
+                                </span>{" "}
+                                <input
+                                  //placeholder="Add Notes here ..."
+                                  className="form-control"
+                                  type="date"
+                                  name="dateTested"
+                                  max={
+                                    new Date(
+                                      new Date().getTime() + 24 * 60 * 60 * 1000
+                                    )
+                                      .toISOString()
+                                      .split("T")[0]
+                                  } // Setting min attribute to today's date
+                                  {...register("dateIssued", {
+                                    required: "Please enter date.",
+                                  })}
+                                />
+                                {errors.dateIssued && (
+                                  <h2
+                                    className="h1-seo"
+                                    style={{
+                                      color: "red",
+                                      fontSize: "small",
+                                    }}
+                                  >
+                                    {errors.dateIssued.message}
+                                  </h2>
+                                )}
+                              </FormGroup>
+                            </Col>
+                          </Row>
                           <div className="text-right">
                             <Button className="my-4" color="info" type="submit">
                               Update
@@ -241,7 +356,8 @@ const UpdateMachineCleaning = () => {
                                 navigate(
                                   `/create/store/machincecleaning/${storeId}`
                                 )
-                              }>
+                              }
+                            >
                               Back
                             </Button>
                           </div>

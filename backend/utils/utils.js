@@ -5,6 +5,7 @@ const Order = require("../models/order");
 const BusinessPermit = require("../models/businesspermit");
 const BarangayHealth = require("../models/barangayhealth");
 const PhyChemTest = require("../models/phychemtest");
+const MachineCleaning = require("../models/machinecleaning");
 const mongoose = require("mongoose");
 const {
   storeRenewalNotification,
@@ -41,6 +42,61 @@ exports.notifyAdmin = async (io) => {
       },
     },
   ]);
+  const machineCleaning = await MachineCleaning.aggregate([
+    {
+      $match: {
+        storebranch: { $in: branchIds },
+      },
+    },
+    {
+      $sort: { dateIssued: -1 },
+    },
+    {
+      $group: {
+        _id: "$storebranch",
+        machineCleaningId: { $first: "$_id" },
+        user: { $first: "$user" },
+        checklist: { $first: "$checklist" },
+        dateIssued: { $first: "$dateIssued" },
+        expiryDate: { $first: "$expiryDate" },
+        createdAt: { $first: "$createdAt" },
+        deleted: { $first: "$deleted" },
+      },
+    },
+  ])
+  console.log('machineCleaning', machineCleaning)
+  machineCleaning.forEach(async (cert) => {
+    let title = "";
+    const branchName = branches.find(
+      (branch) => branch._id.toString() === cert._id.toString()
+    );
+    if (branchName) {
+      title = branchName.branch;
+    }
+    const message =
+      "Your Machine Cleaning Record is about to expire in 1 week.";
+
+    // Calculate the date 1 week before the expiry date
+    const oneWeekBeforeExpiry = new Date(cert.expiryDate);
+    oneWeekBeforeExpiry.setDate(oneWeekBeforeExpiry.getDate() - 7);
+    today = oneWeekBeforeExpiry;
+    // Check if today's date is equal to one week before the expiry date
+    if (
+      today.toISOString().slice(0, 10) ===
+      oneWeekBeforeExpiry.toISOString().slice(0, 10)
+    ) {
+      await storeRenewalNotification(
+        message,
+        title,
+        cert.machineCleaningId,
+        "MachineCleaningID",
+        cert.user
+      );
+      io.emit("triggerRenewalNotification");
+    } else {
+      console.log("Today's date is not 1 week before the expiry date");
+    }
+  });
   const potability = await BarangayHealth.aggregate([
     {
       $match: {

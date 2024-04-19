@@ -126,7 +126,7 @@ export const singleMachineCleaningReducer = (
     case SINGLE_MACHINECLEANING_RESET:
       return {
         ...state,
-        machinecleaningdetails: false,
+        machinecleaningdetails: [],
       };
 
     case SINGLE_MACHINECLEANING_FAIL:

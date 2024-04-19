@@ -22,6 +22,7 @@ import {
   InputGroup,
   Form,
   Input,
+  Label,
 } from "reactstrap";
 import Sidebar from "components/Sidebar/Sidebar";
 import MetaData from "components/layout/MetaData";
@@ -63,7 +64,16 @@ const MachineCleaningList = () => {
 
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
-
+  const [selectedItems, setSelectedItems] = useState({
+    cleanTank: false,
+    cleanPipeline: false,
+    cleanSedimentFilters: false,
+    cleanBrineTank: false,
+    replaceTank: false,
+    replaceBoosterPump: false,
+    replacePipelines: false,
+    replaceSedimentFilter: false,
+  });
   const [notes, setNotes] = useState("");
   const [cleaningImage, setcleaningImage] = useState("");
   const [cleaningImagePreview, setcleaningImagePreview] = useState(
@@ -76,7 +86,12 @@ const MachineCleaningList = () => {
     formState: { errors },
     reset,
   } = useForm();
-
+  const handleCheckboxChange = (event) => {
+    setSelectedItems({
+      ...selectedItems,
+      [event.target.name]: event.target.checked,
+    });
+  };
   useEffect(() => {
     dispatch(allMachineCleaning(id));
     dispatch(getStoreDetails(id));
@@ -107,9 +122,8 @@ const MachineCleaningList = () => {
 
   const submitHandler = (e) => {
     const formData = new FormData();
-    formData.set("notes", e.notes);
-    formData.set("cleaningImage", cleaningImage);
-
+    formData.set("dateIssued", e.dateIssued);
+    formData.set("selectedItems", JSON.stringify(selectedItems));
     dispatch(createMachineCleaning(formData, id));
   };
 
@@ -165,26 +179,32 @@ const MachineCleaningList = () => {
       }
     });
   };
-
+  const labels = {
+    cleanTank: "Tank",
+    cleanPipeline: "Pipelines",
+    cleanSedimentFilters: "Sediment Filters",
+    cleanBrineTank: "Brine Tank",
+    replaceTank: "Tank",
+    replaceBoosterPump: "Booster Pump",
+    replacePipelines: "Pipelines",
+    replaceSedimentFilter: "Sediment Filters",
+  };
   const setMCRecord = () => {
     const data = {
       columns: [
         {
-          label: "Documentation",
-          field: "image",
+          label: "Checklist",
+          field: "checklist",
         },
         {
-          label: "Notes",
-          field: "notes",
+          label: "Date Issued",
+          field: "dateIssued",
           sort: "desc",
         },
-
         {
-          label: "Date",
-          field: "date",
-          sort: "desc",
+          label: "Expiry Date",
+          field: "expiryDate"
         },
-
         {
           label: "Actions",
           field: "actions",
@@ -205,19 +225,33 @@ const MachineCleaningList = () => {
 
     sortedMachineCleaning.forEach((machinecleanings) => {
       // machinecleaning.forEach((machinecleanings) => {
-      const dateObject = new Date(machinecleanings.createdAt);
+      const expiryDate = new Date(machinecleanings.expiryDate);
+      const issuedDateObject = new Date(machinecleanings.dateIssued);
       data.rows.push({
-        notes: machinecleanings.notes,
-        image: (
-          <img
-            style={{ width: 100, height: 100 }}
-            src={machinecleanings.cleaningImage.url}
-            alt="image"
-            img
-          />
+        checklist: (
+          <div>
+            <h5>Cleaning Checklist</h5>
+            {Object.entries(machinecleanings.checklist)
+              .filter(([key]) => key.startsWith("clean"))
+              .map(([key, value]) => (
+                <div key={key} className="d-flex align-items-center">
+                  <input type="checkbox" checked={value} disabled />
+                  <label className="ml-2">{labels[key]}</label>
+                </div>
+              ))}
+            <h5>Replacement Checklist</h5>
+            {Object.entries(machinecleanings.checklist)
+              .filter(([key]) => key.startsWith("replace"))
+              .map(([key, value]) => (
+                <div key={key} className="d-flex align-items-center">
+                  <input type="checkbox" checked={value} disabled />
+                  <label className="ml-2">{labels[key]}</label>
+                </div>
+              ))}
+          </div>
         ),
-        // date: machinecleanings.createdAt,
-        date: dateObject.toLocaleDateString(),
+        dateIssued: issuedDateObject.toLocaleDateString(),
+        expiryDate: expiryDate.toLocaleDateString(),
         actions: (
           <Fragment>
             <button
@@ -226,12 +260,14 @@ const MachineCleaningList = () => {
                 navigate(
                   `/update/store/machincecleaning/${machinecleanings._id}`
                 )
-              }>
+              }
+            >
               <i className="fa fa-info-circle"></i>
             </button>
             <button
               className="btn btn-danger py-1 px-2 ml-2"
-              onClick={() => deleterecord(machinecleanings._id)}>
+              onClick={() => deleterecord(machinecleanings._id)}
+            >
               <i className="fa fa-trash"></i>
             </button>
           </Fragment>
@@ -270,13 +306,15 @@ const MachineCleaningList = () => {
                     className="mb-3"
                     color="primary"
                     type="button"
-                    onClick={toggle}>
+                    onClick={toggle}
+                  >
                     Add New Record
                   </Button>
                   <Modal
                     className="modal-dialog-centered"
                     isOpen={modal}
-                    toggle={toggle}>
+                    toggle={toggle}
+                  >
                     <Form role="form" onSubmit={handleSubmit(submitHandler)}>
                       <ModalHeader toggle={toggle}>
                         Machine Cleaning Record
@@ -284,84 +322,135 @@ const MachineCleaningList = () => {
                       <ModalBody>
                         <Row>
                           <Col md="12">
-                            <div className="form-group">
-                              <label htmlFor="avatar_upload">
-                                Documentation
-                              </label>
+                            <h5>Cleaning Checklist</h5>
+                            <FormGroup check>
+                              <Label check>
+                                <Input
+                                  type="checkbox"
+                                  name="cleanTank"
+                                  checked={selectedItems.cleanTank}
+                                  onChange={handleCheckboxChange}
+                                />{" "}
+                                Tank
+                              </Label>
+                            </FormGroup>
+                            <FormGroup check>
+                              <Label check>
+                                <Input
+                                  type="checkbox"
+                                  name="cleanPipeline"
+                                  checked={selectedItems.cleanPipeline}
+                                  onChange={handleCheckboxChange}
+                                />{" "}
+                                Pipeline
+                              </Label>
+                            </FormGroup>
+                            <FormGroup check>
+                              <Label check>
+                                <Input
+                                  type="checkbox"
+                                  name="cleanSedimentFilters"
+                                  checked={selectedItems.cleanSedimentFilters}
+                                  onChange={handleCheckboxChange}
+                                />{" "}
+                                Sediment Filters
+                              </Label>
+                            </FormGroup>
+                            <FormGroup check>
+                              <Label check>
+                                <Input
+                                  type="checkbox"
+                                  name="cleanBrineTank"
+                                  checked={selectedItems.cleanBrineTank}
+                                  onChange={handleCheckboxChange}
+                                />{" "}
+                                Brine Tank
+                              </Label>
+                            </FormGroup>
 
-                              <div className="row">
-                                <div className="col-sm-3"></div>
-                                <div className="col-sm-6">
-                                  <div className="text-center">
-                                    <img
-                                      className="avatar border-gray"
-                                      style={{
-                                        width: "200px",
-                                        height: "200px",
-                                      }}
-                                      src={cleaningImagePreview}
-                                      alt="User"
-                                    />
-                                  </div>
-
-                                  <div className="custom-file">
-                                    <input
-                                      type="file"
-                                      name="storeImage"
-                                      className="custom-file-input"
-                                      id="cleaningImage"
-                                      accept="images/*"
-                                      {...register("cleaningImage", {
-                                        required: true,
-                                      })}
-                                      onChange={(e) => {
-                                        onChange(e);
-                                        e.target.blur();
-                                      }}
-                                    />
-                                    <label
-                                      className="custom-file-label"
-                                      htmlFor="customFile">
-                                      Choose Image
-                                    </label>
-                                  </div>
-                                </div>
-                              </div>
-                              {errors.cleaningImage && !cleaningImage && (
+                            <h5>Replacement Checklist</h5>
+                            <FormGroup check>
+                              <Label check>
+                                <Input
+                                  type="checkbox"
+                                  name="replaceBoosterPump"
+                                  checked={selectedItems.replaceBoosterPump}
+                                  onChange={handleCheckboxChange}
+                                />{" "}
+                                Booster Pump
+                              </Label>
+                            </FormGroup>
+                            <FormGroup check>
+                              <Label check>
+                                <Input
+                                  type="checkbox"
+                                  name="replaceTank"
+                                  checked={selectedItems.replaceTank}
+                                  onChange={handleCheckboxChange}
+                                />{" "}
+                                Tank
+                              </Label>
+                            </FormGroup>
+                            <FormGroup check>
+                              <Label check>
+                                <Input
+                                  type="checkbox"
+                                  name="replacePipelines"
+                                  checked={selectedItems.replacePipelines}
+                                  onChange={handleCheckboxChange}
+                                />{" "}
+                                Pipelines
+                              </Label>
+                            </FormGroup>
+                            <FormGroup check>
+                              <Label check>
+                                <Input
+                                  type="checkbox"
+                                  name="replaceSedimentFilter"
+                                  checked={selectedItems.replaceSedimentFilter}
+                                  onChange={handleCheckboxChange}
+                                />{" "}
+                                Sediment Filter
+                              </Label>
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                        <Row className="mt-3">
+                          <Col md="12">
+                            <FormGroup>
+                              <span style={{ fontWeight: "bold" }}>
+                                Date Issued
+                              </span>{" "}
+                              <input
+                                //placeholder="Add Notes here ..."
+                                className="form-control"
+                                type="date"
+                                name="dateTested"
+                                max={
+                                  new Date(
+                                    new Date().getTime() + 24 * 60 * 60 * 1000
+                                  )
+                                    .toISOString()
+                                    .split("T")[0]
+                                } // Setting min attribute to today's date
+                                {...register("dateIssued", {
+                                  required: "Please enter date.",
+                                })}
+                              />
+                              {errors.dateIssued && (
                                 <h2
                                   className="h1-seo"
                                   style={{
                                     color: "red",
                                     fontSize: "small",
-                                  }}>
-                                  Please select a valid image.
+                                  }}
+                                >
+                                  {errors.dateIssued.message}
                                 </h2>
                               )}
-                            </div>
+                            </FormGroup>
                           </Col>
                         </Row>
-                        <FormGroup>
-                          <span style={{ fontWeight: "bold" }}>Notes:</span>{" "}
-                          <textarea
-                            placeholder="Add Notes here ..."
-                            className="form-control"
-                            type="text"
-                            name="notes"
-                            {...register("notes", {
-                              required: "Please enter notes.",
-                            })}
-                          />
-                          {errors.notes && (
-                            <h2
-                              className="h1-seo"
-                              style={{
-                                color: "red",
-                                fontSize: "small",
-                              }}>
-                              {errors.notes.message}
-                            </h2>
-                          )}
-                        </FormGroup>
                       </ModalBody>
                       <ModalFooter>
                         <Button color="primary" type="submit">

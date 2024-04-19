@@ -81,7 +81,7 @@ const AdminNavbar = (props) => {
             message: notification.message,
             title: notification.title,
             notificationId: notification._id,
-            order: notification.documentType === 'PotabilityID' ? notification.PotabilityID : notification.documentType === 'businessPermitID' ? notification.businessPermitID : notification.PhyChemID,
+            order: notification.documentType === 'PotabilityID' ? notification.PotabilityID : notification.documentType === 'businessPermitID' ? notification.businessPermitID : notification.documentType === 'PhyChemID' ? notification.PhyChemID : notification.MachineCleaningID,
             documentType: notification.documentType,
             createdAt: notification.createdAt,
             renewal: true,

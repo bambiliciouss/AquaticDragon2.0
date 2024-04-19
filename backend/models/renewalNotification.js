@@ -21,6 +21,10 @@ const renewalNotifcationSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'BarangayHealth',
     },
+    MachineCleaningID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'MachineCleaning',
+    },
     userID:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

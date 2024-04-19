@@ -11,23 +11,48 @@ const storeMachineCleaningSchema = new mongoose.Schema({
     required: true,
     ref: "StoreBranch",
   },
-
-  cleaningImage: {
-    public_id: {
-      type: String,
-      required: true,
+  checklist: {
+    cleanTank: {
+      type:Boolean,
+      default: false
     },
-    url: {
-      type: String,
-      required: true,
+    cleanPipeline: {
+      type:Boolean,
+      default: false
+    },
+    cleanSedimentFilters: {
+      type:Boolean,
+      default: false
+    },
+    cleanBrineTank: {
+      type:Boolean,
+      default: false
+    },
+    replaceTank: {
+      type:Boolean,
+      default: false
+    },
+    replaceBoosterPump: {
+      type:Boolean,
+      default: false
+    },
+    replacePipelines: {
+      type:Boolean,
+      default: false
+    },
+    replaceSedimentFilter: {
+      type:Boolean,
+      default: false
     },
   },
-
-  notes: {
-    type: String,
-    default: "",
+  dateIssued: {
+    type: Date,
+    required: true,
   },
-
+  expiryDate: {
+    type: Date,
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

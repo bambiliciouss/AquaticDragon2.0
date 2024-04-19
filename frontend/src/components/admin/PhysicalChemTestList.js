@@ -163,7 +163,10 @@ const PhysicalChemTestList = () => {
           field: "date",
           sort: "desc",
         },
-
+        {
+          label: "Expiry Date",
+          field: "expiryDate"
+        },
         {
           label: "Actions",
           field: "actions",
@@ -183,6 +186,7 @@ const PhysicalChemTestList = () => {
     });
 
     sortedPhysicalChemTest.forEach((physicalchemtests) => {
+      const expiryDate = new Date(physicalchemtests.expiryDate);
       // machinecleaning.forEach((machinecleanings) => {
       const dateObject = new Date(physicalchemtests.dateTested);
       data.rows.push({
@@ -196,6 +200,7 @@ const PhysicalChemTestList = () => {
         ),
         // date: machinecleanings.createdAt,
         date: dateObject.toLocaleDateString(),
+        expiryDate: expiryDate.toLocaleDateString(),
         actions: (
           <Fragment>
             <button

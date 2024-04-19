@@ -159,7 +159,10 @@ const BarangayHealthList = () => {
           field: "date",
           sort: "desc",
         },
-
+        {
+          label: "Expiry Date",
+          field: "expiryDate"
+        },
         {
           label: "Actions",
           field: "actions",
@@ -173,6 +176,7 @@ const BarangayHealthList = () => {
 
     // barangayhealth.forEach((barangayhealths) => {
     sortedData.forEach((barangayhealths) => {
+      const expiryDate = new Date(barangayhealths.expiryDate)
       const dateObject = new Date(barangayhealths.dateVisited);
       data.rows.push({
         date: dateObject.toLocaleDateString(),
@@ -186,6 +190,7 @@ const BarangayHealthList = () => {
         ),
         // date: machinecleanings.createdAt,
         // date: dateObject.toLocaleDateString(),
+        expiryDate: expiryDate.toLocaleDateString(),
         actions: (
           <Fragment>
             <button

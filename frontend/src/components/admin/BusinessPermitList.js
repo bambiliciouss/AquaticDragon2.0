@@ -167,7 +167,10 @@ const BusinessPermitList = () => {
           field: "date",
           sort: "desc",
         },
-
+        {
+          label: "Expiry Date",
+          field: "expiryDate"
+        },
         {
           label: "Actions",
           field: "actions",
@@ -181,6 +184,7 @@ const BusinessPermitList = () => {
     });
 
     sortedBusinessPermit.forEach((businesspermits) => {
+      const expiryDate = new Date(businesspermits.expiryDate);
       const dateObject = new Date(businesspermits.dateIssued);
       data.rows.push({
         image: (
@@ -193,6 +197,7 @@ const BusinessPermitList = () => {
         ),
 
         date: dateObject.toLocaleDateString(),
+        expiryDate: expiryDate.toLocaleDateString(),
         actions: (
           <Fragment>
             <button
