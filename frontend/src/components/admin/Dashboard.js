@@ -83,9 +83,7 @@ import {
   getAllUserReviewsByBranch,
 } from "../../actions/adminAction"; // Actions for sales, walkin sales, order sales, order transactions, order gallon type, barangay sales, staff performance
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faStar
-} from "@fortawesome/free-solid-svg-icons";
+import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { allAdminBranches } from "actions/storebranchActions";
 import { useDispatch, useSelector } from "react-redux";
 const Dashboard = (props) => {
@@ -457,7 +455,7 @@ const Dashboard = (props) => {
   };
   const getAllSalesLabels = (filter, data) => {
     if (filter === "today") {
-      return data.salesByBranch.map((sale) =>
+      return data.totalSales.map((sale) =>
         moment(sale._id + "Z")
           .tz("Asia/Manila")
           .format("YYYY-MM-DD HH:mm")
@@ -484,16 +482,16 @@ const Dashboard = (props) => {
   };
   // Change the data of the chart depending on the sales, transactions, gallons
   useEffect(() => {
-    if (sales && sales.salesByBranch) {
+    if (sales && sales.totalSales) {
       // Get all unique statuses
       const branches = [
         ...new Set(
-          sales.salesByBranch.flatMap((transaction) =>
+          sales.totalSales.flatMap((transaction) =>
             transaction.branches.map((order) => order.branch)
           )
         ),
       ];
-
+      let acc = {};
       //Generate labels
       const labels = getAllSalesLabels(filter4, sales);
       const datasets = branches.map((status) => ({
@@ -501,28 +499,29 @@ const Dashboard = (props) => {
         data: labels.map((label) => {
           let sale;
           if (filter4 === "today") {
-            sale = sales.salesByBranch.find(
+            sale = sales.totalSales.find(
               (transaction) =>
                 moment(transaction._id + "Z")
                   .tz("Asia/Manila")
                   .format("YYYY-MM-DD HH:mm") === label
             );
           } else if (filter4 === "week") {
-            sale = sales.salesByBranch.find(
+            sale = sales.totalSales.find(
               (transaction) =>
                 moment(transaction._id + "Z")
                   .tz("Asia/Manila")
                   .format("YYYY-MM-DD") === label
             );
           } else if (filter4 === "month" || filter4 === "year") {
-            sale = sales.salesByBranch.find(
+            sale = sales.totalSales.find(
               (transaction) => String(transaction._id) === label
             );
           }
-          const order =
-            sale && sale.branches.find((order) => order.branch === status);
-
-          return order ? order.totalSales : 0;
+          const order = sale && sale.branches.find((order) => order.branch === status);
+          if (order){
+            acc[status] = (acc[status] || 0) + order.totalSales
+          }
+          return acc[status] || 0;
         }),
         backgroundColor: getRandomColor(),
       }));
@@ -791,12 +790,12 @@ const Dashboard = (props) => {
       currentSalesBranch.totalSales.length > 0
     ) {
       const labels = totalSalesBranchLabel(filter3, currentSalesBranch);
-      let acc=0;
+      let acc = 0;
       const datasets = [
         {
           data: labels.map((label) => {
             let sale;
-            
+
             if (filter3 === "today") {
               sale = currentSalesBranch.totalSales.find(
                 (sale) =>
@@ -879,7 +878,13 @@ const Dashboard = (props) => {
         dispatch(getStaffPerformance(branch, selectedMonth + 1, selectedYear));
 
         //Get all reviews by branch
-        dispatch(getAllUserReviewsByBranch(branch, reviewSelectedMonth + 1, reviewSelectedYear));
+        dispatch(
+          getAllUserReviewsByBranch(
+            branch,
+            reviewSelectedMonth + 1,
+            reviewSelectedYear
+          )
+        );
 
         //Action for current branch sales
         //Gets the total sales of selected branch
@@ -1899,7 +1904,24 @@ const Dashboard = (props) => {
                         Feedback
                       </h6>
                       <h2 className="mb-0">Customer Reviews</h2>
-                      <h2 className="mb-0">Average Rating {reviews && reviews.length > 0 ?( <>{reviews.reduce((acc,item)=>acc + item._id.rating,0)/(reviews.length).toFixed(2)} <FontAwesomeIcon icon={faStar} size="sm" color="#FFD700"/></> ): "No reviews yet"}</h2>
+                      <h2 className="mb-0">
+                        Average Rating{" "}
+                        {reviews && reviews.length > 0 ? (
+                          <>
+                            {reviews.reduce(
+                              (acc, item) => acc + item._id.rating,
+                              0
+                            ) / reviews.length.toFixed(2)}{" "}
+                            <FontAwesomeIcon
+                              icon={faStar}
+                              size="sm"
+                              color="#FFD700"
+                            />
+                          </>
+                        ) : (
+                          "No reviews yet"
+                        )}
+                      </h2>
                     </div>
                     <Col className="d-flex justify-content-end z-3" xl="6">
                       <Dropdown>
@@ -1923,7 +1945,9 @@ const Dashboard = (props) => {
                       </Dropdown>
                       <Dropdown>
                         <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                          {reviewSelectedYear ? reviewSelectedYear : "Select Year"}
+                          {reviewSelectedYear
+                            ? reviewSelectedYear
+                            : "Select Year"}
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
@@ -1965,7 +1989,9 @@ const Dashboard = (props) => {
                           reviews.map((review, index) => {
                             return (
                               <tr key={index}>
-                                <th className="text-center">{review._id.userID}</th>
+                                <th className="text-center">
+                                  {review._id.userID}
+                                </th>
                                 <th style={{ fontSize: "16px" }}>
                                   {review._id.comment}
                                 </th>
@@ -1985,7 +2011,7 @@ const Dashboard = (props) => {
               </Card>
             </Col>
           </Row>
-          
+
           {/* Total Sales By Branch */}
           <Row>
             <Col className="mb-5 mb-xl-4" xl="12">

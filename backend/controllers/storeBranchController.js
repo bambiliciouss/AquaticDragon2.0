@@ -476,8 +476,97 @@ exports.getSalesByBranch = async (req, res) => {
         transaction._id = monthNames[parseInt(transaction._id) - 1];
       });
     }
+    const walkinSalesByBranch = await OtherGallon.aggregate([
+      {
+        $match: {
+          deleted: false,
+          createdAt: { $gte: startDate, $lt: endDate },
+          storebranch: {$in: branchIds},
+        },
+      },
+      {
+        $group: {
+          _id: { storebranch: "$storebranch", date: groupBy },
+          totalSales: { $sum: { $multiply: ["$price", "$quantity"] } },
+        },
+      },
+      {
+        $lookup: {
+          from: "storebranches", // replace with the actual name of your store branches collection
+          localField: "_id.storebranch",
+          foreignField: "_id",
+          as: "storebranch",
+        },
+      },
+      {
+        $unwind: "$storebranch",
+      },
+      {
+        $project: {
+          _id: 1,
+          totalSales: 1,
+          branch: "$storebranch.branch",
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.date",
+          branches: {
+            $push: {
+              store: "$_id.storebranch",
+              branch: "$branch",
+              totalSales: "$totalSales",
+            },
+          },
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+    ]);
+    // Merge the two arrays
+    const mergedSales = [...salesByBranch, ...walkinSalesByBranch];
+
+    // Group the merged array by date and time
+    const totalSales = mergedSales.reduce((acc, item) => {
+      // Find an existing group for the current date and time
+      const existingGroup = acc.find((group) => group._id === item._id);
+
+      if (existingGroup) {
+        // If a group exists, merge the branches
+        item.branches.forEach((branch) => {
+          const existingBranch = existingGroup.branches.find(
+            (b) => b.store === branch.store
+          );
+
+          if (existingBranch) {
+            // If the branch exists, sum the total sales
+            existingBranch.totalSales += branch.totalSales;
+          } else {
+            // If the branch doesn't exist, add it
+            existingGroup.branches.push(branch);
+          }
+
+          // Update the group's total sales
+          existingGroup.totalSales =
+            (existingGroup.totalSales || 0) + branch.totalSales;
+        });
+      } else {
+        // If a group doesn't exist, add a new group
+        item.totalSales = item.branches.reduce(
+          (total, branch) => total + branch.totalSales,
+          0
+        );
+        acc.push(item);
+      }
+
+      return acc;
+    }, []);
+
+    // Sort the groups by date and time
+    totalSales.sort((a, b) => new Date(a._id) - new Date(b._id));
     res.status(200).json({
-      salesByBranch,
+      totalSales,
       startDate: startDate.toLocaleDateString(),
       endDate: endDate.toLocaleDateString(),
     });
