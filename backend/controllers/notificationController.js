@@ -69,7 +69,7 @@ exports.fetchRenewalNotification = async (userID) => {
       userID,
       read: false,
       createdAt: { $gte: today, $lt: tomorrow },
-    });
+    }).sort({ createdAt: -1 });
     return notifications;
   } catch (error) {
     console.log(error);
@@ -111,7 +111,7 @@ exports.fetchCustomerNotification = async (customerId) => {
     const notifications = await CustomerNotification.find({
       userID: customerId,
       read: false,
-    });
+    }).sort({ createdAt: -1 });
     return notifications;
   } catch (error) {
     console.log(error);
@@ -147,7 +147,7 @@ exports.fetchRiderNotification = async (riderId) => {
     const notifications = await RiderNotification.find({
       userID: riderId,
       read: false,
-    });
+    }).sort({ createdAt: -1 });
     return notifications;
   } catch (error) {
     console.log(error);
@@ -171,7 +171,7 @@ exports.storeNotification = async (
   orderItems,
   orderProducts,
   adminId,
-  orderId
+  orderId,
 ) => {
   try {
     const order = await Order.findById(orderId);
@@ -198,7 +198,7 @@ exports.fetchNotification = async (adminId) => {
     const notifications = await Notification.find({
       userID: { $in: adminId },
       read: false,
-    });
+    }).sort({ createdAt: -1 });
     return notifications;
   } catch (error) {
     console.log(error);

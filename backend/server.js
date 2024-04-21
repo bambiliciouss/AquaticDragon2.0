@@ -57,6 +57,8 @@ let riderSockets = {};
 let customerSockets = {};
 let orderItems = [];
 let orderProducts = [];
+// .on(), .emit(), .to()
+
 // Socket.io connection handling
 io.on("connection", (socket) => {
   console.log("New client connected");
