@@ -353,7 +353,7 @@ const Dashboard = (props) => {
       );
     } else if (filter === "weekly") {
       // return transactions.transactions.map(transaction => transaction._id);
-      const [month, day, year] = transactions.startDate.split("/");
+      const [month, day, year] = transactions.startDate.split("/");//4/21/2024
       const start = new Date(year, month - 1, Number(day));
       return Array.from({ length: 7 }, (_, i) => {
         const date = new Date(start.getTime());

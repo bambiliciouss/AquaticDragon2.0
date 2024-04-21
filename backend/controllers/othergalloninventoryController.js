@@ -126,7 +126,7 @@ exports.getTotalSalesWalkin = async (req, res) => {
       {
         $match: {
           deleted: false,
-          createdAt: { $gte: startOfToday, $lt: endOfToday },
+          createdAt: { $gte: startOfToday, $lte: endOfToday },
         },
       },
       {

@@ -35,7 +35,7 @@ router
   .get(isAuthenticatedUser, authorizeRoles("admin"), allOrdersAdmin);
 
 router.route("/order/:id").get(isAuthenticatedUser, getSingleOrder);
-router.get("/admin/all/orders/:id", isAuthenticatedUser, authorizeRoles("admin", "employee", "rider"), getOrderTransactions);
+router.get("/admin/all/orders/:id", isAuthenticatedUser, authorizeRoles("admin"), getOrderTransactions);
 router.get("/admin/orders/byGallon/:id",isAuthenticatedUser, authorizeRoles("admin", "employee", "rider"), getOrdersByGallonType);
 router.get("/admin/orders/byBarangay/:id",isAuthenticatedUser, authorizeRoles("admin", "employee", "rider"), getOrderByBarangay);
 router.get("/admin/orders/staff/:id", isAuthenticatedUser, authorizeRoles("admin", "employee", "rider"), getAcceptedAndDeliveredOrders);

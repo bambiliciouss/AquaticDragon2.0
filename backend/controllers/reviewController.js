@@ -149,14 +149,12 @@ exports.getAllUserReviewsByBranch = async (req, res) => {
             rating: "$rating",
             branchName: "$storebranch.branchName",
           },
-          count: { $sum: 1 },
+      
         },
       },
       {
         $project: {
           _id: 1,
-          
-          count: 1,
           month: {
             $let: {
               vars: {
@@ -181,7 +179,7 @@ exports.getAllUserReviewsByBranch = async (req, res) => {
           },
         },
       },
-      { $sort: { count: -1, name: 1 } },
+      { $sort: {  name: 1 } },
     ]);
     // const reviews = await Review.find({
     //   "storebranch.branchID": new mongoose.Types.ObjectId(req.params.id),

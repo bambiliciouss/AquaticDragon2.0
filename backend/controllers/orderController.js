@@ -331,7 +331,7 @@ exports.getOrderTransactions = async (req, res, next) => {
       endDate = new Date();
       endDate.setHours(23, 59, 59, 999); // set the time to the end of the day
 
-      groupBy = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt", timezone: "Asia/Manila" } };
+      groupBy = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } };
     } else if (filter === 'monthly') {
       groupBy = { $dateToString: { format: "%m", date: "$createdAt" } };
     } else if (filter === 'yearly') {
